@@ -97,9 +97,11 @@ const AdminLogin = () => {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
+      // Save token in localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("isAdmin", "true");
 
+      // Redirect to dashboard
       window.location.href = "/admin";
     } catch (err) {
       alert(err.message);
@@ -143,10 +145,7 @@ const AdminLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <span
-              className="eye-icon"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+            <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
           </div>
