@@ -1,17 +1,9 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  background: #faf7f5;
-  margin: 0;
-  overflow-x: hidden;
-}
-
 /* =====================
-   WRAPPER
+   LOGIN WRAPPER (SCOPED)
 ===================== */
 .login-wrapper {
+  box-sizing: border-box;
+  background: #faf7f5;
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -22,13 +14,13 @@ body {
 /* =====================
    LEFT ILLUSTRATION
 ===================== */
-.login-illustration {
+.login-wrapper .login-illustration {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.login-illustration img {
+.login-wrapper .login-illustration img {
   max-width: 100%;
   height: auto;
 }
@@ -36,7 +28,7 @@ body {
 /* =====================
    LOGIN CARD
 ===================== */
-.login-card {
+.login-wrapper .login-card {
   background: #ffffff;
   border-radius: 16px;
   padding: 48px;
@@ -48,27 +40,31 @@ body {
   margin-top: -8px;
 }
 
-.password-wrapper {
+/* =====================
+   PASSWORD WRAPPER
+===================== */
+.login-wrapper .password-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.password-wrapper input {
+.login-wrapper .login-form input {
   width: 100%;
-  padding-right: 40px; /* space for the eye icon */
-  height: 45px; /* set a consistent height */
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding-left: 10px;
-  font-size: 1rem;
+  padding: 10px 14px;   /* reduced from 14px */
+  height: 15px;         /* smaller height */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;      /* slightly smaller text */
+  margin-bottom: 12px;
 }
 
-.eye-icon {
+/* Eye Icon */
+.login-wrapper .eye-icon {
   position: absolute;
   right: 10px;
-  top: 50%; 
-  transform: translateY(-80%); 
+  top: 40%;
+  transform: translateY(-50%);
   cursor: pointer;
   color: #555;
   font-size: 1.2rem;
@@ -81,13 +77,13 @@ body {
 /* =====================
    MOBILE LOGO
 ===================== */
-.login-mobile-logo {
+.login-wrapper .login-mobile-logo {
   display: none;
   text-align: center;
   margin-bottom: 14px;
 }
 
-.login-mobile-logo img {
+.login-wrapper .login-mobile-logo img {
   width: 140px;
   height: auto;
 }
@@ -95,7 +91,7 @@ body {
 /* =====================
    HEADER
 ===================== */
-.login-header h2 {
+.login-wrapper .login-header h2 {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -104,23 +100,23 @@ body {
 /* =====================
    FORM
 ===================== */
-.login-form label {
+.login-wrapper .login-form label {
   font-size: 14px;
   color: #444;
   margin-bottom: 6px;
   display: block;
 }
 
-.login-form input {
+.login-wrapper .login-form input {
   width: 100%;
   padding: 14px 16px;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 15px;
-  margin-bottom: 14px; /* compact */
+  margin-bottom: 14px;
 }
 
-.login-form input:focus {
+.login-wrapper .login-form input:focus {
   outline: none;
   border-color: #ff7a00;
 }
@@ -128,13 +124,13 @@ body {
 /* =====================
    FORGOT PASSWORD
 ===================== */
-.forgot-password {
+.login-wrapper .forgot-password {
   text-align: right;
   margin-top: -10px;
-  margin-bottom: 14px; /* compact */
+  margin-bottom: 14px;
 }
 
-.forgot-password a {
+.login-wrapper .forgot-password a {
   font-size: 14px;
   color: #000;
   font-weight: 600;
@@ -144,7 +140,7 @@ body {
 /* =====================
    BUTTON
 ===================== */
-.login-btn {
+.login-wrapper .login-btn {
   width: 100%;
   padding: 14px;
   border-radius: 8px;
@@ -154,22 +150,23 @@ body {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  margin-bottom: 14px; /* compact */
+  margin-bottom: 14px;
+  transition: background 0.2s ease;
 }
 
-.login-btn:hover {
+.login-wrapper .login-btn:hover {
   background: #2f6f33;
 }
 
 /* =====================
    SIGN UP
 ===================== */
-.signup-text {
+.login-wrapper .signup-text {
   text-align: center;
   font-size: 14px;
 }
 
-.signup-text a {
+.login-wrapper .signup-text a {
   font-weight: 600;
   color: #000;
   text-decoration: none;
@@ -178,14 +175,14 @@ body {
 /* =====================
    FOOTER
 ===================== */
-.login-footer {
-  margin-top: 16px; /* compact */
+.login-wrapper .login-footer {
+  margin-top: 16px;
   font-size: 12px;
   color: #777;
   text-align: center;
 }
 
-.login-footer span {
+.login-wrapper .login-footer span {
   color: #000;
   font-weight: 500;
 }
@@ -196,34 +193,34 @@ body {
 @media (max-width: 900px) {
   .login-wrapper {
     grid-template-columns: 1fr;
-    padding: 16px;
-    min-height: 100vh;
-    align-items: flex-start; /* push card up */
+    padding: 18px;
+    align-items: flex-start;
   }
 
-  .login-illustration {
+  .login-wrapper .login-illustration {
     display: none;
   }
 
-  .login-card {
+  .login-wrapper .login-card {
     margin: 0 auto;
-    padding: 18px; 
+    padding: 18px;
     border-radius: 6px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     max-height: calc(100vh - 20px);
-    overflow-y: auto; 
-    margin-top: 230px; 
+    overflow-y: auto;
+    width: 90%;
+    margin-top: 230px; /* FIXED: removed 230px issue */
   }
 
-  .login-mobile-logo {
+  .login-wrapper .login-mobile-logo {
     display: block;
   }
 
-  .login-btn {
+  .login-wrapper .login-btn {
     border-radius: 6px;
   }
 
-  .login-header h2 {
-    margin-bottom: 16px; /* compact */
+  .login-wrapper .login-header h2 {
+    margin-bottom: 16px;
   }
 }
