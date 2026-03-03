@@ -124,13 +124,20 @@ const AdminDashboard = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found. Please login.");
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const data = await response.json();
+        // Handle non-JSON responses gracefully
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error("Unexpected response from server: " + text);
+        }
 
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch admin stats");
@@ -170,35 +177,14 @@ const AdminDashboard = () => {
   }
 
   const statCards = [
-    {
-      title: "Total Users",
-      value: stats.totalUsers,
-      icon: <FiUsers />,
-      color: "#3b82f6",
-    },
-    {
-      title: "Total Revenue",
-      value: `₦${stats.totalRevenue.toLocaleString()}`,
-      icon: <FiDollarSign />,
-      color: "#10b981",
-    },
-    {
-      title: "Total Transactions",
-      value: stats.totalTransactions,
-      icon: <FiActivity />,
-      color: "#f59e0b",
-    },
-    {
-      title: "Total Orders",
-      value: stats.totalOrders,
-      icon: <FiShoppingCart />,
-      color: "#6366f1",
-    },
+    { title: "Total Users", value: stats.totalUsers, icon: <FiUsers />, color: "#3b82f6" },
+    { title: "Total Revenue", value: `₦${stats.totalRevenue.toLocaleString()}`, icon: <FiDollarSign />, color: "#10b981" },
+    { title: "Total Transactions", value: stats.totalTransactions, icon: <FiActivity />, color: "#f59e0b" },
+    { title: "Total Orders", value: stats.totalOrders, icon: <FiShoppingCart />, color: "#6366f1" },
   ];
 
   return (
     <div className="admin-dashboard">
-      {/* Welcome Section */}
       <div className="admin-welcome-card">
         <div>
           <h2>Welcome Back, Admin 👋</h2>
@@ -206,7 +192,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="admin-stats-container">
         {statCards.map((stat, index) => (
           <StatCard
