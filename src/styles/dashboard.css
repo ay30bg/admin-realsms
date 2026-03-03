@@ -1,0 +1,170 @@
+.admin-dashboard {
+  padding: 25px;
+}
+
+/* Welcome Card */
+.admin-welcome-card {
+  background: linear-gradient(90deg, #111827, #1f2937);
+  color: #fff;
+  padding: 28px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.admin-welcome-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.admin-welcome-card p {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Stat card */
+.stat-card {
+  background-color: #ffffff;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Top section */
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card-top h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Icon */
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Body */
+.stat-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-subtitle {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Dark mode */
+.stat-card.dark {
+  background-color: #1f2937;
+}
+
+.stat-card.dark .stat-value {
+  color: #f9fafb;
+}
+
+.stat-card.dark h4,
+.stat-card.dark .stat-subtitle {
+  color: #d1d5db;
+}
+
+.stat-weekly-change {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  color: #555;
+}
+
+.stat-weekly-change.positive {
+  color: #10b981; /* green */
+}
+
+.stat-weekly-change.negative {
+  color: #ef4444; /* red */
+}
+
+/* Stats Grid */
+.admin-stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* Loading */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #367e3a;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Mobile */
+@media (max-width: 640px) {
+  .admin-dashboard {
+    padding: 15px;
+  }
+
+  .admin-welcome-card {
+    padding: 20px;
+  }
+
+  .admin-stats-container {
+    grid-template-columns: 1fr;
+  }
+
+   .stat-card {
+    padding: 18px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}

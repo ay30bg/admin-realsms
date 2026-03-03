@@ -1,0 +1,479 @@
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.admin-table thead {
+  background: #f9fafb;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.admin-table td {
+  padding: 14px;
+  font-size: 14px;
+  color: #111827;
+  border-top: 1px solid #f1f5f9;
+}
+
+.admin-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Status Badges */
+
+.status-success {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.status-failed {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-edit {
+  background: #3b82f6; /* blue */
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-edit:active {
+  transform: translateY(0);
+}
+
+.btn-edit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-ban {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.btn-ban:hover {
+  background: #d97706;
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background: #b91c1c;
+}
+
+.btn-export {
+  background: #2563eb;
+  color: #fff;
+  margin-left: 10px;
+}
+
+.btn-export:hover {
+  background: #1e40af;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 350px;
+  max-width: 90%;
+}
+
+.modal input {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0 15px;
+}
+
+/* =========================
+   MODAL ACTION BUTTONS
+========================= */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.modal-actions button {
+  min-width: 90px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* SAVE BUTTON */
+.btn-save {
+  background: #16a34a;   /* green */
+  color: #fff;
+}
+
+.btn-save:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+/* CANCEL BUTTON */
+.btn-cancel {
+  background: #dc2626;   /* red */
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.modal-actions button:active {
+  transform: translateY(0);
+}
+
+/* Status badges */
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+}
+
+.status-badge.active {
+  background: #16a34a;
+}
+
+.status-badge.banned {
+  background: #dc2626;
+}
+
+.status-badge.pending {
+  background: #f59e0b; /* Amber / orange for pending */
+  color: #fff;
+}
+
+/* FAILED */
+.status-badge.failed {
+  background-color: #dc2626; /* red */
+  color: #fff;
+}
+
+/* =======================
+   TABLE CONTROLS
+======================= */
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+/* Search bar */
+.table-controls .search-input {
+  flex: 1;
+  max-width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.table-controls .search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Button container (right side) */
+.table-controls .buttons-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.table-controls .btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-export {
+  background-color: #2563eb;
+  /* Blue */
+  color: white;
+}
+
+.btn-export:hover {
+  background-color: #1e40af;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  /* Red */
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #b91c1c;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.pagination button {
+  padding: 5px 12px;
+  border-radius: 3px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Current page number box */
+.pagination .current-page {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 3px;
+  background-color: #fff;
+  color: #6B7280;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid #6B7280;
+}
+
+.btn-confirm {
+  background: #16a34a; /* green */
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #15803d;
+}
+
+/* =======================
+   RESPONSIVE STYLING
+======================= */
+
+@media (max-width: 768px) {
+
+  /* Table becomes block for small screens */
+  .admin-table,
+  .admin-table thead,
+  .admin-table tbody,
+  .admin-table th,
+  .admin-table td,
+  .admin-table tr {
+    display: block;
+  }
+
+  .admin-table thead {
+    display: none;
+    /* hide header */
+  }
+
+  .admin-table tbody tr {
+    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .admin-table tbody td {
+    padding: 6px 10px;
+    text-align: right;
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .admin-table tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    text-align: left;
+    font-weight: 700;
+    color: #6b7280;
+  }
+
+  .action-buttons {
+    justify-content: flex-end;
+    margin-top: 5px;
+  }
+
+  /* Table controls */
+  .table-controls {
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 40px;
+    gap: 10px;
+  }
+
+  .table-controls .search-input {
+    max-width: 50%;
+  }
+
+  .table-controls .buttons-right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .btn-export {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* Make table horizontally scrollable on very small screens */
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .table-controls {
+    gap: 8px;
+  }
+
+  .table-controls .btn {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+}
+
+/* ========================
+   PAGINATION FIX FOR MOBILE
+======================== */
+
+@media (max-width: 768px) {
+  .pagination {
+    display: flex !important;
+    /* enforce flex */
+    flex-direction: row !important;
+    /* horizontal */
+    justify-content: center;
+    /* center on screen */
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .pagination button {
+    flex: 0 0 auto;
+    /* don’t shrink buttons */
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center;
+    overflow-x: auto;
+    /* scroll if buttons overflow */
+    gap: 6px;
+    padding-bottom: 5px;
+  }
+
+  .pagination button {
+    flex: 0 0 auto;
+    /* prevent shrinking */
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+}

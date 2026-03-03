@@ -1,0 +1,163 @@
+/* =======================
+   SIDEBAR - DESKTOP
+======================= */
+.sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  padding: 25px 20px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1200;
+
+  transition: transform 0.3s ease;
+}
+
+/* Logo */
+.sidebar-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.sidebar-logo img {
+  width: 180px;
+}
+
+/* Navigation */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+
+  color: #4b5563;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.sidebar nav a:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Active */
+.sidebar nav a.active {
+  background: #367e3a;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(54, 126, 58, 0.25);
+}
+
+/* Icons */
+.sidebar-icon {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.sidebar nav a:hover .sidebar-icon {
+  transform: scale(1.1);
+}
+
+/* =======================
+   MAIN CONTENT PUSH
+======================= */
+.main-content {
+  margin-left: 220px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin 0.3s ease;
+}
+
+/* =======================
+   OVERLAY
+======================= */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1100;
+}
+
+/* Sidebar notification badge */
+.nav-with-badge {
+  position: relative;
+}
+
+/* Shared badge styles */
+.nav-with-badge {
+  position: relative;
+}
+
+.nav-with-badge .badge {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+/* Pending transactions (red) */
+.nav-with-badge .badge.pulse {
+  background-color: #dc2626; /* red */
+  animation: pulse 1s infinite;
+}
+
+/* Unread messages (blue) */
+.nav-with-badge .badge.unread {
+  background-color: #2563eb; /* blue */
+  animation: pulse 1s infinite;
+}
+
+/* =======================
+   MOBILE SIDEBAR
+======================= */
+@media (max-width: 768px) {
+
+  /* Hide using transform (NO left shifting) */
+  .sidebar {
+    transform: translateX(-100%);
+    border-right: none; /* remove 1px border leak */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .sidebar-logo img {
+    width: 150px;
+  }
+
+  .close-btn {
+    display: block;
+    text-align: right;
+    font-size: 24px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+}

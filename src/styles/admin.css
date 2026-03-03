@@ -1,0 +1,147 @@
+/* =========================
+   ADMIN LAYOUT STRUCTURE
+========================= */
+
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* =========================
+   SIDEBAR SPACE HANDLING
+   (Assumes sidebar width = 260px)
+========================= */
+
+.admin-main {
+  flex: 1;
+  margin-left: 260px; /* same as sidebar width */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin 0.3s ease;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-header {
+  background: #ffffff;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.admin-name {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.logout-btn {
+  background: #ef4444;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   MAIN CONTENT AREA
+========================= */
+
+.admin-content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  margin-top: 40px;
+}
+
+/* =========================
+   RESPONSIVE - TABLET
+========================= */
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 220px; /* slightly smaller sidebar */
+  }
+
+  .admin-content {
+    padding: 20px;
+    margin-top: 60px;
+  }
+}
+
+/* =========================
+   RESPONSIVE - MOBILE
+========================= */
+
+@media (max-width: 768px) {
+  .admin-container {
+    flex-direction: column;
+  }
+
+  /* Remove fixed sidebar spacing */
+  .admin-main {
+    margin-left: 0;
+  }
+
+  .admin-header {
+    padding: 14px 16px;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+
+  .header-right {
+    gap: 12px;
+  }
+
+  .admin-name {
+    display: none; /* optional */
+  }
+
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* =========================
+   SCROLLBAR (Optional Premium Touch)
+========================= */
+
+.admin-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.admin-content::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
