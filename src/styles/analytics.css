@@ -2,10 +2,46 @@
   padding: 25px;
 }
 
-.analytics-page h2 {
-  font-size: 24px;
+.analytics-filter {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.analytics-filter select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.analytics-alerts {
+  margin-bottom: 15px;
+}
+
+.analytics-alert {
+  background-color: #fef3c7;
+  color: #b45309;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.analytics-kpis {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
   margin-bottom: 20px;
-  color: #111827;
+}
+
+.kpi-card {
+  flex: 1 1 200px;
+  background-color: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+  text-align: center;
 }
 
 .analytics-section {
