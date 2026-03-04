@@ -1,90 +1,256 @@
-import { useState, useMemo } from "react";
+// import { useState, useMemo } from "react";
+// import "../styles/table.css";
+
+// const Transactions = () => {
+//   const initialData = [
+//     {
+//       ref: "TXN001",
+//       user: "user1@email.com",
+//       amount: 10000,
+//       status: "SUCCESS",
+//       method: "Paystack",
+//       date: "2026-02-20",
+//     },
+//     {
+//       ref: "TXN002",
+//       user: "user2@email.com",
+//       amount: 5000,
+//       status: "PENDING",
+//       method: "NowPayments",
+//       date: "2026-02-21",
+//     },
+//     {
+//       ref: "TXN003",
+//       user: "user3@email.com",
+//       amount: 7500,
+//       status: "PENDING",
+//       method: "Korapay",
+//       date: "2026-02-22",
+//     },
+//     {
+//       ref: "TXN004",
+//       user: "user4@email.com",
+//       amount: 2000,
+//       status: "SUCCESS",
+//       method: "Flutterwave",
+//       date: "2026-02-23",
+//     },
+//   ];
+
+//   const [transactions, setTransactions] = useState(initialData);
+//   const [search, setSearch] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const rowsPerPage = 5;
+
+//   const filteredData = useMemo(
+//     () =>
+//       transactions.filter(
+//         (t) =>
+//           t.user.toLowerCase().includes(search.toLowerCase()) ||
+//           t.ref.toLowerCase().includes(search.toLowerCase())
+//       ),
+//     [transactions, search]
+//   );
+
+//   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+//   const paginatedData = filteredData.slice(
+//     (currentPage - 1) * rowsPerPage,
+//     currentPage * rowsPerPage
+//   );
+
+//   const handleConfirm = (ref) => {
+//     if (window.confirm(`Confirm deposit ${ref}?`)) {
+//       setTransactions((prev) =>
+//         prev.map((t) =>
+//           t.ref === ref && t.status === "PENDING"
+//             ? { ...t, status: "SUCCESS" }
+//             : t
+//         )
+//       );
+//     }
+//   };
+
+//   const handleExport = () => {
+//     const csv = [
+//       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
+//       ...transactions.map((t) => [
+//         t.ref,
+//         t.user,
+//         `₦${t.amount}`,
+//         t.status,
+//         t.method,
+//         t.date,
+//       ]),
+//     ]
+//       .map((row) => row.join(","))
+//       .join("\n");
+
+//     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+//     const link = document.createElement("a");
+//     link.href = URL.createObjectURL(blob);
+//     link.download = "transactions.csv";
+//     link.click();
+//   };
+
+//   return (
+//     <div>
+//       <h1>Transactions</h1>
+
+//       {/* Top Controls */}
+//       <div className="table-controls">
+//         <input
+//           type="text"
+//           className="search-input"
+//           placeholder="Search by user or reference..."
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//         />
+
+//         <div className="buttons-right">
+//           <button className="btn btn-export" onClick={handleExport}>
+//             Export CSV
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* Responsive Table SAME AS USERS */}
+//       <table className="admin-table">
+//         <thead>
+//           <tr>
+//             <th>Reference</th>
+//             <th>User</th>
+//             <th>Amount</th>
+//             <th>Status</th>
+//             <th>Payment Method</th>
+//             <th>Date</th>
+//             <th>Actions</th>
+//           </tr>
+//         </thead>
+
+//         <tbody>
+//           {paginatedData.map((t) => (
+//             <tr key={t.ref}>
+//               <td data-label="Reference">{t.ref}</td>
+//               <td data-label="User">{t.user}</td>
+//               <td data-label="Amount">
+//                 ₦{t.amount.toLocaleString()}
+//               </td>
+//               <td data-label="Status">
+//                 <span
+//                   className={`status-badge ${
+//                     t.status === "SUCCESS"
+//                       ? "active"
+//                       : t.status === "PENDING"
+//                       ? "pending"
+//                       : "failed"
+//                   }`}
+//                 >
+//                   {t.status}
+//                 </span>
+//               </td>
+//               <td data-label="Payment Method">{t.method}</td>
+//               <td data-label="Date">{t.date}</td>
+//               <td data-label="Actions">
+//                 <div className="action-buttons">
+//                   {t.status === "PENDING" && (
+//                     <button
+//                       className="btn btn-confirm"
+//                       onClick={() => handleConfirm(t.ref)}
+//                     >
+//                       Confirm
+//                     </button>
+//                   )}
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+
+//       {/* Pagination */}
+//       <div className="pagination">
+//         <button
+//           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+//           disabled={currentPage === 1}
+//         >
+//           Previous
+//         </button>
+
+//         <span className="current-page">{currentPage}</span>
+
+//         <button
+//           onClick={() =>
+//             setCurrentPage((p) => Math.min(totalPages, p + 1))
+//           }
+//           disabled={currentPage === totalPages || totalPages === 0}
+//         >
+//           Next
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+// export default Transactions;
+
+import { useState, useEffect, useMemo } from "react";
 import "../styles/table.css";
 
 const Transactions = () => {
-  const initialData = [
-    {
-      ref: "TXN001",
-      user: "user1@email.com",
-      amount: 10000,
-      status: "SUCCESS",
-      method: "Paystack",
-      date: "2026-02-20",
-    },
-    {
-      ref: "TXN002",
-      user: "user2@email.com",
-      amount: 5000,
-      status: "PENDING",
-      method: "NowPayments",
-      date: "2026-02-21",
-    },
-    {
-      ref: "TXN003",
-      user: "user3@email.com",
-      amount: 7500,
-      status: "PENDING",
-      method: "Korapay",
-      date: "2026-02-22",
-    },
-    {
-      ref: "TXN004",
-      user: "user4@email.com",
-      amount: 2000,
-      status: "SUCCESS",
-      method: "Flutterwave",
-      date: "2026-02-23",
-    },
-  ];
-
-  const [transactions, setTransactions] = useState(initialData);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const token = localStorage.getItem("adminToken");
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/transactions`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setTransactions(data);
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
   const filteredData = useMemo(
-    () =>
-      transactions.filter(
-        (t) =>
-          t.user.toLowerCase().includes(search.toLowerCase()) ||
-          t.ref.toLowerCase().includes(search.toLowerCase())
-      ),
+    () => transactions.filter(
+      (t) =>
+        t.user?.email.toLowerCase().includes(search.toLowerCase()) ||
+        t.reference?.toLowerCase().includes(search.toLowerCase())
+    ),
     [transactions, search]
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
   const paginatedData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
-  const handleConfirm = (ref) => {
-    if (window.confirm(`Confirm deposit ${ref}?`)) {
-      setTransactions((prev) =>
-        prev.map((t) =>
-          t.ref === ref && t.status === "PENDING"
-            ? { ...t, status: "SUCCESS" }
-            : t
-        )
-      );
-    }
-  };
-
   const handleExport = () => {
     const csv = [
       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
       ...transactions.map((t) => [
-        t.ref,
-        t.user,
+        t.reference,
+        t.user?.email || "-",
         `₦${t.amount}`,
         t.status,
-        t.method,
-        t.date,
+        t.provider,
+        t.createdAt?.split("T")[0] || "-",
       ]),
-    ]
-      .map((row) => row.join(","))
-      .join("\n");
+    ].map((row) => row.join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -93,28 +259,21 @@ const Transactions = () => {
     link.click();
   };
 
+  if (loading) return <p>Loading transactions...</p>;
+
   return (
     <div>
       <h1>Transactions</h1>
 
-      {/* Top Controls */}
       <div className="table-controls">
         <input
-          type="text"
-          className="search-input"
           placeholder="Search by user or reference..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-
-        <div className="buttons-right">
-          <button className="btn btn-export" onClick={handleExport}>
-            Export CSV
-          </button>
-        </div>
+        <button onClick={handleExport}>Export CSV</button>
       </div>
 
-      {/* Responsive Table SAME AS USERS */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -122,71 +281,32 @@ const Transactions = () => {
             <th>User</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>Payment Method</th>
+            <th>Method</th>
             <th>Date</th>
-            <th>Actions</th>
           </tr>
         </thead>
-
         <tbody>
           {paginatedData.map((t) => (
-            <tr key={t.ref}>
-              <td data-label="Reference">{t.ref}</td>
-              <td data-label="User">{t.user}</td>
-              <td data-label="Amount">
-                ₦{t.amount.toLocaleString()}
-              </td>
-              <td data-label="Status">
-                <span
-                  className={`status-badge ${
-                    t.status === "SUCCESS"
-                      ? "active"
-                      : t.status === "PENDING"
-                      ? "pending"
-                      : "failed"
-                  }`}
-                >
+            <tr key={t._id}>
+              <td>{t.reference}</td>
+              <td>{t.user?.email || "-"}</td>
+              <td>₦{t.amount.toLocaleString()}</td>
+              <td>
+                <span className={`status-badge ${t.status === "SUCCESS" ? "active" : t.status === "PENDING" ? "pending" : "failed"}`}>
                   {t.status}
                 </span>
               </td>
-              <td data-label="Payment Method">{t.method}</td>
-              <td data-label="Date">{t.date}</td>
-              <td data-label="Actions">
-                <div className="action-buttons">
-                  {t.status === "PENDING" && (
-                    <button
-                      className="btn btn-confirm"
-                      onClick={() => handleConfirm(t.ref)}
-                    >
-                      Confirm
-                    </button>
-                  )}
-                </div>
-              </td>
+              <td>{t.provider}</td>
+              <td>{t.createdAt?.split("T")[0] || "-"}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className="pagination">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-
-        <span className="current-page">{currentPage}</span>
-
-        <button
-          onClick={() =>
-            setCurrentPage((p) => Math.min(totalPages, p + 1))
-          }
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          Next
-        </button>
+        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
+        <span>{currentPage}</span>
+        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</button>
       </div>
     </div>
   );
