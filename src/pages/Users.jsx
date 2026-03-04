@@ -155,89 +155,52 @@
 
 // export default Users;
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/table.css";
 
 const Users = () => {
   const [data, setData] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const rowsPerPage = 5;
 
-  /* =========================
-     FETCH USERS
-  ========================= */
-  const fetchUsers = useCallback(async () => {
+  // Fetch users from backend
+  const fetchUsers = async () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/admin/users", {
-        params: { search, page: currentPage, limit: rowsPerPage },
+        params: {
+          search,
+          page: currentPage,
+          limit: rowsPerPage,
+        },
       });
-      setData(res.data.data);
-      setTotalUsers(res.data.total);
+      setData(res.data?.data || []);
+      setTotalUsers(res.data?.total || 0);
       setLoading(false);
-    } catch (error) {
-      console.error("Fetch users error:", error);
+    } catch (err) {
+      console.error("Fetch users error:", err);
+      setData([]);
+      setTotalUsers(0);
       setLoading(false);
     }
-  }, [search, currentPage, rowsPerPage]);
+  };
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+  }, [search, currentPage, rowsPerPage]); // re-fetch on search or page change
 
-  /* =========================
-     BAN / UNBAN USER
-  ========================= */
-  const handleBan = async (id) => {
-    try {
-      await axios.patch(`/api/admin/users/${id}/ban`);
-      fetchUsers();
-    } catch (error) {
-      console.error("Ban/Unban error:", error);
-    }
-  };
+  const totalPages = Math.ceil(totalUsers / rowsPerPage);
 
-  /* =========================
-     DELETE USER
-  ========================= */
-  const handleDelete = async (id, email) => {
-    if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
-    try {
-      await axios.delete(`/api/admin/users/${id}`);
-      fetchUsers();
-    } catch (error) {
-      console.error("Delete user error:", error);
-    }
-  };
-
-  /* =========================
-     SAVE EDITED USER
-  ========================= */
-  const handleEditSave = async () => {
-    try {
-      await axios.put(`/api/admin/users/${editingUser._id}`, {
-        email: editingUser.email,
-        walletBalanceNGN: editingUser.balance,
-      });
-      setEditingUser(null);
-      fetchUsers();
-    } catch (error) {
-      console.error("Edit user error:", error);
-    }
-  };
-
-  /* =========================
-     EXPORT CSV
-  ========================= */
+  // Export CSV
   const handleExport = () => {
     const csv = [
       ["Email", "Balance", "Date Joined", "Status"],
-      ...data.map((u) => [
+      ...(data || []).map((u) => [
         u.email,
         `₦${Number(u.balance).toLocaleString()}`,
         new Date(u.dateJoined).toLocaleDateString(),
@@ -254,7 +217,40 @@ const Users = () => {
     link.click();
   };
 
-  const totalPages = Math.ceil(totalUsers / rowsPerPage);
+  // Ban / Unban
+  const handleBan = async (id) => {
+    try {
+      await axios.put(`/api/admin/users/ban/${id}`);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Delete user
+  const handleDelete = async (id, email) => {
+    if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
+    try {
+      await axios.delete(`/api/admin/users/${id}`);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Save edited user
+  const handleEditSave = async () => {
+    try {
+      await axios.put(`/api/admin/users/${editingUser._id}`, {
+        email: editingUser.email,
+        balance: editingUser.balance,
+      });
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="table-page">
@@ -267,7 +263,10 @@ const Users = () => {
           className="search-input"
           placeholder="Search by email..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // reset to page 1 on search
+          }}
         />
         <div className="buttons-right">
           <button className="btn btn-export" onClick={handleExport}>
@@ -294,20 +293,28 @@ const Users = () => {
                 Loading...
               </td>
             </tr>
-          ) : data.length === 0 ? (
+          ) : data?.length === 0 ? (
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>
                 No users found
               </td>
             </tr>
           ) : (
-            data.map((user) => (
+            data?.map((user) => (
               <tr key={user._id}>
                 <td data-label="Email">{user.email}</td>
-                <td data-label="Balance">₦{Number(user.balance).toLocaleString()}</td>
-                <td data-label="Date Joined">{new Date(user.dateJoined).toLocaleDateString()}</td>
+                <td data-label="Balance">
+                  ₦{Number(user.balance).toLocaleString()}
+                </td>
+                <td data-label="Date Joined">
+                  {new Date(user.dateJoined).toLocaleDateString()}
+                </td>
                 <td data-label="Status">
-                  <span className={`status-badge ${user.status === "Active" ? "active" : "banned"}`}>
+                  <span
+                    className={`status-badge ${
+                      user.status === "Active" ? "active" : "banned"
+                    }`}
+                  >
                     {user.status}
                   </span>
                 </td>
@@ -315,14 +322,22 @@ const Users = () => {
                   <div className="action-buttons">
                     <button
                       className="btn btn-edit"
-                      onClick={() => setEditingUser({ ...user, originalEmail: user.email })}
+                      onClick={() =>
+                        setEditingUser({ ...user, originalEmail: user.email })
+                      }
                     >
                       Edit
                     </button>
-                    <button className="btn btn-ban" onClick={() => handleBan(user._id)}>
+                    <button
+                      className="btn btn-ban"
+                      onClick={() => handleBan(user._id)}
+                    >
                       {user.status === "Active" ? "Ban" : "Unban"}
                     </button>
-                    <button className="btn btn-delete" onClick={() => handleDelete(user._id, user.email)}>
+                    <button
+                      className="btn btn-delete"
+                      onClick={() => handleDelete(user._id, user.email)}
+                    >
                       Delete
                     </button>
                   </div>
@@ -335,7 +350,10 @@ const Users = () => {
 
       {/* Pagination */}
       <div className="pagination">
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
           Previous
         </button>
         <span className="current-page">{currentPage}</span>
@@ -356,19 +374,29 @@ const Users = () => {
             <input
               type="text"
               value={editingUser.email}
-              onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+              onChange={(e) =>
+                setEditingUser({ ...editingUser, email: e.target.value })
+              }
             />
             <label>Balance</label>
             <input
               type="number"
               value={editingUser.balance}
-              onChange={(e) => setEditingUser({ ...editingUser, balance: Number(e.target.value) })}
+              onChange={(e) =>
+                setEditingUser({
+                  ...editingUser,
+                  balance: Number(e.target.value),
+                })
+              }
             />
             <div className="modal-actions">
               <button className="btn btn-save" onClick={handleEditSave}>
                 Save
               </button>
-              <button className="btn btn-cancel" onClick={() => setEditingUser(null)}>
+              <button
+                className="btn btn-cancel"
+                onClick={() => setEditingUser(null)}
+              >
                 Cancel
               </button>
             </div>
