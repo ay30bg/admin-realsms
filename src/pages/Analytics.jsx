@@ -152,7 +152,7 @@ const Analytics = () => {
 
   return (
     <div className="analytics-page">
-      <h2>Analytics / Dashboard Insights</h2>
+      <h2>Analytics</h2>
 
       {/* Date Filter */}
       <div className="analytics-filter">
