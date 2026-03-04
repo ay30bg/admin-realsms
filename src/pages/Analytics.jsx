@@ -25,8 +25,13 @@
 // );
 
 // const Analytics = () => {
-//   const [dailyData, setDailyData] = useState([]);
-//   const [overview, setOverview] = useState(null);
+//   const [weeklyData, setWeeklyData] = useState([]);
+//   const [overview, setOverview] = useState({
+//     totalUsers: 0,
+//     totalRevenue: 0,
+//     totalTransactions: 0,
+//     totalOrders: 0,
+//   });
 //   const [loading, setLoading] = useState(true);
 //   const [dateFilter, setDateFilter] = useState("7");
 //   const [alerts, setAlerts] = useState([]);
@@ -39,37 +44,33 @@
 //         setLoading(true);
 //         const token = localStorage.getItem("adminToken");
 
-//         // 🔹 Fetch Daily Breakdown
-//         const dailyRes = await fetch(
-//           `${process.env.REACT_APP_API_URL}/api/admin/analytics/daily?days=${dateFilter}`,
-//           { headers: { Authorization: `Bearer ${token}` } }
-//         );
-
-//         const daily = await dailyRes.json();
-//         setDailyData(daily);
-
-//         // 🔹 Fetch Overview Totals
+//         // Fetch Overview Totals
 //         const overviewRes = await fetch(
 //           `${process.env.REACT_APP_API_URL}/api/admin/analytics/overview`,
 //           { headers: { Authorization: `Bearer ${token}` } }
 //         );
-
 //         const overviewData = await overviewRes.json();
+
+//         // Fetch Daily Breakdown
+//         const dailyRes = await fetch(
+//           `${process.env.REACT_APP_API_URL}/api/admin/analytics/daily?days=${dateFilter}`,
+//           { headers: { Authorization: `Bearer ${token}` } }
+//         );
+//         const dailyData = await dailyRes.json();
+
 //         setOverview(overviewData);
+//         setWeeklyData(dailyData);
 
-//         // 🔹 Alerts
-//         const totalTransactions = daily.reduce((sum, d) => sum + d.transactions, 0);
-//         const totalOrders = daily.reduce((sum, d) => sum + d.orders, 0);
-
+//         // Generate Alerts
 //         const newAlerts = [];
-//         if (totalTransactions < 5)
+//         if (overviewData.totalTransactions < 5)
 //           newAlerts.push("Transactions are very low this period!");
-//         if (totalOrders < 5)
+//         if (overviewData.totalOrders < 5)
 //           newAlerts.push("Orders are very low this period!");
-
 //         setAlerts(newAlerts);
+
 //       } catch (err) {
-//         console.error("Analytics fetch error:", err);
+//         console.error("Failed to fetch analytics:", err);
 //       } finally {
 //         setLoading(false);
 //       }
@@ -78,45 +79,88 @@
 //     fetchAnalytics();
 //   }, [dateFilter]);
 
-//   if (loading) return <p style={{ textAlign: "center" }}>Loading analytics...</p>;
+//   if (loading)
+//     return <p style={{ textAlign: "center" }}>Loading analytics...</p>;
 
-//   if (!dailyData || dailyData.length === 0)
-//     return <p style={{ textAlign: "center" }}>No analytics data available.</p>;
-
-//   // 🔹 Growth Calculation
+//   // Growth calculation (last day vs previous day)
 //   const calcGrowth = (arr, key) => {
-//     if (arr.length < 2) return 0;
-//     const today = arr[arr.length - 1][key];
-//     const yesterday = arr[arr.length - 2][key];
+//     if (!arr || arr.length < 2) return 0;
+//     const today = Number(arr[arr.length - 1][key] || 0);
+//     const yesterday = Number(arr[arr.length - 2][key] || 0);
 //     if (yesterday === 0) return today > 0 ? 100 : 0;
-//     return (((today - yesterday) / yesterday) * 100).toFixed(2);
+//     return Number((((today - yesterday) / yesterday) * 100).toFixed(2));
 //   };
 
 //   const kpis = [
 //     {
 //       label: "Total Users",
-//       value: overview?.totalUsers || 0,
-//       growth: calcGrowth(dailyData, "newUsers"),
+//       value: overview.totalUsers,
+//       growth: calcGrowth(weeklyData, "newUsers"),
 //     },
 //     {
 //       label: "Total Revenue (₦)",
-//       value: overview?.totalRevenue?.toLocaleString() || "0",
-//       growth: calcGrowth(dailyData, "revenue"),
+//       value: Number(overview.totalRevenue || 0).toLocaleString(),
+//       growth: calcGrowth(weeklyData, "revenue"),
 //     },
 //     {
 //       label: "Transactions",
-//       value: overview?.totalTransactions || 0,
-//       growth: calcGrowth(dailyData, "transactions"),
+//       value: overview.totalTransactions,
+//       growth: calcGrowth(weeklyData, "transactions"),
 //     },
 //     {
 //       label: "Orders",
-//       value: overview?.totalOrders || 0,
-//       growth: calcGrowth(dailyData, "orders"),
+//       value: overview.totalOrders,
+//       growth: calcGrowth(weeklyData, "orders"),
 //     },
 //   ];
 
 //   const chartConfig = {
-//     labels: dailyData.map((d) => d.date),
+//     users: {
+//       labels: weeklyData.map((d) => d.date),
+//       datasets: [
+//         {
+//           label: "New Users",
+//           data: weeklyData.map((d) => d.newUsers),
+//           borderColor: "#3b82f6",
+//           backgroundColor: "#3b82f620",
+//           tension: 0.3,
+//         },
+//       ],
+//     },
+//     revenue: {
+//       labels: weeklyData.map((d) => d.date),
+//       datasets: [
+//         {
+//           label: "Revenue (₦)",
+//           data: weeklyData.map((d) => d.revenue),
+//           backgroundColor: "#10b98180",
+//           borderColor: "#10b981",
+//         },
+//       ],
+//     },
+//     transactions: {
+//       labels: weeklyData.map((d) => d.date),
+//       datasets: [
+//         {
+//           label: "Transactions",
+//           data: weeklyData.map((d) => d.transactions),
+//           borderColor: "#f59e0b",
+//           backgroundColor: "#f59e0b20",
+//           tension: 0.3,
+//         },
+//       ],
+//     },
+//     orders: {
+//       labels: weeklyData.map((d) => d.date),
+//       datasets: [
+//         {
+//           label: "Orders",
+//           data: weeklyData.map((d) => d.orders),
+//           backgroundColor: "#6366f180",
+//           borderColor: "#6366f1",
+//         },
+//       ],
+//     },
 //   };
 
 //   return (
@@ -126,7 +170,10 @@
 //       {/* Date Filter */}
 //       <div className="analytics-filter">
 //         <label>Show data for:</label>
-//         <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+//         <select
+//           value={dateFilter}
+//           onChange={(e) => setDateFilter(e.target.value)}
+//         >
 //           <option value="7">Last 7 Days</option>
 //           <option value="14">Last 14 Days</option>
 //           <option value="30">Last 30 Days</option>
@@ -175,7 +222,7 @@
 //             >
 //               {kpi.growth > 0 && `▲ ${kpi.growth}%`}
 //               {kpi.growth < 0 && `▼ ${Math.abs(kpi.growth)}%`}
-//               {kpi.growth === "0.00" && "—"}
+//               {kpi.growth === 0 && "—"}
 //             </div>
 //           </div>
 //         ))}
@@ -184,70 +231,22 @@
 //       {/* Charts */}
 //       <div className="analytics-section">
 //         <h3>New Users</h3>
-//         <Line
-//           data={{
-//             ...chartConfig,
-//             datasets: [
-//               {
-//                 label: "New Users",
-//                 data: dailyData.map((d) => d.newUsers),
-//                 borderColor: "#3b82f6",
-//                 backgroundColor: "#3b82f620",
-//                 tension: 0.3,
-//               },
-//             ],
-//           }}
-//         />
+//         <Line data={chartConfig.users} />
 //       </div>
 
 //       <div className="analytics-section">
 //         <h3>Revenue</h3>
-//         <Bar
-//           data={{
-//             ...chartConfig,
-//             datasets: [
-//               {
-//                 label: "Revenue (₦)",
-//                 data: dailyData.map((d) => d.revenue),
-//                 backgroundColor: "#10b98180",
-//               },
-//             ],
-//           }}
-//         />
+//         <Bar data={chartConfig.revenue} />
 //       </div>
 
 //       <div className="analytics-section">
 //         <h3>Transactions</h3>
-//         <Line
-//           data={{
-//             ...chartConfig,
-//             datasets: [
-//               {
-//                 label: "Transactions",
-//                 data: dailyData.map((d) => d.transactions),
-//                 borderColor: "#f59e0b",
-//                 backgroundColor: "#f59e0b20",
-//                 tension: 0.3,
-//               },
-//             ],
-//           }}
-//         />
+//         <Line data={chartConfig.transactions} />
 //       </div>
 
 //       <div className="analytics-section">
 //         <h3>Orders</h3>
-//         <Bar
-//           data={{
-//             ...chartConfig,
-//             datasets: [
-//               {
-//                 label: "Orders",
-//                 data: dailyData.map((d) => d.orders),
-//                 backgroundColor: "#6366f180",
-//               },
-//             ],
-//           }}
-//         />
+//         <Bar data={chartConfig.orders} />
 //       </div>
 //     </div>
 //   );
@@ -283,14 +282,8 @@ ChartJS.register(
 
 const Analytics = () => {
   const [weeklyData, setWeeklyData] = useState([]);
-  const [overview, setOverview] = useState({
-    totalUsers: 0,
-    totalRevenue: 0,
-    totalTransactions: 0,
-    totalOrders: 0,
-  });
   const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState("7");
+  const [dateFilter, setDateFilter] = useState("7"); // default last 7 days
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
@@ -301,31 +294,30 @@ const Analytics = () => {
         setLoading(true);
         const token = localStorage.getItem("adminToken");
 
-        // Fetch Overview Totals
-        const overviewRes = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/admin/analytics/overview`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const overviewData = await overviewRes.json();
-
-        // Fetch Daily Breakdown
+        // Fetch daily breakdown based on filter
         const dailyRes = await fetch(
           `${process.env.REACT_APP_API_URL}/api/admin/analytics/daily?days=${dateFilter}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        const dailyData = await dailyRes.json();
 
-        setOverview(overviewData);
+        const dailyData = await dailyRes.json();
         setWeeklyData(dailyData);
 
-        // Generate Alerts
-        const newAlerts = [];
-        if (overviewData.totalTransactions < 5)
-          newAlerts.push("Transactions are very low this period!");
-        if (overviewData.totalOrders < 5)
-          newAlerts.push("Orders are very low this period!");
-        setAlerts(newAlerts);
+        // Generate alerts based on filtered data
+        const totalTransactions = dailyData.reduce(
+          (sum, d) => sum + Number(d.transactions || 0),
+          0
+        );
+        const totalOrders = dailyData.reduce(
+          (sum, d) => sum + Number(d.orders || 0),
+          0
+        );
 
+        const newAlerts = [];
+        if (totalTransactions < 5)
+          newAlerts.push("Transactions are very low this period!");
+        if (totalOrders < 5) newAlerts.push("Orders are very low this period!");
+        setAlerts(newAlerts);
       } catch (err) {
         console.error("Failed to fetch analytics:", err);
       } finally {
@@ -348,29 +340,48 @@ const Analytics = () => {
     return Number((((today - yesterday) / yesterday) * 100).toFixed(2));
   };
 
+  // Calculate totals from filtered data
+  const totalUsers = weeklyData.reduce(
+    (sum, d) => sum + Number(d.newUsers || 0),
+    0
+  );
+  const totalRevenue = weeklyData.reduce(
+    (sum, d) => sum + Number(d.revenue || 0),
+    0
+  );
+  const totalTransactions = weeklyData.reduce(
+    (sum, d) => sum + Number(d.transactions || 0),
+    0
+  );
+  const totalOrders = weeklyData.reduce(
+    (sum, d) => sum + Number(d.orders || 0),
+    0
+  );
+
   const kpis = [
     {
-      label: "Total Users",
-      value: overview.totalUsers,
+      label: `Users (Last ${dateFilter} days)`,
+      value: totalUsers,
       growth: calcGrowth(weeklyData, "newUsers"),
     },
     {
-      label: "Total Revenue (₦)",
-      value: Number(overview.totalRevenue || 0).toLocaleString(),
+      label: `Revenue (₦ - Last ${dateFilter} days)`,
+      value: totalRevenue.toLocaleString(),
       growth: calcGrowth(weeklyData, "revenue"),
     },
     {
-      label: "Transactions",
-      value: overview.totalTransactions,
+      label: `Transactions (Last ${dateFilter} days)`,
+      value: totalTransactions,
       growth: calcGrowth(weeklyData, "transactions"),
     },
     {
-      label: "Orders",
-      value: overview.totalOrders,
+      label: `Orders (Last ${dateFilter} days)`,
+      value: totalOrders,
       growth: calcGrowth(weeklyData, "orders"),
     },
   ];
 
+  // Chart data
   const chartConfig = {
     users: {
       labels: weeklyData.map((d) => d.date),
@@ -510,4 +521,3 @@ const Analytics = () => {
 };
 
 export default Analytics;
-
