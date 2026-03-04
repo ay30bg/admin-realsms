@@ -106,10 +106,28 @@ const Dashboard = () => {
   return (
     <div className="admin-dashboard">
       {/* Welcome Card */}
-      <div className="admin-welcome-card">
+      {/* <div className="admin-welcome-card">
         <h2>Welcome Back, Admin 👋</h2>
         <p>Here’s your platform performance overview.</p>
-      </div>
+      </div> */}
+
+      {/* Welcome Card */}
+<div className="admin-welcome-card">
+  <div className="welcome-content">
+    <div>
+      <h2>Welcome Back, Admin 👋</h2>
+      <p>Here’s your platform performance overview.</p>
+    </div>
+    <div className="welcome-buttons">
+      <button
+        className="welcome-action-btn"
+        onClick={() => navigate("/admin/analytics")}
+      >
+        View Analytics
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* Stats */}
       <div className="admin-stats-container">
@@ -129,4 +147,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
 
