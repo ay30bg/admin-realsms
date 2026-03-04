@@ -263,7 +263,7 @@ const AdminDashboard = ({ darkMode }) => {
           <h2>Welcome Back, Admin!</h2>
           <p>Here’s a quick overview of your platform.</p>
         </div>
-        <button className="welcome-action-btn" onClick={handleViewAnalytics}>View Analytics</button>
+        <button className="welcome-btn" onClick={handleViewAnalytics}>View Analytics</button>
       </div>
 
       {/* Stats Cards */}
@@ -285,4 +285,5 @@ const AdminDashboard = ({ darkMode }) => {
 };
 
 export default AdminDashboard;
+
 
