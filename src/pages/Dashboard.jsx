@@ -258,12 +258,12 @@ const AdminDashboard = ({ darkMode }) => {
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
       {/* Admin Welcome Card */}
-      <div className="welcome-card">
-        <div>
+      <div className="admin-welcome-card">
+        <div className="welcome-text">
           <h2>Welcome Back, Admin!</h2>
           <p>Here’s a quick overview of your platform.</p>
         </div>
-        <button onClick={handleViewAnalytics}>View Analytics</button>
+        <button className="welcome-action-btn" onClick={handleViewAnalytics}>View Analytics</button>
       </div>
 
       {/* Stats Cards */}
@@ -285,3 +285,4 @@ const AdminDashboard = ({ darkMode }) => {
 };
 
 export default AdminDashboard;
+
