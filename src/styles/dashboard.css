@@ -2,13 +2,17 @@
   padding: 25px;
 }
 
-/* Welcome Card */
+/* ================= Welcome Card ================= */
 .admin-welcome-card {
   background: linear-gradient(90deg, #111827, #1f2937);
   color: #fff;
-  padding: 28px;
+  padding: 25px;
   border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 30px;
+  flex-wrap: wrap; /* wraps button on smaller screens */
 }
 
 .admin-welcome-card h2 {
@@ -17,35 +21,26 @@
 }
 
 .admin-welcome-card p {
-  margin-top: 8px;
+  margin: 5px 0 0;
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-/* ================= Analytics Button ================= */
-.welcome-buttons {
-  margin-top: 10px; /* spacing for mobile wrap */
-}
-
+/* Analytics / Dashboard Insights button */
 .welcome-action-btn {
-  background-color: #3b82f6; /* blue */
+  background-color: #3b82f6; 
   color: #fff;
-  border: none;
+  font-weight: 600;
   padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .welcome-action-btn:hover {
-  background-color: #2563eb; /* darker blue on hover */
-  transform: translateY(-2px); /* subtle lift effect */
-}
-
-.welcome-action-btn:active {
-  transform: translateY(0);
+  transform: scale(1.05);
+  background-color: #2e6b2f; /* slightly darker on hover */
 }
 
 /* Stat card */
@@ -172,14 +167,16 @@
     padding: 15px;
   }
 
-  .admin-welcome-card {
-    padding: 20px;
+.admin-welcome-card {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .welcome-action-btn {
-    width: 100%; /* full-width button on mobile */
+    width: 100%; /* full width on mobile */
     text-align: center;
-  }
+    margin-top: 12px;
+  }}
 
   .admin-stats-container {
     grid-template-columns: 1fr;
@@ -200,6 +197,7 @@
   }
 
 }
+
 
 
 
