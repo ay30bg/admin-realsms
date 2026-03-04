@@ -7,7 +7,7 @@
   background: linear-gradient(90deg, #111827, #1f2937);
   color: #fff;
   padding: 28px;
-  border-radius: 12px;
+  border-radius: 8px;
   margin-bottom: 30px;
 }
 
@@ -20,6 +20,32 @@
   margin-top: 8px;
   font-size: 14px;
   opacity: 0.8;
+}
+
+/* ================= Analytics Button ================= */
+.welcome-buttons {
+  margin-top: 10px; /* spacing for mobile wrap */
+}
+
+.welcome-action-btn {
+  background-color: #3b82f6; /* blue */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.welcome-action-btn:hover {
+  background-color: #2563eb; /* darker blue on hover */
+  transform: translateY(-2px); /* subtle lift effect */
+}
+
+.welcome-action-btn:active {
+  transform: translateY(0);
 }
 
 /* Stat card */
@@ -150,6 +176,11 @@
     padding: 20px;
   }
 
+  .welcome-action-btn {
+    width: 100%; /* full-width button on mobile */
+    text-align: center;
+  }
+
   .admin-stats-container {
     grid-template-columns: 1fr;
   }
@@ -169,5 +200,6 @@
   }
 
 }
+
 
 
