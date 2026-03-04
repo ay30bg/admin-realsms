@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import AdminLayout from "./components/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Transactions from "./pages/Transactions";
@@ -30,7 +31,9 @@ function App() {
             </ProtectedRoute>
           }
         >
+          
           <Route index element={<Dashboard />} />
+          <Route path="analytics" element={<Analytics />} />
           <Route path="users" element={<Users />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="orders" element={<Orders />} />
