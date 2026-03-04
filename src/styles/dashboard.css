@@ -167,17 +167,25 @@
     padding: 15px;
   }
 
- .welcome-card {
-    flex-direction: column;
-    align-items: flex-start;
+  .welcome-card {
+    padding: 18px;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .welcome-card h2 {
+    font-size: 18px;
+  }
+
+  .welcome-card p {
+    font-size: 13px;
   }
 
   .welcome-card button {
-    width: 100%; 
-    text-align: center;
-    margin-top: 12px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
   }
-
   .admin-stats-container {
     grid-template-columns: 1fr;
   }
@@ -196,6 +204,7 @@
     font-size: 16px;
   }
 }
+
 
 
 
