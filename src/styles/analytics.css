@@ -44,6 +44,35 @@
   text-align: center;
 }
 
+.kpi-card {
+  flex: 1 1 200px;
+  background-color: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kpi-label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.kpi-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.kpi-growth {
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .analytics-section {
   background-color: #fff;
   padding: 20px;
