@@ -16,25 +16,26 @@
   flex-wrap: wrap; 
 }
 
+/* Scope text inside welcome card */
 .admin-welcome-card .welcome-text {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.admin-welcome-card h2 {
+.admin-welcome-card .welcome-text h2 {
   margin: 0;
   font-size: 22px;
 }
 
-.admin-welcome-card p {
+.admin-welcome-card .welcome-text p {
   margin: 5px 0 0;
   font-size: 14px;
   opacity: 0.9;
 }
 
-/* Analytics / Dashboard Insights button */
-.admin-welcome-card .welcome-action-btn {
+/* Button inside welcome card */
+.admin-welcome-card .welcome-btn {
   background-color: #3b82f6; 
   color: #fff;
   font-weight: 600;
@@ -42,11 +43,11 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  flex-shrink: 0; /* prevents shrinking in flex */
+  flex-shrink: 0;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.admin-welcome-card .welcome-action-btn:hover {
+.admin-welcome-card .welcome-btn:hover {
   transform: scale(1.05);
   background-color: #2e6b2f;
 }
@@ -174,26 +175,27 @@
     padding: 15px;
   }
 
-  .admin-welcome-card {
+.admin-welcome-card {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
 
-  .admin-welcome-card h2 {
+  .admin-welcome-card .welcome-text h2 {
     font-size: 18px;
   }
 
-  .admin-welcome-card p {
+  .admin-welcome-card .welcome-text p {
     font-size: 13px;
   }
 
-  .admin-welcome-card .welcome-action-btn {
+  .admin-welcome-card .welcome-btn {
     width: 100%;
     padding: 12px;
     font-size: 14px;
   }
-
+}
+  
   .admin-stats-container {
     grid-template-columns: 1fr;
   }
@@ -212,3 +214,4 @@
     font-size: 16px;
   }
 }
+
