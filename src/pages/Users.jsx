@@ -416,16 +416,14 @@
 
 // export default Users;
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "../styles/table.css";
 
 const Users = () => {
-  const [data, setData] = useState([]);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [editingUser, setEditingUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const rowsPerPage = 5;
 
   // Fetch users from backend
@@ -433,107 +431,75 @@ const Users = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-        if (!token) {
-          window.location.href = "/admin/login";
-          return;
-        }
+        if (!token) return;
 
         const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message || "Failed to fetch users");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch users");
 
-        setData(json);
+        setUsers(data);
       } catch (err) {
-        console.error(err);
-        setError(err.message || "Failed to load users");
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch users:", err);
       }
     };
 
     fetchUsers();
   }, []);
 
-  // Filter users
-  const filteredData = useMemo(
-    () => data.filter((u) => u.email.toLowerCase().includes(search.toLowerCase())),
-    [data, search]
+  // Filtered users based on search
+  const filteredUsers = useMemo(
+    () => users.filter((u) => u.email?.toLowerCase().includes(search.toLowerCase())),
+    [users, search]
   );
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  // Pagination
+  const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+  const paginatedData = filteredUsers.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
-  const handleBan = async (userId, currentStatus) => {
-    try {
-      const token = localStorage.getItem("adminToken");
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/ban`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status: currentStatus === "Active" ? "Banned" : "Active" }),
-      });
+  // Ban / Unban
+  const handleBan = (email) => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.email === email ? { ...u, status: u.status === "Active" ? "Banned" : "Active" } : u
+      )
+    );
+  };
 
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Failed to update status");
-
-      setData((prev) =>
-        prev.map((u) => (u._id === userId ? { ...u, status: currentStatus === "Active" ? "Banned" : "Active" } : u))
-      );
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+  // Delete user
+  const handleDelete = (email) => {
+    if (window.confirm(`Are you sure you want to delete ${email}?`)) {
+      setUsers((prev) => prev.filter((u) => u.email !== email));
     }
   };
 
-  const handleDelete = async (userId, email) => {
-    if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
-
-    try {
-      const token = localStorage.getItem("adminToken");
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Failed to delete user");
-
-      setData((prev) => prev.filter((u) => u._id !== userId));
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
+  // Save edited user
+  const handleEditSave = () => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.email === editingUser.originalEmail
+          ? { ...u, email: editingUser.email, balance: editingUser.balance }
+          : u
+      )
+    );
+    setEditingUser(null);
   };
 
-  const handleEditSave = async () => {
-    try {
-      const token = localStorage.getItem("adminToken");
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${editingUser._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ email: editingUser.email, balance: editingUser.balance }),
-      });
-
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Failed to update user");
-
-      setData((prev) =>
-        prev.map((u) => (u._id === editingUser._id ? { ...u, email: editingUser.email, balance: editingUser.balance } : u))
-      );
-
-      setEditingUser(null);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
-  };
-
+  // Export CSV
   const handleExport = () => {
     const csv = [
       ["Email", "Balance", "Date Joined", "Status"],
-      ...data.map((u) => [u.email, `₦${u.balance.toLocaleString()}`, u.createdAt?.split("T")[0], u.status]),
+      ...users.map((u) => [
+        u.email ?? "-",
+        `₦${(u.balance ?? 0).toLocaleString()}`,
+        u.createdAt ? new Date(u.createdAt).toISOString().split("T")[0] : "-",
+        u.status ?? "-",
+      ]),
     ]
       .map((row) => row.join(","))
       .join("\n");
@@ -544,9 +510,6 @@ const Users = () => {
     link.download = "users.csv";
     link.click();
   };
-
-  if (loading) return <p>Loading users...</p>;
-  if (error) return <p className="error-text">{error}</p>;
 
   return (
     <div className="table-page">
@@ -581,24 +544,31 @@ const Users = () => {
         </thead>
         <tbody>
           {paginatedData.map((user) => (
-            <tr key={user._id}>
-              <td data-label="Email">{user.email}</td>
-              <td data-label="Balance">₦{user.balance.toLocaleString()}</td>
-              <td data-label="Date Joined">{user.createdAt?.split("T")[0]}</td>
+            <tr key={user.email}>
+              <td data-label="Email">{user.email ?? "-"}</td>
+              <td data-label="Balance">₦{(user.balance ?? 0).toLocaleString()}</td>
+              <td data-label="Date Joined">
+                {user.createdAt ? new Date(user.createdAt).toISOString().split("T")[0] : "-"}
+              </td>
               <td data-label="Status">
-                <span className={`status-badge ${user.status === "Active" ? "active" : "banned"}`}>
-                  {user.status}
+                <span
+                  className={`status-badge ${user.status === "Active" ? "active" : "banned"}`}
+                >
+                  {user.status ?? "-"}
                 </span>
               </td>
               <td data-label="Actions">
                 <div className="action-buttons">
-                  <button className="btn btn-edit" onClick={() => setEditingUser(user)}>
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => setEditingUser({ ...user, originalEmail: user.email })}
+                  >
                     Edit
                   </button>
-                  <button className="btn btn-ban" onClick={() => handleBan(user._id, user.status)}>
+                  <button className="btn btn-ban" onClick={() => handleBan(user.email)}>
                     {user.status === "Active" ? "Ban" : "Unban"}
                   </button>
-                  <button className="btn btn-delete" onClick={() => handleDelete(user._id, user.email)}>
+                  <button className="btn btn-delete" onClick={() => handleDelete(user.email)}>
                     Delete
                   </button>
                 </div>
@@ -610,7 +580,10 @@ const Users = () => {
 
       {/* Pagination */}
       <div className="pagination">
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
           Previous
         </button>
         <span className="current-page">{currentPage}</span>
@@ -631,13 +604,17 @@ const Users = () => {
             <input
               type="text"
               value={editingUser.email}
-              onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+              onChange={(e) =>
+                setEditingUser({ ...editingUser, email: e.target.value })
+              }
             />
             <label>Balance</label>
             <input
               type="number"
-              value={editingUser.balance}
-              onChange={(e) => setEditingUser({ ...editingUser, balance: Number(e.target.value) })}
+              value={editingUser.balance ?? 0}
+              onChange={(e) =>
+                setEditingUser({ ...editingUser, balance: Number(e.target.value) })
+              }
             />
             <div className="modal-actions">
               <button className="btn btn-save" onClick={handleEditSave}>
