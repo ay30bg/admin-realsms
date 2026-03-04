@@ -3,7 +3,7 @@
 }
 
 /* ================= Welcome Card ================= */
-.admin-welcome-card {
+.welcome-card {
   background: linear-gradient(90deg, #111827, #1f2937);
   color: #fff;
   padding: 25px;
@@ -15,19 +15,19 @@
   flex-wrap: wrap; 
 }
 
-.admin-welcome-card h2 {
+.welcome-card h2 {
   margin: 0;
   font-size: 22px;
 }
 
-.admin-welcome-card p {
+.welcome-card p {
   margin: 5px 0 0;
   font-size: 14px;
   opacity: 0.9;
 }
 
 /* Analytics / Dashboard Insights button */
-.welcome-action-btn {
+.welcome-card button {
   background-color: #3b82f6; 
   color: #fff;
   font-weight: 600;
@@ -167,12 +167,12 @@
     padding: 15px;
   }
 
-.admin-welcome-card {
+ .welcome-card {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .welcome-action-btn {
+  .welcome-card button {
     width: 100%; 
     text-align: center;
     margin-top: 12px;
@@ -196,6 +196,7 @@
     font-size: 16px;
   }
 }
+
 
 
 
