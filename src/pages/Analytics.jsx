@@ -62,11 +62,43 @@ const Analytics = () => {
 
   if (loading) return <p style={{ textAlign: "center" }}>Loading analytics...</p>;
 
-  // KPIs
+  // KPI calculations
   const totalUsers = weeklyData.reduce((sum, d) => sum + d.newUsers, 0);
   const totalRevenue = weeklyData.reduce((sum, d) => sum + d.revenue, 0);
   const totalTransactions = weeklyData.reduce((sum, d) => sum + d.transactions, 0);
   const totalOrders = weeklyData.reduce((sum, d) => sum + d.orders, 0);
+
+  // Growth calculation (last day vs previous day)
+  const calcGrowth = (arr, key) => {
+    if (arr.length < 2) return 0;
+    const today = arr[arr.length - 1][key];
+    const yesterday = arr[arr.length - 2][key];
+    if (yesterday === 0) return today > 0 ? 100 : 0;
+    return (((today - yesterday) / yesterday) * 100).toFixed(2);
+  };
+
+  const kpis = [
+    {
+      label: "Total Users",
+      value: totalUsers,
+      growth: calcGrowth(weeklyData, "newUsers"),
+    },
+    {
+      label: "Total Revenue (₦)",
+      value: totalRevenue.toLocaleString(),
+      growth: calcGrowth(weeklyData, "revenue"),
+    },
+    {
+      label: "Transactions",
+      value: totalTransactions,
+      growth: calcGrowth(weeklyData, "transactions"),
+    },
+    {
+      label: "Orders",
+      value: totalOrders,
+      growth: calcGrowth(weeklyData, "orders"),
+    },
+  ];
 
   // Chart data
   const chartConfig = {
@@ -145,10 +177,28 @@ const Analytics = () => {
 
       {/* KPI Cards */}
       <div className="analytics-kpis">
-        <div className="kpi-card">Total Users: {totalUsers}</div>
-        <div className="kpi-card">Total Revenue: ₦{totalRevenue.toLocaleString()}</div>
-        <div className="kpi-card">Transactions: {totalTransactions}</div>
-        <div className="kpi-card">Orders: {totalOrders}</div>
+        {kpis.map((kpi, idx) => (
+          <div
+            key={idx}
+            className="kpi-card"
+            style={{
+              borderTop: `4px solid ${
+                kpi.growth > 0 ? "#10b981" : kpi.growth < 0 ? "#ef4444" : "#fbbf24"
+              }`,
+            }}
+          >
+            <div className="kpi-label">{kpi.label}</div>
+            <div className="kpi-value">{kpi.value}</div>
+            <div
+              className="kpi-growth"
+              style={{ color: kpi.growth > 0 ? "#10b981" : kpi.growth < 0 ? "#ef4444" : "#fbbf24" }}
+            >
+              {kpi.growth > 0 && `▲ ${kpi.growth}%`}
+              {kpi.growth < 0 && `▼ ${Math.abs(kpi.growth)}%`}
+              {kpi.growth === "0.00" && "—"}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Charts */}
