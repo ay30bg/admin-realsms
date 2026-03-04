@@ -194,7 +194,6 @@
     padding: 12px;
     font-size: 14px;
   }
-}
   
   .admin-stats-container {
     grid-template-columns: 1fr;
@@ -214,4 +213,5 @@
     font-size: 16px;
   }
 }
+
 
