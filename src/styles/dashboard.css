@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  flex-wrap: wrap; /* wraps button on smaller screens */
+  flex-wrap: nowrap; /* wraps button on smaller screens */
 }
 
 .admin-welcome-card h2 {
@@ -196,6 +196,7 @@
     font-size: 16px;
   }
 }
+
 
 
 
