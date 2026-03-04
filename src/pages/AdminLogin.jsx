@@ -5,30 +5,47 @@
 // import { FiEye, FiEyeOff } from "react-icons/fi";
 
 // const AdminLogin = () => {
+//   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [showPassword, setShowPassword] = useState(false);
+//   const [loading, setLoading] = useState(false);
 
-//   const handleLogin = (e) => {
+//   const handleLogin = async (e) => {
 //     e.preventDefault();
+//     setLoading(true);
 
-//     if (password === "admin123") {
+//     try {
+//       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/auth/login`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ email, password }),
+//       });
+
+//       const data = await res.json();
+
+//       if (!res.ok) throw new Error(data.message || "Login failed");
+
+//       // Save token in localStorage
+//       localStorage.setItem("token", data.token);
 //       localStorage.setItem("isAdmin", "true");
+
+//       // Redirect to dashboard
 //       window.location.href = "/admin";
-//     } else {
-//       alert("Invalid password");
+//     } catch (err) {
+//       alert(err.message);
+//       console.error("Login error:", err);
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
 //   return (
 //     <div className="login-wrapper">
-//       {/* Left Illustration */}
 //       <div className="login-illustration">
 //         <img src={heroImg} alt="Admin Login visual" />
 //       </div>
 
-//       {/* Right Card */}
 //       <div className="login-card">
-//         {/* Mobile Logo */}
 //         <div className="login-mobile-logo">
 //           <img src={logo} alt="Logo" />
 //         </div>
@@ -38,25 +55,31 @@
 //         </div>
 
 //         <form className="login-form" onSubmit={handleLogin}>
-//           <label>Admin Password</label>
+//           <label>Email</label>
+//           <input
+//             type="email"
+//             placeholder="Enter admin email"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             required
+//           />
 
+//           <label>Password</label>
 //           <div className="password-wrapper">
 //             <input
 //               type={showPassword ? "text" : "password"}
 //               placeholder="Enter admin password"
 //               value={password}
 //               onChange={(e) => setPassword(e.target.value)}
+//               required
 //             />
-//             <span
-//               className="eye-icon"
-//               onClick={() => setShowPassword(!showPassword)}
-//             >
+//             <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
 //               {showPassword ? <FiEyeOff /> : <FiEye />}
 //             </span>
 //           </div>
 
-//           <button className="login-btn" type="submit">
-//             Login
+//           <button className="login-btn" type="submit" disabled={loading}>
+//             {loading ? "Logging in..." : "Login"}
 //           </button>
 //         </form>
 
@@ -87,21 +110,26 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/admin/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
+      }
 
-      // Save token in localStorage
-      localStorage.setItem("token", data.token);
+      // ✅ SAVE ADMIN TOKEN
+      localStorage.setItem("adminToken", data.token);
       localStorage.setItem("isAdmin", "true");
 
-      // Redirect to dashboard
+      // Redirect
       window.location.href = "/admin";
     } catch (err) {
       alert(err.message);
@@ -145,7 +173,10 @@ const AdminLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+            <span
+              className="eye-icon"
+              onClick={() => setShowPassword(!showPassword)}
+            >
               {showPassword ? <FiEyeOff /> : <FiEye />}
             </span>
           </div>
@@ -156,7 +187,7 @@ const AdminLogin = () => {
         </form>
 
         <p className="login-footer">
-          Authorized access only, Admin panel is restricted.
+          Authorized access only. Admin panel is restricted.
         </p>
       </div>
     </div>
