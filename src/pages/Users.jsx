@@ -155,7 +155,7 @@
 
 // export default Users;
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "../styles/table.css";
 
 const Users = () => {
@@ -173,29 +173,36 @@ const Users = () => {
   /* ==============================
      FETCH USERS
   ============================== */
-  const fetchUsers = async (page = 1, searchTerm = "") => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/admin/users?search=${searchTerm}&page=${page}&limit=${rowsPerPage}`,
-        {
-          headers: { Authorization: `Bearer ${getToken()}` },
-        }
-      );
+  const fetchUsers = useCallback(
+    async (page = 1, searchTerm = "") => {
+      try {
+        setLoading(true);
 
-      const json = await res.json();
-      setData(json.data);
-      setTotalPages(Math.ceil(json.total / rowsPerPage));
-    } catch (err) {
-      console.error("Fetch users error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/admin/users?search=${searchTerm}&page=${page}&limit=${rowsPerPage}`,
+          {
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+            },
+          }
+        );
+
+        const json = await res.json();
+
+        setData(json.data || []);
+        setTotalPages(Math.ceil((json.total || 0) / rowsPerPage));
+      } catch (err) {
+        console.error("Fetch users error:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [] // rowsPerPage is constant so safe
+  );
 
   useEffect(() => {
     fetchUsers(currentPage, search);
-  }, [currentPage, search]);
+  }, [currentPage, search, fetchUsers]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -225,8 +232,8 @@ const Users = () => {
       const result = await res.json();
 
       if (result.success) {
-        fetchUsers(currentPage, search);
         setEditingUser(null);
+        fetchUsers(currentPage, search);
       } else {
         alert(result.message || "Failed to update user");
       }
@@ -318,6 +325,7 @@ const Users = () => {
     <div className="table-page">
       <h1>Users</h1>
 
+      {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
@@ -334,6 +342,7 @@ const Users = () => {
         </div>
       </div>
 
+      {/* Table */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -350,6 +359,12 @@ const Users = () => {
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>
                 Loading...
+              </td>
+            </tr>
+          ) : data.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                No users found
               </td>
             </tr>
           ) : (
