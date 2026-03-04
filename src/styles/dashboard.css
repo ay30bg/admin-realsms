@@ -53,6 +53,12 @@
 }
 
 /* ================= Stat Card ================= */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
 .stat-card {
   background-color: #ffffff;
   padding: 22px;
@@ -213,5 +219,6 @@
     font-size: 16px;
   }
 }
+
 
 
