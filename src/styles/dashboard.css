@@ -1,9 +1,10 @@
+/* ================= Admin Dashboard Container ================= */
 .admin-dashboard {
   padding: 25px;
 }
 
 /* ================= Welcome Card ================= */
-.welcome-card {
+.admin-welcome-card {
   background: linear-gradient(90deg, #111827, #1f2937);
   color: #fff;
   padding: 25px;
@@ -15,19 +16,25 @@
   flex-wrap: wrap; 
 }
 
-.welcome-card h2 {
+.admin-welcome-card .welcome-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-welcome-card h2 {
   margin: 0;
   font-size: 22px;
 }
 
-.welcome-card p {
+.admin-welcome-card p {
   margin: 5px 0 0;
   font-size: 14px;
   opacity: 0.9;
 }
 
 /* Analytics / Dashboard Insights button */
-.welcome-card button {
+.admin-welcome-card .welcome-action-btn {
   background-color: #3b82f6; 
   color: #fff;
   font-weight: 600;
@@ -35,15 +42,16 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  flex-shrink: 0; /* prevents shrinking in flex */
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.welcome-action-btn:hover {
+.admin-welcome-card .welcome-action-btn:hover {
   transform: scale(1.05);
-  background-color: #2e6b2f; /* slightly darker on hover */
+  background-color: #2e6b2f;
 }
 
-/* Stat card */
+/* ================= Stat Card ================= */
 .stat-card {
   background-color: #ffffff;
   padding: 22px;
@@ -160,37 +168,37 @@
   100% { transform: rotate(360deg); }
 }
 
-
-/* Mobile */
+/* ================= Mobile ================= */
 @media (max-width: 640px) {
   .admin-dashboard {
     padding: 15px;
   }
 
-  .welcome-card {
-    padding: 18px;
-    gap: 14px;
-    text-align: left;
+  .admin-welcome-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
-  .welcome-card h2 {
+  .admin-welcome-card h2 {
     font-size: 18px;
   }
 
-  .welcome-card p {
+  .admin-welcome-card p {
     font-size: 13px;
   }
 
-  .welcome-card button {
+  .admin-welcome-card .welcome-action-btn {
     width: 100%;
     padding: 12px;
     font-size: 14px;
   }
+
   .admin-stats-container {
     grid-template-columns: 1fr;
   }
 
-   .stat-card {
+  .stat-card {
     padding: 18px;
   }
 
@@ -204,13 +212,3 @@
     font-size: 16px;
   }
 }
-
-
-
-
-
-
-
-
-
-
