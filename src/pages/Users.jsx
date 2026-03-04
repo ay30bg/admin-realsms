@@ -155,28 +155,27 @@
 
 // export default Users;
 
-import { useState, useEffect } from "react";
-import "../styles/table.css";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import "../styles/table.css";
 
 const Users = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [rowsPerPage] = useState(5);
-  const [editingUser, setEditingUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const rowsPerPage = 5;
 
-  const fetchUsers = async () => {
+  /* =========================
+     FETCH USERS
+  ========================= */
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/admin/users", {
-        params: {
-          search,
-          page: currentPage,
-          limit: rowsPerPage,
-        },
+        params: { search, page: currentPage, limit: rowsPerPage },
       });
       setData(res.data.data);
       setTotalUsers(res.data.total);
@@ -185,12 +184,40 @@ const Users = () => {
       console.error("Fetch users error:", error);
       setLoading(false);
     }
-  };
+  }, [search, currentPage, rowsPerPage]);
 
   useEffect(() => {
     fetchUsers();
-  }, [search, currentPage]);
+  }, [fetchUsers]);
 
+  /* =========================
+     BAN / UNBAN USER
+  ========================= */
+  const handleBan = async (id) => {
+    try {
+      await axios.patch(`/api/admin/users/${id}/ban`);
+      fetchUsers();
+    } catch (error) {
+      console.error("Ban/Unban error:", error);
+    }
+  };
+
+  /* =========================
+     DELETE USER
+  ========================= */
+  const handleDelete = async (id, email) => {
+    if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
+    try {
+      await axios.delete(`/api/admin/users/${id}`);
+      fetchUsers();
+    } catch (error) {
+      console.error("Delete user error:", error);
+    }
+  };
+
+  /* =========================
+     SAVE EDITED USER
+  ========================= */
   const handleEditSave = async () => {
     try {
       await axios.put(`/api/admin/users/${editingUser._id}`, {
@@ -204,29 +231,18 @@ const Users = () => {
     }
   };
 
-  const handleBan = async (userId) => {
-    try {
-      await axios.patch(`/api/admin/users/${userId}/ban`);
-      fetchUsers();
-    } catch (error) {
-      console.error("Ban/Unban error:", error);
-    }
-  };
-
-  const handleDelete = async (userId, email) => {
-    if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
-    try {
-      await axios.delete(`/api/admin/users/${userId}`);
-      fetchUsers();
-    } catch (error) {
-      console.error("Delete user error:", error);
-    }
-  };
-
+  /* =========================
+     EXPORT CSV
+  ========================= */
   const handleExport = () => {
     const csv = [
       ["Email", "Balance", "Date Joined", "Status"],
-      ...data.map((u) => [u.email, `₦${u.balance.toLocaleString()}`, new Date(u.dateJoined).toLocaleDateString(), u.status]),
+      ...data.map((u) => [
+        u.email,
+        `₦${Number(u.balance).toLocaleString()}`,
+        new Date(u.dateJoined).toLocaleDateString(),
+        u.status,
+      ]),
     ]
       .map((row) => row.join(","))
       .join("\n");
@@ -251,10 +267,7 @@ const Users = () => {
           className="search-input"
           placeholder="Search by email..."
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1); // reset page when searching
-          }}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <div className="buttons-right">
           <button className="btn btn-export" onClick={handleExport}>
@@ -277,17 +290,21 @@ const Users = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: "center" }}>Loading...</td>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                Loading...
+              </td>
             </tr>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: "center" }}>No users found</td>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                No users found
+              </td>
             </tr>
           ) : (
             data.map((user) => (
               <tr key={user._id}>
                 <td data-label="Email">{user.email}</td>
-                <td data-label="Balance">₦{user.balance.toLocaleString()}</td>
+                <td data-label="Balance">₦{Number(user.balance).toLocaleString()}</td>
                 <td data-label="Date Joined">{new Date(user.dateJoined).toLocaleDateString()}</td>
                 <td data-label="Status">
                   <span className={`status-badge ${user.status === "Active" ? "active" : "banned"}`}>
@@ -298,7 +315,7 @@ const Users = () => {
                   <div className="action-buttons">
                     <button
                       className="btn btn-edit"
-                      onClick={() => setEditingUser({ ...user })}
+                      onClick={() => setEditingUser({ ...user, originalEmail: user.email })}
                     >
                       Edit
                     </button>
