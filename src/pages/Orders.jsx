@@ -526,28 +526,34 @@ const Orders = () => {
         </tbody>
       </table>
 
-      {/* Pagination */}
+         {/* Pagination */}
       <div className="pagination">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          onClick={() =>
+            setCurrentPage((p) => Math.max(1, p - 1))
+          }
           disabled={currentPage === 1}
         >
           Previous
         </button>
 
-        <span className="current-page">
-          Page {currentPage} / {totalPages || 1}
-        </span>
+        <span className="current-page">{currentPage}</span>
 
         <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages || totalPages === 0}
+          onClick={() =>
+            setCurrentPage((p) =>
+              Math.min(totalPages, p + 1)
+            )
+          }
+          disabled={currentPage === totalPages}
         >
           Next
         </button>
       </div>
+      
     </div>
   );
 };
 
 export default Orders;
+
