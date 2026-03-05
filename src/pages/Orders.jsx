@@ -188,7 +188,7 @@ const Orders = () => {
   const getToken = () => localStorage.getItem("adminToken");
 
   // ==============================
-  // Fetch Orders From Backend
+  // Fetch Orders
   // ==============================
   useEffect(() => {
     const fetchOrders = async () => {
@@ -224,8 +224,8 @@ const Orders = () => {
   // ==============================
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
-      const user = o.user?.email || o.user || "";
-      const id = o._id || o.id || "";
+      const user = o.user?.email || "";
+      const id = o._id || "";
 
       return (
         user.toLowerCase().includes(search.toLowerCase()) ||
@@ -261,10 +261,10 @@ const Orders = () => {
       ],
       ...orders.map((o) => [
         o._id,
-        o.user?.email || o.user,
-        o.service?.name || o.service,
-        o.country?.name || o.country,
-        o.number,
+        o.user?.email || "N/A",
+        o.service?.code || o.service?.name || "N/A",
+        o.country?.code || o.country?.name || "N/A",
+        o.number || "",
         `₦${o.amount}`,
         o.status,
         new Date(o.createdAt).toLocaleDateString(),
@@ -325,15 +325,15 @@ const Orders = () => {
               <td data-label="Order ID">{order._id}</td>
 
               <td data-label="User">
-                {order.user?.email || order.user || "N/A"}
+                {order.user?.email || "N/A"}
               </td>
 
               <td data-label="Service">
-                {order.service?.name || order.service}
+                {order.service?.code || order.service?.name || "N/A"}
               </td>
 
               <td data-label="Country">
-                {order.country?.name || order.country}
+                {order.country?.code || order.country?.name || "N/A"}
               </td>
 
               <td data-label="Number">{order.number}</td>
