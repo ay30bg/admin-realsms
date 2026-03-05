@@ -217,7 +217,7 @@
 
 // export default Transactions;
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "../styles/table.css";
 
 const Transactions = () => {
