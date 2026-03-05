@@ -217,6 +217,26 @@
   color: #fff;
 }
 
+.status-badge.waiting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.received {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.refunded {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-badge.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 /* =======================
    TABLE CONTROLS
 ======================= */
@@ -476,4 +496,5 @@
     padding: 4px 8px;
     font-size: 13px;
   }
+
 }
