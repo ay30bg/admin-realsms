@@ -103,7 +103,7 @@
 
 /* Shared badge styles */
 .badge{
-   margin-top: 30px;
+   margin-top: 10px;
 }
 
 .nav-with-badge {
@@ -166,3 +166,4 @@
   }
 
 }
+
