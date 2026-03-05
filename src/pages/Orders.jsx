@@ -215,9 +215,9 @@ const Orders = () => {
   const rowsPerPage = 8;
   const getToken = () => localStorage.getItem("adminToken");
 
-  // ==============================
-  // Fetch Orders (backend-driven)
-  // ==============================
+  /* ==============================
+     FETCH ORDERS
+  ============================== */
   const fetchOrders = useCallback(
     async (page = 1, searchTerm = "") => {
       try {
@@ -230,8 +230,8 @@ const Orders = () => {
         );
 
         if (!res.ok) throw new Error("Failed to fetch orders");
-
         const data = await res.json();
+
         setOrders(data.data || []);
         setCurrentPage(data.page || 1);
         setTotalPages(data.totalPages || 1);
@@ -244,9 +244,9 @@ const Orders = () => {
     [rowsPerPage]
   );
 
-  // ==============================
-  // Fetch on mount and when page/search changes
-  // ==============================
+  /* ==============================
+     EFFECT: FETCH ON MOUNT / PAGE / SEARCH
+  ============================== */
   useEffect(() => {
     fetchOrders(currentPage, search);
   }, [currentPage, search, fetchOrders]);
@@ -256,9 +256,9 @@ const Orders = () => {
     setCurrentPage(1);
   };
 
-  // ==============================
-  // Export CSV
-  // ==============================
+  /* ==============================
+     EXPORT CSV
+  ============================== */
   const handleExport = () => {
     const csv = [
       ["User", "OTP", "Service", "Country", "Number", "Amount", "Status", "Date"],
@@ -283,15 +283,16 @@ const Orders = () => {
     link.click();
   };
 
+  /* ==============================
+     RENDER
+  ============================== */
   if (loading) return <p>Loading orders...</p>;
 
   return (
-    <div>
+    <div className="table-page">
       <h1>Orders</h1>
 
-      {/* ==============================
-         Controls
-      ============================== */}
+      {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
@@ -308,9 +309,7 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* ==============================
-         Orders Table
-      ============================== */}
+      {/* Orders Table */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -335,27 +334,25 @@ const Orders = () => {
           ) : (
             orders.map((order) => (
               <tr key={order._id}>
-                <td>{order.user?.email || "Unknown"}</td>
-                <td>{order.otp || "N/A"}</td>
-                <td>{order.service?.name}</td>
-                <td>{order.country?.code}</td>
-                <td>{order.number}</td>
-                <td>₦{order.priceCharged?.toLocaleString()}</td>
-                <td>
+                <td data-label="User">{order.user?.email || "Unknown"}</td>
+                <td data-label="OTP">{order.otp || "N/A"}</td>
+                <td data-label="Service">{order.service?.name}</td>
+                <td data-label="Country">{order.country?.code}</td>
+                <td data-label="Number">{order.number}</td>
+                <td data-label="Amount">₦{order.priceCharged?.toLocaleString()}</td>
+                <td data-label="Status">
                   <span className={`status-badge ${order.status}`}>
                     {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
                   </span>
                 </td>
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                <td data-label="Date">{new Date(order.createdAt).toLocaleDateString()}</td>
               </tr>
             ))
           )}
         </tbody>
       </table>
 
-      {/* ==============================
-         Pagination
-      ============================== */}
+      {/* Pagination */}
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
