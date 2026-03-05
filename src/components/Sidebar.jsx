@@ -141,7 +141,7 @@ import logo from "../assets/logo.png";
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
-  const [unreadMessages, setUnreadMessages] = useState(0); // if you plan to fetch
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   const getToken = () => localStorage.getItem("adminToken");
 
@@ -149,7 +149,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   // Detect Mobile Screen
   // ==============================
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
 
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -157,57 +159,39 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   }, []);
 
   // ==============================
-  // Fetch Pending Transactions
+  // Fetch Pending Transactions & Unread Messages
   // ==============================
   useEffect(() => {
-    const fetchPendingTransactions = async () => {
+    const fetchSidebarCounts = async () => {
       try {
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/admin/transactions?search=&page=1&limit=100`,
+        const token = getToken();
+
+        // Fetch transactions count
+        const txRes = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/admin/transactions?status=PENDING`,
           {
-            headers: {
-              Authorization: `Bearer ${getToken()}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-        const data = await res.json();
-        if (data.success) {
-          const count = data.data.filter((t) => t.status === "PENDING").length;
-          setPendingCount(count);
-        }
-      } catch (err) {
-        console.error("Fetch pending transactions error:", err);
+        const txData = await txRes.json();
+        setPendingCount(txData.data?.length || 0);
+
+        // Fetch unread messages count
+        const msgRes = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/admin/support/unread`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const msgData = await msgRes.json();
+        setUnreadMessages(msgData.data?.length || 0);
+      } catch (error) {
+        console.error("Sidebar fetch error:", error);
       }
     };
 
-    fetchPendingTransactions();
+    fetchSidebarCounts();
   }, []);
-
-  // ==============================
-  // Fetch Unread Messages (optional)
-  // ==============================
-  // Uncomment if backend endpoint exists
-  /*
-  useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/admin/messages/unread-count`,
-          {
-            headers: {
-              Authorization: `Bearer ${getToken()}`,
-            },
-          }
-        );
-        const data = await res.json();
-        if (data.success) setUnreadMessages(data.count || 0);
-      } catch (err) {
-        console.error("Fetch unread messages error:", err);
-      }
-    };
-    fetchUnread();
-  }, []);
-  */
 
   return (
     <>
@@ -229,19 +213,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
         {/* Navigation */}
         <nav>
-          {/* Dashboard */}
           <NavLink to="/admin" end onClick={toggleSidebar}>
             <FiHome className="sidebar-icon" />
             <span>Dashboard</span>
           </NavLink>
 
-          {/* Users */}
           <NavLink to="/admin/users" onClick={toggleSidebar}>
             <FiUsers className="sidebar-icon" />
             <span>Users</span>
           </NavLink>
 
-          {/* Transactions */}
           <NavLink
             to="/admin/transactions"
             onClick={toggleSidebar}
@@ -249,17 +230,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <FiClock className="sidebar-icon" />
             <span>Transactions</span>
-
-            {pendingCount > 0 && <span className="badge pulse">{pendingCount}</span>}
+            {pendingCount > 0 && (
+              <span className="badge pulse">{pendingCount}</span>
+            )}
           </NavLink>
 
-          {/* Orders */}
           <NavLink to="/admin/orders" onClick={toggleSidebar}>
             <FiPlusCircle className="sidebar-icon" />
             <span>Orders</span>
           </NavLink>
 
-          {/* Support */}
           <NavLink
             to="/admin/support"
             onClick={toggleSidebar}
@@ -267,7 +247,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <FiHeadphones className="sidebar-icon" />
             <span>Support</span>
-
             {unreadMessages > 0 && (
               <span className="badge unread pulse">{unreadMessages}</span>
             )}
