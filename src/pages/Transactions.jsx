@@ -195,14 +195,14 @@
 
 // export default Transactions;
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import "../styles/table.css";
 
 const Transactions = () => {
-
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const rowsPerPage = 5;
 
@@ -210,8 +210,10 @@ const Transactions = () => {
 
   /* ================= FETCH TRANSACTIONS ================= */
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
+      setLoading(true);
+
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/admin/transactions`,
         {
@@ -224,27 +226,27 @@ const Transactions = () => {
       const data = await res.json();
 
       if (data.success) {
-        setTransactions(data.data);
+        setTransactions(data.data || []);
       }
-
     } catch (error) {
       console.error("Fetch transactions error:", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [fetchTransactions]);
 
   /* ================= SEARCH ================= */
 
   const filteredData = useMemo(() => {
-
-    return transactions.filter((t) =>
-      t.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
-      t.ref?.toLowerCase().includes(search.toLowerCase())
+    return transactions.filter(
+      (t) =>
+        t.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+        t.ref?.toLowerCase().includes(search.toLowerCase())
     );
-
   }, [transactions, search]);
 
   /* ================= PAGINATION ================= */
@@ -259,11 +261,9 @@ const Transactions = () => {
   /* ================= CONFIRM TRANSACTION ================= */
 
   const handleConfirm = async (ref) => {
-
     if (!window.confirm(`Confirm deposit ${ref}?`)) return;
 
     try {
-
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/admin/transactions/${ref}/confirm`,
         {
@@ -279,9 +279,8 @@ const Transactions = () => {
       if (result.success) {
         fetchTransactions();
       } else {
-        alert(result.message);
+        alert(result.message || "Failed to confirm transaction");
       }
-
     } catch (error) {
       console.error("Confirm transaction error:", error);
     }
@@ -290,7 +289,6 @@ const Transactions = () => {
   /* ================= EXPORT CSV ================= */
 
   const handleExport = () => {
-
     const csv = [
       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
       ...transactions.map((t) => [
@@ -305,7 +303,9 @@ const Transactions = () => {
       .map((row) => row.join(","))
       .join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -314,17 +314,20 @@ const Transactions = () => {
   };
 
   return (
-    <div>
+    <div className="table-page">
       <h1>Transactions</h1>
 
+      {/* Top Controls */}
       <div className="table-controls">
-
         <input
           type="text"
           className="search-input"
           placeholder="Search by user or reference..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
         />
 
         <div className="buttons-right">
@@ -332,11 +335,10 @@ const Transactions = () => {
             Export CSV
           </button>
         </div>
-
       </div>
 
+      {/* Table */}
       <table className="admin-table">
-
         <thead>
           <tr>
             <th>Reference</th>
@@ -350,54 +352,75 @@ const Transactions = () => {
         </thead>
 
         <tbody>
-
-          {paginatedData.map((t) => (
-            <tr key={t._id}>
-
-              <td data-label="Reference">{t.ref}</td>
-              <td data-label="User">{t.user?.email}</td>
-
-              <td data-label="Amount">
-                ₦{t.amount?.toLocaleString()}
+          {loading ? (
+            <tr>
+              <td colSpan="7" style={{ textAlign: "center" }}>
+                Loading...
               </td>
-
-              <td data-label="Status">
-                <span className={`status-badge ${t.status === "SUCCESS" ? "active" : "pending"}`}>
-                  {t.status}
-                </span>
-              </td>
-
-              <td data-label="Payment Method">{t.method}</td>
-
-              <td data-label="Date">
-                {new Date(t.createdAt).toLocaleDateString()}
-              </td>
-
-              <td data-label="Actions">
-                <div className="action-buttons">
-
-                  {t.status === "PENDING" && (
-                    <button
-                      className="btn btn-confirm"
-                      onClick={() => handleConfirm(t.ref)}
-                    >
-                      Confirm
-                    </button>
-                  )}
-
-                </div>
-              </td>
-
             </tr>
-          ))}
+          ) : paginatedData.length === 0 ? (
+            <tr>
+              <td colSpan="7" style={{ textAlign: "center" }}>
+                No transactions found
+              </td>
+            </tr>
+          ) : (
+            paginatedData.map((t) => (
+              <tr key={t._id}>
+                <td data-label="Reference">{t.ref}</td>
 
+                <td data-label="User">
+                  {t.user?.email || "Unknown"}
+                </td>
+
+                <td data-label="Amount">
+                  ₦{t.amount?.toLocaleString()}
+                </td>
+
+                <td data-label="Status">
+                  <span
+                    className={`status-badge ${
+                      t.status === "SUCCESS"
+                        ? "active"
+                        : t.status === "PENDING"
+                        ? "pending"
+                        : "failed"
+                    }`}
+                  >
+                    {t.status}
+                  </span>
+                </td>
+
+                <td data-label="Payment Method">{t.method}</td>
+
+                <td data-label="Date">
+                  {new Date(t.createdAt).toLocaleDateString()}
+                </td>
+
+                <td data-label="Actions">
+                  <div className="action-buttons">
+                    {t.status === "PENDING" && (
+                      <button
+                        className="btn btn-confirm"
+                        onClick={() => handleConfirm(t.ref)}
+                      >
+                        Confirm
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
+      {/* Pagination */}
       <div className="pagination">
-
         <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          onClick={() =>
+            setCurrentPage((p) => Math.max(1, p - 1))
+          }
           disabled={currentPage === 1}
         >
           Previous
@@ -407,13 +430,14 @@ const Transactions = () => {
 
         <button
           onClick={() =>
-            setCurrentPage((p) => Math.min(totalPages, p + 1))
+            setCurrentPage((p) =>
+              Math.min(totalPages, p + 1)
+            )
           }
           disabled={currentPage === totalPages || totalPages === 0}
         >
           Next
         </button>
-
       </div>
     </div>
   );
