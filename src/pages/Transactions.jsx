@@ -199,114 +199,221 @@ import { useState, useEffect, useMemo } from "react";
 import "../styles/table.css";
 
 const Transactions = () => {
+
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
   const rowsPerPage = 5;
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const token = localStorage.getItem("adminToken");
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/transactions`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setTransactions(data);
-      } catch (err) {
-        console.error("Failed to fetch transactions:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getToken = () => localStorage.getItem("adminToken");
 
+  /* ================= FETCH TRANSACTIONS ================= */
+
+  const fetchTransactions = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/admin/transactions`,
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setTransactions(data.data);
+      }
+
+    } catch (error) {
+      console.error("Fetch transactions error:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchTransactions();
   }, []);
 
-  const filteredData = useMemo(
-    () => transactions.filter(
-      (t) =>
-        t.user?.email.toLowerCase().includes(search.toLowerCase()) ||
-        t.reference?.toLowerCase().includes(search.toLowerCase())
-    ),
-    [transactions, search]
-  );
+  /* ================= SEARCH ================= */
+
+  const filteredData = useMemo(() => {
+
+    return transactions.filter((t) =>
+      t.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+      t.ref?.toLowerCase().includes(search.toLowerCase())
+    );
+
+  }, [transactions, search]);
+
+  /* ================= PAGINATION ================= */
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
   const paginatedData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
+  /* ================= CONFIRM TRANSACTION ================= */
+
+  const handleConfirm = async (ref) => {
+
+    if (!window.confirm(`Confirm deposit ${ref}?`)) return;
+
+    try {
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/admin/transactions/${ref}/confirm`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
+
+      const result = await res.json();
+
+      if (result.success) {
+        fetchTransactions();
+      } else {
+        alert(result.message);
+      }
+
+    } catch (error) {
+      console.error("Confirm transaction error:", error);
+    }
+  };
+
+  /* ================= EXPORT CSV ================= */
+
   const handleExport = () => {
+
     const csv = [
       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
       ...transactions.map((t) => [
-        t.reference,
-        t.user?.email || "-",
+        t.ref,
+        t.user?.email,
         `₦${t.amount}`,
         t.status,
-        t.provider,
-        t.createdAt?.split("T")[0] || "-",
+        t.method,
+        new Date(t.createdAt).toLocaleDateString(),
       ]),
-    ].map((row) => row.join(",")).join("\n");
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "transactions.csv";
     link.click();
   };
 
-  if (loading) return <p>Loading transactions...</p>;
-
   return (
     <div>
       <h1>Transactions</h1>
 
       <div className="table-controls">
+
         <input
+          type="text"
+          className="search-input"
           placeholder="Search by user or reference..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button onClick={handleExport}>Export CSV</button>
+
+        <div className="buttons-right">
+          <button className="btn btn-export" onClick={handleExport}>
+            Export CSV
+          </button>
+        </div>
+
       </div>
 
       <table className="admin-table">
+
         <thead>
           <tr>
             <th>Reference</th>
             <th>User</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>Method</th>
+            <th>Payment Method</th>
             <th>Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
+
           {paginatedData.map((t) => (
             <tr key={t._id}>
-              <td>{t.reference}</td>
-              <td>{t.user?.email || "-"}</td>
-              <td>₦{t.amount.toLocaleString()}</td>
-              <td>
-                <span className={`status-badge ${t.status === "SUCCESS" ? "active" : t.status === "PENDING" ? "pending" : "failed"}`}>
+
+              <td data-label="Reference">{t.ref}</td>
+              <td data-label="User">{t.user?.email}</td>
+
+              <td data-label="Amount">
+                ₦{t.amount?.toLocaleString()}
+              </td>
+
+              <td data-label="Status">
+                <span className={`status-badge ${t.status === "SUCCESS" ? "active" : "pending"}`}>
                   {t.status}
                 </span>
               </td>
-              <td>{t.provider}</td>
-              <td>{t.createdAt?.split("T")[0] || "-"}</td>
+
+              <td data-label="Payment Method">{t.method}</td>
+
+              <td data-label="Date">
+                {new Date(t.createdAt).toLocaleDateString()}
+              </td>
+
+              <td data-label="Actions">
+                <div className="action-buttons">
+
+                  {t.status === "PENDING" && (
+                    <button
+                      className="btn btn-confirm"
+                      onClick={() => handleConfirm(t.ref)}
+                    >
+                      Confirm
+                    </button>
+                  )}
+
+                </div>
+              </td>
+
             </tr>
           ))}
+
         </tbody>
       </table>
 
       <div className="pagination">
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
-        <span>{currentPage}</span>
-        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</button>
+
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <span className="current-page">{currentPage}</span>
+
+        <button
+          onClick={() =>
+            setCurrentPage((p) => Math.min(totalPages, p + 1))
+          }
+          disabled={currentPage === totalPages || totalPages === 0}
+        >
+          Next
+        </button>
+
       </div>
     </div>
   );
