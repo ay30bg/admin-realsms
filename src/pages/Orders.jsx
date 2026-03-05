@@ -202,7 +202,8 @@
 
 // export default Orders;
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import "../styles/table.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -214,29 +215,168 @@ const Orders = () => {
   const rowsPerPage = 8;
   const getToken = () => localStorage.getItem("adminToken");
 
-  const fetchOrders = useCallback(async (page = 1, searchTerm = "") => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/admin/orders?search=${searchTerm}&page=${page}&limit=${rowsPerPage}`,
-        {
-          headers: { Authorization: `Bearer ${getToken()}` },
-        }
-      );
+  // ==============================
+  // Fetch Orders (backend-driven)
+  // ==============================
+  const fetchOrders = useCallback(
+    async (page = 1, searchTerm = "") => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/admin/orders?search=${searchTerm}&page=${page}&limit=${rowsPerPage}`,
+          {
+            headers: { Authorization: `Bearer ${getToken()}` },
+          }
+        );
 
-      if (!res.ok) throw new Error("Failed to fetch orders");
+        if (!res.ok) throw new Error("Failed to fetch orders");
 
-      const data = await res.json();
-      setOrders(data.data || []);
-      setCurrentPage(data.page || 1);
-      setTotalPages(data.totalPages || 1);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [rowsPerPage]); // rowsPerPage is safe here
+        const data = await res.json();
+        setOrders(data.data || []);
+        setCurrentPage(data.page || 1);
+        setTotalPages(data.totalPages || 1);
+      } catch (err) {
+        console.error("Orders fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [rowsPerPage]
+  );
 
+  // ==============================
+  // Fetch on mount and when page/search changes
+  // ==============================
   useEffect(() => {
     fetchOrders(currentPage, search);
-  }, [currentPage, search, fetchOrders]); // ✅ include fetchOrders
+  }, [currentPage, search, fetchOrders]);
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // ==============================
+  // Export CSV
+  // ==============================
+  const handleExport = () => {
+    const csv = [
+      ["User", "OTP", "Service", "Country", "Number", "Amount", "Status", "Date"],
+      ...orders.map((o) => [
+        o.user?.email || "Unknown",
+        o.otp || "",
+        o.service?.name || "",
+        o.country?.code || "",
+        o.number,
+        `₦${o.priceCharged?.toLocaleString()}`,
+        o.status,
+        new Date(o.createdAt).toLocaleDateString(),
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "orders.csv";
+    link.click();
+  };
+
+  if (loading) return <p>Loading orders...</p>;
+
+  return (
+    <div>
+      <h1>Orders</h1>
+
+      {/* ==============================
+         Controls
+      ============================== */}
+      <div className="table-controls">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by User or OTP..."
+          value={search}
+          onChange={handleSearchChange}
+        />
+
+        <div className="buttons-right">
+          <button className="btn btn-export" onClick={handleExport}>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* ==============================
+         Orders Table
+      ============================== */}
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>OTP</th>
+            <th>Service</th>
+            <th>Country</th>
+            <th>Number</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {orders.length === 0 ? (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No orders found
+              </td>
+            </tr>
+          ) : (
+            orders.map((order) => (
+              <tr key={order._id}>
+                <td>{order.user?.email || "Unknown"}</td>
+                <td>{order.otp || "N/A"}</td>
+                <td>{order.service?.name}</td>
+                <td>{order.country?.code}</td>
+                <td>{order.number}</td>
+                <td>₦{order.priceCharged?.toLocaleString()}</td>
+                <td>
+                  <span className={`status-badge ${order.status}`}>
+                    {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
+                  </span>
+                </td>
+                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* ==============================
+         Pagination
+      ============================== */}
+      <div className="pagination">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <span className="current-page">
+          Page {currentPage} / {totalPages || 1}
+        </span>
+
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Orders;
