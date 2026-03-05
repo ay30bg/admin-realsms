@@ -102,6 +102,10 @@
 }
 
 /* Shared badge styles */
+.badge{
+   margin-top: 30px;
+}
+
 .nav-with-badge {
   position: relative;
 }
@@ -160,4 +164,5 @@
     cursor: pointer;
     margin-bottom: 10px;
   }
+
 }
