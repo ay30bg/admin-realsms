@@ -174,27 +174,43 @@
 
 // export default Orders;
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "../styles/table.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+
   const rowsPerPage = 5;
 
+  const getToken = () => localStorage.getItem("adminToken");
+
+  // ==============================
+  // Fetch Orders From Backend
+  // ==============================
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("adminToken");
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/orders`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const token = getToken();
+
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/admin/orders`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch orders");
+
         const data = await res.json();
-        setOrders(data);
-      } catch (err) {
-        console.error("Failed to fetch orders:", err);
+
+        setOrders(data || []);
+      } catch (error) {
+        console.error("Orders fetch error:", error);
       } finally {
         setLoading(false);
       }
@@ -203,37 +219,62 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
-  const filteredData = useMemo(
-    () => orders.filter(
-      (o) =>
-        o.user?.email.toLowerCase().includes(search.toLowerCase()) ||
-        o._id.toLowerCase().includes(search.toLowerCase())
-    ),
-    [orders, search]
-  );
+  // ==============================
+  // Search Filter
+  // ==============================
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      const user = o.user?.email || o.user || "";
+      const id = o._id || o.id || "";
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(
+      return (
+        user.toLowerCase().includes(search.toLowerCase()) ||
+        id.toLowerCase().includes(search.toLowerCase())
+      );
+    });
+  }, [orders, search]);
+
+  // ==============================
+  // Pagination
+  // ==============================
+  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+
+  const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
+  // ==============================
+  // Export CSV
+  // ==============================
   const handleExport = () => {
     const csv = [
-      ["Order ID", "User", "Service", "Country", "Number", "Amount", "Status", "Date"],
+      [
+        "Order ID",
+        "User",
+        "Service",
+        "Country",
+        "Number",
+        "Amount",
+        "Status",
+        "Date",
+      ],
       ...orders.map((o) => [
         o._id,
-        o.user?.email || "-",
-        o.service || "-",
-        o.country || "-",
-        o.number || "-",
+        o.user?.email || o.user,
+        o.service?.name || o.service,
+        o.country?.name || o.country,
+        o.number,
         `₦${o.amount}`,
         o.status,
-        o.createdAt?.split("T")[0] || "-",
+        new Date(o.createdAt).toLocaleDateString(),
       ]),
-    ].map((row) => row.join(",")).join("\n");
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "orders.csv";
@@ -246,15 +287,24 @@ const Orders = () => {
     <div>
       <h1>Orders</h1>
 
+      {/* Controls */}
       <div className="table-controls">
         <input
+          type="text"
+          className="search-input"
           placeholder="Search by Order ID or User..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button onClick={handleExport}>Export CSV</button>
+
+        <div className="buttons-right">
+          <button className="btn btn-export" onClick={handleExport}>
+            Export CSV
+          </button>
+        </div>
       </div>
 
+      {/* Table */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -268,30 +318,71 @@ const Orders = () => {
             <th>Date</th>
           </tr>
         </thead>
+
         <tbody>
-          {paginatedData.map((o) => (
-            <tr key={o._id}>
-              <td>{o._id}</td>
-              <td>{o.user?.email || "-"}</td>
-              <td>{o.service || "-"}</td>
-              <td>{o.country || "-"}</td>
-              <td>{o.number || "-"}</td>
-              <td>₦{o.amount?.toLocaleString() || 0}</td>
-              <td>
-                <span className={`status-badge ${o.status === "SUCCESS" ? "active" : o.status === "PENDING" ? "pending" : "failed"}`}>
-                  {o.status}
+          {paginatedOrders.map((order) => (
+            <tr key={order._id}>
+              <td data-label="Order ID">{order._id}</td>
+
+              <td data-label="User">
+                {order.user?.email || order.user || "N/A"}
+              </td>
+
+              <td data-label="Service">
+                {order.service?.name || order.service}
+              </td>
+
+              <td data-label="Country">
+                {order.country?.name || order.country}
+              </td>
+
+              <td data-label="Number">{order.number}</td>
+
+              <td data-label="Amount">
+                ₦{order.amount?.toLocaleString()}
+              </td>
+
+              <td data-label="Status">
+                <span
+                  className={`status-badge ${
+                    order.status === "SUCCESS"
+                      ? "active"
+                      : order.status === "PENDING"
+                      ? "pending"
+                      : "failed"
+                  }`}
+                >
+                  {order.status}
                 </span>
               </td>
-              <td>{o.createdAt?.split("T")[0] || "-"}</td>
+
+              <td data-label="Date">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
+      {/* Pagination */}
       <div className="pagination">
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
-        <span>{currentPage}</span>
-        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</button>
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <span className="current-page">{currentPage}</span>
+
+        <button
+          onClick={() =>
+            setCurrentPage((p) => Math.min(totalPages, p + 1))
+          }
+          disabled={currentPage === totalPages || totalPages === 0}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
