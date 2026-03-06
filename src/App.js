@@ -17,10 +17,10 @@ function App() {
       <Routes>
 
         {/* Redirect root to admin dashboard */}
-        <Route path="/" element={<Navigate to="/admin" replace />} />
+        <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
 
         {/* Admin Login */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/" element={<AdminLogin />} />
 
         {/* Protected Admin Routes */}
         <Route
