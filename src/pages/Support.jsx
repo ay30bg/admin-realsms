@@ -119,34 +119,33 @@ import React, { useState, useEffect } from "react";
 import "../styles/support.css";
 
 const Support = () => {
-
   const [messages, setMessages] = useState([]);
   const [selected, setSelected] = useState(null);
   const [reply, setReply] = useState("");
 
   const token = localStorage.getItem("adminToken");
 
-  // Fetch all support messages
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch("/api/support/admin", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-      setMessages(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  // Fetch messages
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch("/api/support/admin", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  // Group by user
+        const data = await res.json();
+        setMessages(data);
+      } catch (error) {
+        console.error("Error fetching support messages:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [token]);
+
+  // Group conversations by user
   const conversations = Object.values(
     messages.reduce((acc, msg) => {
       const userId = msg.user._id;
@@ -163,8 +162,12 @@ const Support = () => {
     }, {})
   );
 
+  // Reply to user
   const handleReply = async () => {
-    if (!reply.trim()) return alert("Reply cannot be empty");
+    if (!reply.trim()) {
+      alert("Reply cannot be empty");
+      return;
+    }
 
     try {
       const res = await fetch("/api/support/reply", {
@@ -181,14 +184,15 @@ const Support = () => {
 
       const data = await res.json();
 
+      // Add new reply to chat
       setSelected((prev) => ({
         ...prev,
         messages: [...prev.messages, data],
       }));
 
       setReply("");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Reply error:", error);
     }
   };
 
@@ -197,41 +201,49 @@ const Support = () => {
 
       {/* Sidebar */}
       <div className={`support-sidebar ${selected ? "mobile-hide" : ""}`}>
+
         <div className="sidebar-header">
           <h2>Support Inbox</h2>
         </div>
 
         <div className="message-list">
-          {conversations.map((conv) => {
-            const lastMsg = conv.messages[conv.messages.length - 1];
+          {conversations.length === 0 ? (
+            <div className="no-message">No support messages</div>
+          ) : (
+            conversations.map((conv) => {
+              const lastMsg = conv.messages[conv.messages.length - 1];
 
-            return (
-              <div
-                key={conv.user._id}
-                className={`support-item ${
-                  selected?.user._id === conv.user._id ? "active" : ""
-                }`}
-                onClick={() => setSelected(conv)}
-              >
-                <div className="support-item-top">
-                  <strong>{conv.user.email}</strong>
-                  <span>
-                    {new Date(lastMsg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+              return (
+                <div
+                  key={conv.user._id}
+                  className={`support-item ${
+                    selected?.user._id === conv.user._id ? "active" : ""
+                  }`}
+                  onClick={() => setSelected(conv)}
+                >
+                  <div className="support-item-top">
+                    <strong>{conv.user.email}</strong>
+
+                    <span>
+                      {new Date(lastMsg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+
+                  <p>{lastMsg.message}</p>
                 </div>
-
-                <p>{lastMsg.message}</p>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
+
       </div>
 
-      {/* Chat */}
+      {/* Chat Area */}
       <div className={`support-chat ${selected ? "mobile-show" : ""}`}>
+
         {selected ? (
           <>
             <div className="chat-header">
@@ -269,7 +281,10 @@ const Support = () => {
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
               />
-              <button onClick={handleReply}>Send Reply</button>
+
+              <button onClick={handleReply}>
+                Send Reply
+              </button>
             </div>
           </>
         ) : (
@@ -277,8 +292,8 @@ const Support = () => {
             Select a conversation to view
           </div>
         )}
-      </div>
 
+      </div>
     </div>
   );
 };
