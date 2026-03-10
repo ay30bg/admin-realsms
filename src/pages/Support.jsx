@@ -115,7 +115,9 @@
 
 // export default Support;
 
-import React, { useState, useEffect } from "react";
+
+
+  import React, { useState, useEffect } from "react";
 import "../styles/support.css";
 
 const Support = () => {
@@ -126,7 +128,7 @@ const Support = () => {
   const token = localStorage.getItem("adminToken");
   const API_URL = process.env.REACT_APP_API_URL;
 
-  // Fetch messages
+  // Fetch all conversations
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -136,10 +138,24 @@ const Support = () => {
           },
         });
 
+        if (!res.ok) {
+          console.error("Failed to fetch support messages:", res.status);
+          setMessages([]); // Prevent .reduce crash
+          return;
+        }
+
         const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Expected array from server but got:", data);
+          setMessages([]);
+          return;
+        }
+
         setMessages(data);
       } catch (error) {
         console.error("Error fetching support messages:", error);
+        setMessages([]);
       }
     };
 
@@ -147,28 +163,20 @@ const Support = () => {
   }, [token, API_URL]);
 
   // Group conversations by user
-  const conversations = Object.values(
-    messages.reduce((acc, msg) => {
-      const userId = msg.user._id;
+  const conversations = Array.isArray(messages)
+    ? Object.values(
+        messages.reduce((acc, msg) => {
+          const userId = msg.user._id;
+          if (!acc[userId]) acc[userId] = { user: msg.user, messages: [] };
+          acc[userId].messages.push(msg);
+          return acc;
+        }, {})
+      )
+    : [];
 
-      if (!acc[userId]) {
-        acc[userId] = {
-          user: msg.user,
-          messages: [],
-        };
-      }
-
-      acc[userId].messages.push(msg);
-      return acc;
-    }, {})
-  );
-
-  // Reply to user
+  // Send reply to user
   const handleReply = async () => {
-    if (!reply.trim()) {
-      alert("Reply cannot be empty");
-      return;
-    }
+    if (!reply.trim() || !selected) return;
 
     try {
       const res = await fetch(`${API_URL}/api/support/reply`, {
@@ -183,9 +191,14 @@ const Support = () => {
         }),
       });
 
+      if (!res.ok) {
+        console.error("Failed to send reply:", res.status);
+        return;
+      }
+
       const data = await res.json();
 
-      // Add new reply to chat
+      // Update selected conversation
       setSelected((prev) => ({
         ...prev,
         messages: [...prev.messages, data],
@@ -211,7 +224,6 @@ const Support = () => {
           ) : (
             conversations.map((conv) => {
               const lastMsg = conv.messages[conv.messages.length - 1];
-
               return (
                 <div
                   key={conv.user._id}
@@ -222,16 +234,16 @@ const Support = () => {
                 >
                   <div className="support-item-top">
                     <strong>{conv.user.email}</strong>
-
                     <span>
-                      {new Date(lastMsg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {lastMsg?.createdAt
+                        ? new Date(lastMsg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
                     </span>
                   </div>
-
-                  <p>{lastMsg.message}</p>
+                  <p>{lastMsg?.message || ""}</p>
                 </div>
               );
             })
@@ -244,13 +256,9 @@ const Support = () => {
         {selected ? (
           <>
             <div className="chat-header">
-              <button
-                className="back-btn"
-                onClick={() => setSelected(null)}
-              >
+              <button className="back-btn" onClick={() => setSelected(null)}>
                 ←
               </button>
-
               <div>
                 <h3>{selected.user.email}</h3>
                 <p>Customer Support</p>
@@ -262,7 +270,9 @@ const Support = () => {
                 <div
                   key={msg._id}
                   className={`message-bubble ${
-                    msg.sender === "admin" ? "admin-message" : "user-message"
+                    msg.sender === "admin"
+                      ? "admin-message"
+                      : "user-message"
                   }`}
                 >
                   {msg.message}
@@ -276,10 +286,7 @@ const Support = () => {
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
               />
-
-              <button onClick={handleReply}>
-                Send Reply
-              </button>
+              <button onClick={handleReply}>Send Reply</button>
             </div>
           </>
         ) : (
