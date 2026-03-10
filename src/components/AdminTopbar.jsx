@@ -81,10 +81,10 @@ const AdminTopbar = ({ toggleSidebar }) => {
           {dropdownOpen && (
             <div className="dropdown-menu">
               <p>
-                <FiSettings /> Account
+                <FiSettings /> ACCOUNT
               </p>
               <p className="logout" onClick={handleLogout}>
-                <FiLogOut /> Logout
+                <FiLogOut /> LOGOUT
               </p>
             </div>
           )}
@@ -95,4 +95,5 @@ const AdminTopbar = ({ toggleSidebar }) => {
 };
 
 export default AdminTopbar;
+
 
