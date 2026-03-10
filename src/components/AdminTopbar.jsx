@@ -12,6 +12,7 @@
 // const AdminTopbar = ({ toggleSidebar }) => {
 //   const [dropdownOpen, setDropdownOpen] = useState(false);
 //   const [adminName, setAdminName] = useState("Admin");
+//   const [greeting, setGreeting] = useState("");
 
 //   const navigate = useNavigate();
 
@@ -28,6 +29,17 @@
 //   useEffect(() => {
 //     const name = localStorage.getItem("adminName");
 //     if (name) setAdminName(name);
+
+//     // Greeting logic
+//     const hour = new Date().getHours();
+
+//     if (hour < 12) {
+//       setGreeting("Good morning");
+//     } else if (hour < 18) {
+//       setGreeting("Good afternoon");
+//     } else {
+//       setGreeting("Good evening");
+//     }
 //   }, []);
 
 //   return (
@@ -36,7 +48,11 @@
 //         <div className="hamburger" onClick={toggleSidebar}>
 //           <FiMenu size={22} />
 //         </div>
-        
+
+//         {/* Greeting */}
+//         <div className="greeting">
+//           {greeting}, <strong>{adminName}</strong>
+//         </div>
 //       </div>
 
 //       <div className="topbar-right">
@@ -51,7 +67,6 @@
 //             alt="Admin Avatar"
 //             className="avatar"
 //           />
-//           <span className="username">{adminName}</span>
 //           <FiChevronDown
 //             className={`arrow ${dropdownOpen ? "rotate" : ""}`}
 //           />
@@ -72,7 +87,6 @@
 //   );
 // };
 
-
 // export default AdminTopbar;
 
 import React, { useState, useEffect } from "react";
@@ -90,6 +104,7 @@ const AdminTopbar = ({ toggleSidebar }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [adminName, setAdminName] = useState("Admin");
   const [greeting, setGreeting] = useState("");
+  const [initials, setInitials] = useState("A");
 
   const navigate = useNavigate();
 
@@ -104,8 +119,17 @@ const AdminTopbar = ({ toggleSidebar }) => {
   };
 
   useEffect(() => {
-    const name = localStorage.getItem("adminName");
-    if (name) setAdminName(name);
+    const name = localStorage.getItem("adminName") || "Admin";
+    setAdminName(name);
+
+    // Generate initials
+    const nameParts = name.split(" ");
+    const generatedInitials =
+      nameParts.length > 1
+        ? nameParts[0][0] + nameParts[1][0]
+        : nameParts[0][0];
+
+    setInitials(generatedInitials.toUpperCase());
 
     // Greeting logic
     const hour = new Date().getHours();
@@ -126,7 +150,6 @@ const AdminTopbar = ({ toggleSidebar }) => {
           <FiMenu size={22} />
         </div>
 
-        {/* Greeting */}
         <div className="greeting">
           {greeting}, <strong>{adminName}</strong>
         </div>
@@ -139,12 +162,9 @@ const AdminTopbar = ({ toggleSidebar }) => {
         </div>
 
         <div className="profile" onClick={toggleDropdown}>
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="Admin Avatar"
-            className="avatar"
-          />
-          <span className="username">{adminName}</span>
+          {/* Initials Avatar */}
+          <div className="admin-avatar">{initials}</div>
+
           <FiChevronDown
             className={`arrow ${dropdownOpen ? "rotate" : ""}`}
           />
