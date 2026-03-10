@@ -39,6 +39,17 @@
   gap: 20px;
 }
 
+.greeting {
+  margin-left: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+.greeting strong {
+  color: #000;
+}
+
 /* Notification */
 .notification {
   position: relative;
@@ -152,4 +163,5 @@
   .username {
     display: none;
   }
+
 }
