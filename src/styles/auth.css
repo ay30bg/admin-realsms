@@ -107,15 +107,6 @@
   display: block;
 }
 
-/* .login-wrapper .login-form input {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  margin-bottom: 14px;
-} */
-
 .login-wrapper .login-form input {
   width: 100%;
   padding: 12px 14px;
@@ -235,4 +226,5 @@
     margin-bottom: 16px;
   }
 }
+
 
