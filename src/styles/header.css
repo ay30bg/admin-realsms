@@ -19,6 +19,20 @@
   z-index: 1000;
 }
 
+.admin-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #367e3a;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+}
+
 /* Left */
 .topbar-left {
   display: flex;
@@ -165,3 +179,4 @@
   }
 
 }
+
