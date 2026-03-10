@@ -132,7 +132,7 @@ const Support = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/support/admin`, {
+        const res = await fetch(`${API_URL}/api/admin`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -298,3 +298,4 @@ const Support = () => {
 };
 
 export default Support;
+
