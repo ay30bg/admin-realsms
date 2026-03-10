@@ -124,12 +124,13 @@ const Support = () => {
   const [reply, setReply] = useState("");
 
   const token = localStorage.getItem("adminToken");
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Fetch messages
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch("/api/support/admin", {
+        const res = await fetch(`${API_URL}/api/support/admin`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -143,7 +144,7 @@ const Support = () => {
     };
 
     fetchMessages();
-  }, [token]);
+  }, [token, API_URL]);
 
   // Group conversations by user
   const conversations = Object.values(
@@ -170,7 +171,7 @@ const Support = () => {
     }
 
     try {
-      const res = await fetch("/api/support/reply", {
+      const res = await fetch(`${API_URL}/api/support/reply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,10 +199,8 @@ const Support = () => {
 
   return (
     <div className="support-container">
-
       {/* Sidebar */}
       <div className={`support-sidebar ${selected ? "mobile-hide" : ""}`}>
-
         <div className="sidebar-header">
           <h2>Support Inbox</h2>
         </div>
@@ -238,12 +237,10 @@ const Support = () => {
             })
           )}
         </div>
-
       </div>
 
       {/* Chat Area */}
       <div className={`support-chat ${selected ? "mobile-show" : ""}`}>
-
         {selected ? (
           <>
             <div className="chat-header">
@@ -265,9 +262,7 @@ const Support = () => {
                 <div
                   key={msg._id}
                   className={`message-bubble ${
-                    msg.sender === "admin"
-                      ? "admin-message"
-                      : "user-message"
+                    msg.sender === "admin" ? "admin-message" : "user-message"
                   }`}
                 >
                   {msg.message}
@@ -288,11 +283,8 @@ const Support = () => {
             </div>
           </>
         ) : (
-          <div className="no-message">
-            Select a conversation to view
-          </div>
+          <div className="no-message">Select a conversation to view</div>
         )}
-
       </div>
     </div>
   );
