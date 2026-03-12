@@ -116,7 +116,6 @@
 // export default Support;
 
 
-```javascript
 import React, { useState, useEffect, useCallback } from "react";
 import "../styles/support.css";
 
@@ -352,6 +351,7 @@ const Support = () => {
 };
 
 export default Support;
-```
+
+
 
 
