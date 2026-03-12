@@ -128,32 +128,42 @@ const Support = () => {
   const token = localStorage.getItem("adminToken");
 
   /* ================================
-      FETCH ALL ADMIN MESSAGES
+      FETCH ADMIN MESSAGES
   =================================*/
   const fetchMessages = useCallback(async () => {
     try {
-      const { data } = await axios.get("/api/support/admin", {
+      const res = await axios.get("/api/support/admin", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setMessages(data);
+      const data = res.data;
+
+      // Ensure messages is always an array
+      if (Array.isArray(data)) {
+        setMessages(data);
+      } else if (Array.isArray(data.messages)) {
+        setMessages(data.messages);
+      } else {
+        setMessages([]);
+      }
     } catch (error) {
       console.error("Fetch messages error:", error);
+      setMessages([]);
     }
   }, [token]);
 
   /* ================================
-      GROUP CONVERSATIONS BY USER
+      GROUP CONVERSATIONS
   =================================*/
   const groupedUsers = Object.values(
-    messages.reduce((acc, msg) => {
-      const id = msg.user?._id;
+    (Array.isArray(messages) ? messages : []).reduce((acc, msg) => {
+      const userId = msg?.user?._id;
 
-      if (!id) return acc;
+      if (!userId) return acc;
 
-      if (!acc[id]) {
-        acc[id] = {
-          userId: id,
+      if (!acc[userId]) {
+        acc[userId] = {
+          userId,
           email: msg.user.email,
           lastMessage: msg.message,
           unread: msg.sender === "user" && !msg.read,
@@ -172,7 +182,7 @@ const Support = () => {
     setSelectedUser(user);
 
     const userChat = messages
-      .filter((msg) => msg.user?._id === user.userId)
+      .filter((msg) => msg?.user?._id === user.userId)
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     setChat(userChat);
@@ -193,7 +203,7 @@ const Support = () => {
   };
 
   /* ================================
-      SEND ADMIN REPLY
+      SEND REPLY
   =================================*/
   const sendReply = async () => {
     if (!reply.trim()) return;
@@ -241,7 +251,7 @@ const Support = () => {
         <div className="message-list">
           {groupedUsers.length === 0 && (
             <div className="no-message">
-              No support messages
+              No support conversations
             </div>
           )}
 
