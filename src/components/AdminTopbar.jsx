@@ -24,7 +24,7 @@ const AdminTopbar = ({ toggleSidebar }) => {
   const handleLogout = () => {
     localStorage.removeItem("isAdmin");
     setDropdownOpen(false);
-    navigate("/admin/");
+    navigate("/");
   };
 
   useEffect(() => {
@@ -95,6 +95,7 @@ const AdminTopbar = ({ toggleSidebar }) => {
 };
 
 export default AdminTopbar;
+
 
 
 
