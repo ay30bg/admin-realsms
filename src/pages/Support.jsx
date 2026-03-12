@@ -353,7 +353,7 @@
 // export default Support;
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/support.css";
 
 const Support = () => {
@@ -362,75 +362,68 @@ const Support = () => {
   const [selected, setSelected] = useState(null);
   const [reply, setReply] = useState("");
 
-  const token = localStorage.getItem("adminToken"); // Make sure this is an admin token
+  const token = localStorage.getItem("adminToken");
   const API_URL = process.env.REACT_APP_API_URL;
 
-  // Fetch all admin messages
-  const fetchMessages = async () => {
+  // Fetch all messages (admin)
+  const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/support/admin`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) {
-        console.error("Failed to fetch messages:", res.status);
+        console.error("Failed to fetch support messages:", res.status);
         setMessages([]);
         return;
       }
-
       const data = await res.json();
-      if (!Array.isArray(data)) setMessages([]);
-      else setMessages(data);
+      setMessages(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      console.error("Error fetching support messages:", error);
       setMessages([]);
     }
-  };
+  }, [API_URL, token]);
 
-  // Fetch unread messages
-  const fetchUnreadCount = async () => {
+  // Fetch unread messages count
+  const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/support/admin/unread`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) {
         console.error("Failed to fetch unread messages:", res.status);
         setUnreadCount(0);
         return;
       }
-
       const data = await res.json();
       setUnreadCount(Array.isArray(data) ? data.length : 0);
     } catch (error) {
       console.error("Error fetching unread messages:", error);
       setUnreadCount(0);
     }
-  };
+  }, [API_URL, token]);
 
-  // Mark messages as read when opening conversation
-  const markAsRead = async (userId) => {
-    try {
-      const res = await fetch(`${API_URL}/api/support/admin/read/${userId}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) console.error("Failed to mark messages as read:", res.status);
-    } catch (error) {
-      console.error("Error marking messages as read:", error);
-    }
-  };
-
-  // Select a conversation
-  const handleSelect = (conv) => {
-    setSelected(conv);
-    // Mark messages as read when opening
-    markAsRead(conv.user._id);
+  // Poll messages and unread count
+  useEffect(() => {
     fetchMessages();
     fetchUnreadCount();
-  };
+    const interval = setInterval(fetchUnreadCount, 30000); // every 30s
+    return () => clearInterval(interval);
+  }, [fetchMessages, fetchUnreadCount]);
 
-  // Send admin reply
+  // Group messages by user
+  const conversations = Array.isArray(messages)
+    ? Object.values(
+        messages.reduce((acc, msg) => {
+          const userId = msg.user._id;
+          if (!acc[userId]) acc[userId] = { user: msg.user, messages: [] };
+          acc[userId].messages.push(msg);
+          return acc;
+        }, {})
+      )
+    : [];
+
+  // Send reply to user
   const handleReply = async () => {
     if (!reply.trim() || !selected) return;
 
@@ -453,37 +446,22 @@ const Support = () => {
       }
 
       const data = await res.json();
+
+      // Update selected conversation locally
       setSelected((prev) => ({
         ...prev,
         messages: [...prev.messages, data],
       }));
 
+      // Refresh all messages and unread count
       fetchMessages();
       fetchUnreadCount();
+
       setReply("");
     } catch (error) {
       console.error("Reply error:", error);
     }
   };
-
-  // Group messages by user
-  const conversations = Array.isArray(messages)
-    ? Object.values(
-        messages.reduce((acc, msg) => {
-          const userId = msg.user._id;
-          if (!acc[userId]) acc[userId] = { user: msg.user, messages: [] };
-          acc[userId].messages.push(msg);
-          return acc;
-        }, {})
-      )
-    : [];
-
-  useEffect(() => {
-    fetchMessages();
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000); // refresh unread count every 30s
-    return () => clearInterval(interval);
-  }, [token, API_URL]);
 
   return (
     <div className="support-container">
@@ -506,8 +484,8 @@ const Support = () => {
                   key={conv.user._id}
                   className={`support-item ${
                     selected?.user._id === conv.user._id ? "active" : ""
-                  } ${unreadMsgs > 0 ? "unread" : ""}`}
-                  onClick={() => handleSelect(conv)}
+                  }`}
+                  onClick={() => setSelected(conv)}
                 >
                   <div className="support-item-top">
                     <strong>{conv.user.email}</strong>
@@ -521,7 +499,9 @@ const Support = () => {
                     </span>
                   </div>
                   <p>{lastMsg?.message || ""}</p>
-                  {unreadMsgs > 0 && <span className="unread-badge">{unreadMsgs}</span>}
+                  {unreadMsgs > 0 && (
+                    <span className="unread-badge">{unreadMsgs}</span>
+                  )}
                 </div>
               );
             })
@@ -574,5 +554,3 @@ const Support = () => {
 };
 
 export default Support;
-
-
