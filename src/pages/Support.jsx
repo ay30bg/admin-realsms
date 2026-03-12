@@ -115,7 +115,7 @@
 
 // export default Support;
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "../styles/support.css";
 
@@ -128,9 +128,9 @@ const Support = () => {
   const token = localStorage.getItem("adminToken");
 
   /* ================================
-      GET ALL ADMIN MESSAGES
+      FETCH ALL ADMIN MESSAGES
   =================================*/
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/support/admin", {
         headers: { Authorization: `Bearer ${token}` },
@@ -138,24 +138,29 @@ const Support = () => {
 
       setMessages(data);
     } catch (error) {
-      console.error(error);
+      console.error("Fetch messages error:", error);
     }
-  };
+  }, [token]);
 
   /* ================================
       GROUP CONVERSATIONS BY USER
   =================================*/
   const groupedUsers = Object.values(
     messages.reduce((acc, msg) => {
-      if (!acc[msg.user._id]) {
-        acc[msg.user._id] = {
-          userId: msg.user._id,
+      const id = msg.user?._id;
+
+      if (!id) return acc;
+
+      if (!acc[id]) {
+        acc[id] = {
+          userId: id,
           email: msg.user.email,
           lastMessage: msg.message,
           unread: msg.sender === "user" && !msg.read,
           time: msg.createdAt,
         };
       }
+
       return acc;
     }, {})
   );
@@ -167,7 +172,7 @@ const Support = () => {
     setSelectedUser(user);
 
     const userChat = messages
-      .filter((msg) => msg.user._id === user.userId)
+      .filter((msg) => msg.user?._id === user.userId)
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     setChat(userChat);
@@ -176,17 +181,19 @@ const Support = () => {
       await axios.put(
         `/api/support/admin/read/${user.userId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       fetchMessages();
     } catch (error) {
-      console.error(error);
+      console.error("Mark read error:", error);
     }
   };
 
   /* ================================
-      SEND REPLY
+      SEND ADMIN REPLY
   =================================*/
   const sendReply = async () => {
     if (!reply.trim()) return;
@@ -198,20 +205,26 @@ const Support = () => {
           userId: selectedUser.userId,
           message: reply,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       setReply("");
-      fetchMessages();
+
+      await fetchMessages();
       openChat(selectedUser);
     } catch (error) {
-      console.error(error);
+      console.error("Reply error:", error);
     }
   };
 
+  /* ================================
+      INITIAL LOAD
+  =================================*/
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [fetchMessages]);
 
   return (
     <div className="support-container">
@@ -226,6 +239,12 @@ const Support = () => {
         </div>
 
         <div className="message-list">
+          {groupedUsers.length === 0 && (
+            <div className="no-message">
+              No support messages
+            </div>
+          )}
+
           {groupedUsers.map((user) => (
             <div
               key={user.userId}
@@ -258,6 +277,7 @@ const Support = () => {
       >
         {selectedUser ? (
           <>
+            {/* HEADER */}
             <div className="chat-header">
               <button
                 className="back-btn"
@@ -288,12 +308,14 @@ const Support = () => {
               ))}
             </div>
 
-            {/* REPLY */}
+            {/* REPLY BOX */}
             <div className="chat-reply">
               <textarea
                 placeholder="Type your reply..."
                 value={reply}
-                onChange={(e) => setReply(e.target.value)}
+                onChange={(e) =>
+                  setReply(e.target.value)
+                }
               />
 
               <button onClick={sendReply}>
@@ -312,3 +334,4 @@ const Support = () => {
 };
 
 export default Support;
+
