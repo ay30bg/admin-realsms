@@ -1,45 +1,224 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import "../styles/support.css";
+
+// const dummyMessages = [
+//   {
+//     id: 1,
+//     user: "user1@email.com",
+//     subject: "Payment not reflecting",
+//     message: "I paid but my wallet was not credited.",
+//     status: "UNREAD",
+//     time: "2 mins ago",
+//   },
+//   {
+//     id: 2,
+//     user: "user2@email.com",
+//     subject: "Order delay",
+//     message: "My SMS order is still pending.",
+//     status: "READ",
+//     time: "1 hour ago",
+//   },
+// ];
+
+// const Support = () => {
+//   const [selected, setSelected] = useState(null);
+//   const [reply, setReply] = useState("");
+
+//   const handleSelect = (msg) => {
+//     setSelected(msg);
+//   };
+
+//   const handleReply = () => {
+//     if (!reply.trim()) return alert("Reply cannot be empty");
+//     alert("Reply sent successfully!");
+//     setReply("");
+//   };
+
+//   return (
+//     <div className="support-container">
+//       {/* Sidebar */}
+//       <div
+//         className={`support-sidebar ${
+//           selected ? "mobile-hide" : ""
+//         }`}
+//       >
+//         <div className="sidebar-header">
+//           <h2>Support Inbox</h2>
+//         </div>
+
+//         <div className="message-list">
+//           {dummyMessages.map((msg) => (
+//             <div
+//               key={msg.id}
+//               className={`support-item ${
+//                 selected?.id === msg.id ? "active" : ""
+//               } ${msg.status === "UNREAD" ? "unread" : ""}`}
+//               onClick={() => handleSelect(msg)}
+//             >
+//               <div className="support-item-top">
+//                 <strong>{msg.user}</strong>
+//                 <span>{msg.time}</span>
+//               </div>
+//               <p>{msg.subject}</p>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Chat */}
+//       <div
+//         className={`support-chat ${
+//           selected ? "mobile-show" : ""
+//         }`}
+//       >
+//         {selected ? (
+//           <>
+//             <div className="chat-header">
+//               <button
+//                 className="back-btn"
+//                 onClick={() => setSelected(null)}
+//               >
+//                 ←
+//               </button>
+
+//               <div>
+//                 <h3>{selected.subject}</h3>
+//                 <p>{selected.user}</p>
+//               </div>
+//             </div>
+
+//             <div className="chat-body">
+//               <div className="message-bubble user-message">
+//                 {selected.message}
+//               </div>
+//             </div>
+
+//             <div className="chat-reply">
+//               <textarea
+//                 placeholder="Type your reply..."
+//                 value={reply}
+//                 onChange={(e) => setReply(e.target.value)}
+//               />
+//               <button onClick={handleReply}>Send Reply</button>
+//             </div>
+//           </>
+//         ) : (
+//           <div className="no-message">
+//             Select a conversation to view
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+
+// export default Support;
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "../styles/support.css";
 
-const dummyMessages = [
-  {
-    id: 1,
-    user: "user1@email.com",
-    subject: "Payment not reflecting",
-    message: "I paid but my wallet was not credited.",
-    status: "UNREAD",
-    time: "2 mins ago",
-  },
-  {
-    id: 2,
-    user: "user2@email.com",
-    subject: "Order delay",
-    message: "My SMS order is still pending.",
-    status: "READ",
-    time: "1 hour ago",
-  },
-];
-
 const Support = () => {
-  const [selected, setSelected] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [chat, setChat] = useState([]);
   const [reply, setReply] = useState("");
 
-  const handleSelect = (msg) => {
-    setSelected(msg);
+  const token = localStorage.getItem("adminToken");
+
+  /* ================================
+      GET ALL ADMIN MESSAGES
+  =================================*/
+  const fetchMessages = async () => {
+    try {
+      const { data } = await axios.get("/api/support/admin", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setMessages(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleReply = () => {
-    if (!reply.trim()) return alert("Reply cannot be empty");
-    alert("Reply sent successfully!");
-    setReply("");
+  /* ================================
+      GROUP CONVERSATIONS BY USER
+  =================================*/
+  const groupedUsers = Object.values(
+    messages.reduce((acc, msg) => {
+      if (!acc[msg.user._id]) {
+        acc[msg.user._id] = {
+          userId: msg.user._id,
+          email: msg.user.email,
+          lastMessage: msg.message,
+          unread: msg.sender === "user" && !msg.read,
+          time: msg.createdAt,
+        };
+      }
+      return acc;
+    }, {})
+  );
+
+  /* ================================
+      OPEN CHAT
+  =================================*/
+  const openChat = async (user) => {
+    setSelectedUser(user);
+
+    const userChat = messages
+      .filter((msg) => msg.user._id === user.userId)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+    setChat(userChat);
+
+    try {
+      await axios.put(
+        `/api/support/admin/read/${user.userId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      fetchMessages();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  /* ================================
+      SEND REPLY
+  =================================*/
+  const sendReply = async () => {
+    if (!reply.trim()) return;
+
+    try {
+      await axios.post(
+        "/api/support/reply",
+        {
+          userId: selectedUser.userId,
+          message: reply,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setReply("");
+      fetchMessages();
+      openChat(selectedUser);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   return (
     <div className="support-container">
-      {/* Sidebar */}
+      {/* ================= SIDEBAR ================= */}
       <div
         className={`support-sidebar ${
-          selected ? "mobile-hide" : ""
+          selectedUser ? "mobile-hide" : ""
         }`}
       >
         <div className="sidebar-header">
@@ -47,59 +226,79 @@ const Support = () => {
         </div>
 
         <div className="message-list">
-          {dummyMessages.map((msg) => (
+          {groupedUsers.map((user) => (
             <div
-              key={msg.id}
+              key={user.userId}
               className={`support-item ${
-                selected?.id === msg.id ? "active" : ""
-              } ${msg.status === "UNREAD" ? "unread" : ""}`}
-              onClick={() => handleSelect(msg)}
+                selectedUser?.userId === user.userId
+                  ? "active"
+                  : ""
+              } ${user.unread ? "unread" : ""}`}
+              onClick={() => openChat(user)}
             >
               <div className="support-item-top">
-                <strong>{msg.user}</strong>
-                <span>{msg.time}</span>
+                <strong>{user.email}</strong>
               </div>
-              <p>{msg.subject}</p>
+
+              <p>{user.lastMessage}</p>
+
+              {user.unread && (
+                <span className="unread-dot"></span>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Chat */}
+      {/* ================= CHAT ================= */}
       <div
         className={`support-chat ${
-          selected ? "mobile-show" : ""
+          selectedUser ? "mobile-show" : ""
         }`}
       >
-        {selected ? (
+        {selectedUser ? (
           <>
             <div className="chat-header">
               <button
                 className="back-btn"
-                onClick={() => setSelected(null)}
+                onClick={() => setSelectedUser(null)}
               >
                 ←
               </button>
 
               <div>
-                <h3>{selected.subject}</h3>
-                <p>{selected.user}</p>
+                <h3>{selectedUser.email}</h3>
+                <p>Customer Support</p>
               </div>
             </div>
 
+            {/* CHAT BODY */}
             <div className="chat-body">
-              <div className="message-bubble user-message">
-                {selected.message}
-              </div>
+              {chat.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`message-bubble ${
+                    msg.sender === "admin"
+                      ? "admin-message"
+                      : "user-message"
+                  }`}
+                >
+                  {msg.message}
+                </div>
+              ))}
             </div>
 
+            {/* REPLY */}
             <div className="chat-reply">
               <textarea
                 placeholder="Type your reply..."
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
               />
-              <button onClick={handleReply}>Send Reply</button>
+
+              <button onClick={sendReply}>
+                Send Reply
+              </button>
             </div>
           </>
         ) : (
@@ -111,6 +310,5 @@ const Support = () => {
     </div>
   );
 };
-
 
 export default Support;
