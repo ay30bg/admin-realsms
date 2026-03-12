@@ -356,19 +356,28 @@ const Support = () => {
   const [chat, setChat] = useState([]);
   const [reply, setReply] = useState("");
 
+  // ============================
+  // Get admin token safely
+  // ============================
   const token = localStorage.getItem("adminToken");
 
   // ================================
   // FETCH ALL MESSAGES FOR ADMIN
   // ================================
   const fetchMessages = useCallback(async () => {
+    if (!token) {
+      console.error("No admin token found. Please log in.");
+      return;
+    }
+
     try {
       const res = await axios.get(
         `${process.env.REACT_APP_API_URL}/api/support/admin`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
-      // messages should be an array
       const data = Array.isArray(res.data) ? res.data : [];
       setMessages(data);
     } catch (error) {
@@ -382,7 +391,7 @@ const Support = () => {
   // ================================
   const groupedUsers = Object.values(
     (Array.isArray(messages) ? messages : []).reduce((acc, msg) => {
-      const userId = msg.user?._id; // populated from backend
+      const userId = msg.user?._id;
       if (!userId) return acc;
 
       if (!acc[userId]) {
@@ -409,9 +418,11 @@ const Support = () => {
   // ================================
   const openChat = (user) => {
     setSelectedUser(user);
+
     const userChat = messages
       .filter((msg) => msg.user?._id === user.userId)
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
     setChat(userChat);
   };
 
