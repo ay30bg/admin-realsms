@@ -1,96 +1,283 @@
-// // import React, { useState } from "react";
+// // // import React, { useState } from "react";
+// // // import "../styles/support.css";
+
+// // // const dummyMessages = [
+// // //   {
+// // //     id: 1,
+// // //     user: "user1@email.com",
+// // //     subject: "Payment not reflecting",
+// // //     message: "I paid but my wallet was not credited.",
+// // //     status: "UNREAD",
+// // //     time: "2 mins ago",
+// // //   },
+// // //   {
+// // //     id: 2,
+// // //     user: "user2@email.com",
+// // //     subject: "Order delay",
+// // //     message: "My SMS order is still pending.",
+// // //     status: "READ",
+// // //     time: "1 hour ago",
+// // //   },
+// // // ];
+
+// // // const Support = () => {
+// // //   const [selected, setSelected] = useState(null);
+// // //   const [reply, setReply] = useState("");
+
+// // //   const handleSelect = (msg) => {
+// // //     setSelected(msg);
+// // //   };
+
+// // //   const handleReply = () => {
+// // //     if (!reply.trim()) return alert("Reply cannot be empty");
+// // //     alert("Reply sent successfully!");
+// // //     setReply("");
+// // //   };
+
+// // //   return (
+// // //     <div className="support-container">
+// // //       {/* Sidebar */}
+// // //       <div
+// // //         className={`support-sidebar ${
+// // //           selected ? "mobile-hide" : ""
+// // //         }`}
+// // //       >
+// // //         <div className="sidebar-header">
+// // //           <h2>Support Inbox</h2>
+// // //         </div>
+
+// // //         <div className="message-list">
+// // //           {dummyMessages.map((msg) => (
+// // //             <div
+// // //               key={msg.id}
+// // //               className={`support-item ${
+// // //                 selected?.id === msg.id ? "active" : ""
+// // //               } ${msg.status === "UNREAD" ? "unread" : ""}`}
+// // //               onClick={() => handleSelect(msg)}
+// // //             >
+// // //               <div className="support-item-top">
+// // //                 <strong>{msg.user}</strong>
+// // //                 <span>{msg.time}</span>
+// // //               </div>
+// // //               <p>{msg.subject}</p>
+// // //             </div>
+// // //           ))}
+// // //         </div>
+// // //       </div>
+
+// // //       {/* Chat */}
+// // //       <div
+// // //         className={`support-chat ${
+// // //           selected ? "mobile-show" : ""
+// // //         }`}
+// // //       >
+// // //         {selected ? (
+// // //           <>
+// // //             <div className="chat-header">
+// // //               <button
+// // //                 className="back-btn"
+// // //                 onClick={() => setSelected(null)}
+// // //               >
+// // //                 ←
+// // //               </button>
+
+// // //               <div>
+// // //                 <h3>{selected.subject}</h3>
+// // //                 <p>{selected.user}</p>
+// // //               </div>
+// // //             </div>
+
+// // //             <div className="chat-body">
+// // //               <div className="message-bubble user-message">
+// // //                 {selected.message}
+// // //               </div>
+// // //             </div>
+
+// // //             <div className="chat-reply">
+// // //               <textarea
+// // //                 placeholder="Type your reply..."
+// // //                 value={reply}
+// // //                 onChange={(e) => setReply(e.target.value)}
+// // //               />
+// // //               <button onClick={handleReply}>Send Reply</button>
+// // //             </div>
+// // //           </>
+// // //         ) : (
+// // //           <div className="no-message">
+// // //             Select a conversation to view
+// // //           </div>
+// // //         )}
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // };
+
+
+// // // export default Support;
+
+
+
+// //   import React, { useState, useEffect } from "react";
 // // import "../styles/support.css";
 
-// // const dummyMessages = [
-// //   {
-// //     id: 1,
-// //     user: "user1@email.com",
-// //     subject: "Payment not reflecting",
-// //     message: "I paid but my wallet was not credited.",
-// //     status: "UNREAD",
-// //     time: "2 mins ago",
-// //   },
-// //   {
-// //     id: 2,
-// //     user: "user2@email.com",
-// //     subject: "Order delay",
-// //     message: "My SMS order is still pending.",
-// //     status: "READ",
-// //     time: "1 hour ago",
-// //   },
-// // ];
-
 // // const Support = () => {
+// //   const [messages, setMessages] = useState([]);
 // //   const [selected, setSelected] = useState(null);
 // //   const [reply, setReply] = useState("");
 
-// //   const handleSelect = (msg) => {
-// //     setSelected(msg);
-// //   };
+// //   const token = localStorage.getItem("adminToken");
+// //   const API_URL = process.env.REACT_APP_API_URL;
 
-// //   const handleReply = () => {
-// //     if (!reply.trim()) return alert("Reply cannot be empty");
-// //     alert("Reply sent successfully!");
-// //     setReply("");
+// //   // Fetch all conversations
+// //   useEffect(() => {
+// //     const fetchMessages = async () => {
+// //       try {
+// //         const res = await fetch(`${API_URL}/api/admin`, {
+// //           headers: {
+// //             Authorization: `Bearer ${token}`,
+// //           },
+// //         });
+
+// //         if (!res.ok) {
+// //           console.error("Failed to fetch support messages:", res.status);
+// //           setMessages([]); // Prevent .reduce crash
+// //           return;
+// //         }
+
+// //         const data = await res.json();
+
+// //         if (!Array.isArray(data)) {
+// //           console.error("Expected array from server but got:", data);
+// //           setMessages([]);
+// //           return;
+// //         }
+
+// //         setMessages(data);
+// //       } catch (error) {
+// //         console.error("Error fetching support messages:", error);
+// //         setMessages([]);
+// //       }
+// //     };
+
+// //     fetchMessages();
+// //   }, [token, API_URL]);
+
+// //   // Group conversations by user
+// //   const conversations = Array.isArray(messages)
+// //     ? Object.values(
+// //         messages.reduce((acc, msg) => {
+// //           const userId = msg.user._id;
+// //           if (!acc[userId]) acc[userId] = { user: msg.user, messages: [] };
+// //           acc[userId].messages.push(msg);
+// //           return acc;
+// //         }, {})
+// //       )
+// //     : [];
+
+// //   // Send reply to user
+// //   const handleReply = async () => {
+// //     if (!reply.trim() || !selected) return;
+
+// //     try {
+// //       const res = await fetch(`${API_URL}/api/support/reply`, {
+// //         method: "POST",
+// //         headers: {
+// //           "Content-Type": "application/json",
+// //           Authorization: `Bearer ${token}`,
+// //         },
+// //         body: JSON.stringify({
+// //           userId: selected.user._id,
+// //           message: reply,
+// //         }),
+// //       });
+
+// //       if (!res.ok) {
+// //         console.error("Failed to send reply:", res.status);
+// //         return;
+// //       }
+
+// //       const data = await res.json();
+
+// //       // Update selected conversation
+// //       setSelected((prev) => ({
+// //         ...prev,
+// //         messages: [...prev.messages, data],
+// //       }));
+
+// //       setReply("");
+// //     } catch (error) {
+// //       console.error("Reply error:", error);
+// //     }
 // //   };
 
 // //   return (
 // //     <div className="support-container">
 // //       {/* Sidebar */}
-// //       <div
-// //         className={`support-sidebar ${
-// //           selected ? "mobile-hide" : ""
-// //         }`}
-// //       >
+// //       <div className={`support-sidebar ${selected ? "mobile-hide" : ""}`}>
 // //         <div className="sidebar-header">
 // //           <h2>Support Inbox</h2>
 // //         </div>
 
 // //         <div className="message-list">
-// //           {dummyMessages.map((msg) => (
-// //             <div
-// //               key={msg.id}
-// //               className={`support-item ${
-// //                 selected?.id === msg.id ? "active" : ""
-// //               } ${msg.status === "UNREAD" ? "unread" : ""}`}
-// //               onClick={() => handleSelect(msg)}
-// //             >
-// //               <div className="support-item-top">
-// //                 <strong>{msg.user}</strong>
-// //                 <span>{msg.time}</span>
-// //               </div>
-// //               <p>{msg.subject}</p>
-// //             </div>
-// //           ))}
+// //           {conversations.length === 0 ? (
+// //             <div className="no-message">No support messages</div>
+// //           ) : (
+// //             conversations.map((conv) => {
+// //               const lastMsg = conv.messages[conv.messages.length - 1];
+// //               return (
+// //                 <div
+// //                   key={conv.user._id}
+// //                   className={`support-item ${
+// //                     selected?.user._id === conv.user._id ? "active" : ""
+// //                   }`}
+// //                   onClick={() => setSelected(conv)}
+// //                 >
+// //                   <div className="support-item-top">
+// //                     <strong>{conv.user.email}</strong>
+// //                     <span>
+// //                       {lastMsg?.createdAt
+// //                         ? new Date(lastMsg.createdAt).toLocaleTimeString([], {
+// //                             hour: "2-digit",
+// //                             minute: "2-digit",
+// //                           })
+// //                         : ""}
+// //                     </span>
+// //                   </div>
+// //                   <p>{lastMsg?.message || ""}</p>
+// //                 </div>
+// //               );
+// //             })
+// //           )}
 // //         </div>
 // //       </div>
 
-// //       {/* Chat */}
-// //       <div
-// //         className={`support-chat ${
-// //           selected ? "mobile-show" : ""
-// //         }`}
-// //       >
+// //       {/* Chat Area */}
+// //       <div className={`support-chat ${selected ? "mobile-show" : ""}`}>
 // //         {selected ? (
 // //           <>
 // //             <div className="chat-header">
-// //               <button
-// //                 className="back-btn"
-// //                 onClick={() => setSelected(null)}
-// //               >
+// //               <button className="back-btn" onClick={() => setSelected(null)}>
 // //                 ←
 // //               </button>
-
 // //               <div>
-// //                 <h3>{selected.subject}</h3>
-// //                 <p>{selected.user}</p>
+// //                 <h3>{selected.user.email}</h3>
+// //                 <p>Customer Support</p>
 // //               </div>
 // //             </div>
 
 // //             <div className="chat-body">
-// //               <div className="message-bubble user-message">
-// //                 {selected.message}
-// //               </div>
+// //               {selected.messages.map((msg) => (
+// //                 <div
+// //                   key={msg._id}
+// //                   className={`message-bubble ${
+// //                     msg.sender === "admin"
+// //                       ? "admin-message"
+// //                       : "user-message"
+// //                   }`}
+// //                 >
+// //                   {msg.message}
+// //                 </div>
+// //               ))}
 // //             </div>
 
 // //             <div className="chat-reply">
@@ -103,66 +290,87 @@
 // //             </div>
 // //           </>
 // //         ) : (
-// //           <div className="no-message">
-// //             Select a conversation to view
-// //           </div>
+// //           <div className="no-message">Select a conversation to view</div>
 // //         )}
 // //       </div>
 // //     </div>
 // //   );
 // // };
 
-
 // // export default Support;
 
 
-
-//   import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react";
 // import "../styles/support.css";
 
 // const Support = () => {
 //   const [messages, setMessages] = useState([]);
+//   const [unreadCount, setUnreadCount] = useState(0);
 //   const [selected, setSelected] = useState(null);
 //   const [reply, setReply] = useState("");
 
 //   const token = localStorage.getItem("adminToken");
 //   const API_URL = process.env.REACT_APP_API_URL;
 
-//   // Fetch all conversations
-//   useEffect(() => {
-//     const fetchMessages = async () => {
-//       try {
-//         const res = await fetch(`${API_URL}/api/admin`, {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
+//   // Fetch all messages
+//   const fetchMessages = async () => {
+//     try {
+//       const res = await fetch(`${API_URL}/api/support/admin`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
 
-//         if (!res.ok) {
-//           console.error("Failed to fetch support messages:", res.status);
-//           setMessages([]); // Prevent .reduce crash
-//           return;
-//         }
-
-//         const data = await res.json();
-
-//         if (!Array.isArray(data)) {
-//           console.error("Expected array from server but got:", data);
-//           setMessages([]);
-//           return;
-//         }
-
-//         setMessages(data);
-//       } catch (error) {
-//         console.error("Error fetching support messages:", error);
+//       if (!res.ok) {
+//         console.error("Failed to fetch support messages:", res.status);
 //         setMessages([]);
+//         return;
 //       }
-//     };
 
+//       const data = await res.json();
+
+//       if (!Array.isArray(data)) {
+//         console.error("Expected array but got:", data);
+//         setMessages([]);
+//         return;
+//       }
+
+//       setMessages(data);
+//     } catch (error) {
+//       console.error("Error fetching support messages:", error);
+//       setMessages([]);
+//     }
+//   };
+
+//   // Fetch unread messages count
+//   const fetchUnreadCount = async () => {
+//     try {
+//       const res = await fetch(`${API_URL}/api/support/admin/unread`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+
+//       if (!res.ok) {
+//         console.error("Failed to fetch unread messages:", res.status);
+//         setUnreadCount(0);
+//         return;
+//       }
+
+//       const data = await res.json();
+//       setUnreadCount(Array.isArray(data) ? data.length : 0);
+//     } catch (error) {
+//       console.error("Error fetching unread messages:", error);
+//       setUnreadCount(0);
+//     }
+//   };
+
+//   useEffect(() => {
 //     fetchMessages();
+//     fetchUnreadCount();
+
+//     // Poll unread count every 30s
+//     const interval = setInterval(fetchUnreadCount, 30000);
+//     return () => clearInterval(interval);
 //   }, [token, API_URL]);
 
-//   // Group conversations by user
+//   // Group messages by user
 //   const conversations = Array.isArray(messages)
 //     ? Object.values(
 //         messages.reduce((acc, msg) => {
@@ -204,6 +412,10 @@
 //         messages: [...prev.messages, data],
 //       }));
 
+//       // Refresh all messages and unread count
+//       fetchMessages();
+//       fetchUnreadCount();
+
 //       setReply("");
 //     } catch (error) {
 //       console.error("Reply error:", error);
@@ -216,6 +428,7 @@
 //       <div className={`support-sidebar ${selected ? "mobile-hide" : ""}`}>
 //         <div className="sidebar-header">
 //           <h2>Support Inbox</h2>
+//           <span className="unread-count">{unreadCount}</span>
 //         </div>
 
 //         <div className="message-list">
@@ -224,6 +437,7 @@
 //           ) : (
 //             conversations.map((conv) => {
 //               const lastMsg = conv.messages[conv.messages.length - 1];
+//               const unreadMsgs = conv.messages.filter((m) => !m.read).length;
 //               return (
 //                 <div
 //                   key={conv.user._id}
@@ -244,6 +458,7 @@
 //                     </span>
 //                   </div>
 //                   <p>{lastMsg?.message || ""}</p>
+//                   {unreadMsgs > 0 && <span className="unread-badge">{unreadMsgs}</span>}
 //                 </div>
 //               );
 //             })
@@ -270,9 +485,7 @@
 //                 <div
 //                   key={msg._id}
 //                   className={`message-bubble ${
-//                     msg.sender === "admin"
-//                       ? "admin-message"
-//                       : "user-message"
+//                     msg.sender === "admin" ? "admin-message" : "user-message"
 //                   }`}
 //                 >
 //                   {msg.message}
@@ -299,8 +512,7 @@
 
 // export default Support;
 
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/support.css";
 
 const Support = () => {
@@ -309,55 +521,56 @@ const Support = () => {
   const [selected, setSelected] = useState(null);
   const [reply, setReply] = useState("");
 
+  const chatRef = useRef(null);
+
   const token = localStorage.getItem("adminToken");
   const API_URL = process.env.REACT_APP_API_URL;
 
-  // Fetch all messages
+  // FETCH ALL MESSAGES
   const fetchMessages = async () => {
     try {
       const res = await fetch(`${API_URL}/api/support/admin`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        console.error("Failed to fetch support messages:", res.status);
-        setMessages([]);
-        return;
-      }
+      if (!res.ok) throw new Error("Failed to fetch messages");
 
       const data = await res.json();
-
-      if (!Array.isArray(data)) {
-        console.error("Expected array but got:", data);
-        setMessages([]);
-        return;
-      }
-
-      setMessages(data);
+      setMessages(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching support messages:", error);
       setMessages([]);
     }
   };
 
-  // Fetch unread messages count
+  // FETCH UNREAD COUNT
   const fetchUnreadCount = async () => {
     try {
       const res = await fetch(`${API_URL}/api/support/admin/unread`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        console.error("Failed to fetch unread messages:", res.status);
-        setUnreadCount(0);
-        return;
-      }
+      if (!res.ok) throw new Error("Unread fetch failed");
 
       const data = await res.json();
       setUnreadCount(Array.isArray(data) ? data.length : 0);
     } catch (error) {
-      console.error("Error fetching unread messages:", error);
+      console.error("Unread count error:", error);
       setUnreadCount(0);
+    }
+  };
+
+  // MARK AS READ
+  const markAsRead = async (userId) => {
+    try {
+      await fetch(`${API_URL}/api/support/admin/read/${userId}`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      fetchUnreadCount();
+    } catch (error) {
+      console.error("Read update error:", error);
     }
   };
 
@@ -365,24 +578,47 @@ const Support = () => {
     fetchMessages();
     fetchUnreadCount();
 
-    // Poll unread count every 30s
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const interval = setInterval(() => {
+      fetchMessages();
+      fetchUnreadCount();
+    }, 10000);
+
     return () => clearInterval(interval);
-  }, [token, API_URL]);
+  }, []);
 
-  // Group messages by user
-  const conversations = Array.isArray(messages)
-    ? Object.values(
-        messages.reduce((acc, msg) => {
-          const userId = msg.user._id;
-          if (!acc[userId]) acc[userId] = { user: msg.user, messages: [] };
-          acc[userId].messages.push(msg);
-          return acc;
-        }, {})
-      )
-    : [];
+  // AUTO SCROLL CHAT
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [selected]);
 
-  // Send reply to user
+  // GROUP BY USER
+  const conversations = Object.values(
+    messages.reduce((acc, msg) => {
+      if (!msg.user) return acc;
+
+      const userId = msg.user._id;
+
+      if (!acc[userId]) {
+        acc[userId] = {
+          user: msg.user,
+          messages: [],
+        };
+      }
+
+      acc[userId].messages.push(msg);
+      return acc;
+    }, {})
+  );
+
+  // SELECT CONVERSATION
+  const openConversation = (conv) => {
+    setSelected(conv);
+    markAsRead(conv.user._id);
+  };
+
+  // SEND REPLY
   const handleReply = async () => {
     if (!reply.trim() || !selected) return;
 
@@ -399,24 +635,19 @@ const Support = () => {
         }),
       });
 
-      if (!res.ok) {
-        console.error("Failed to send reply:", res.status);
-        return;
-      }
+      if (!res.ok) throw new Error("Reply failed");
 
       const data = await res.json();
 
-      // Update selected conversation
       setSelected((prev) => ({
         ...prev,
         messages: [...prev.messages, data],
       }));
 
-      // Refresh all messages and unread count
+      setReply("");
+
       fetchMessages();
       fetchUnreadCount();
-
-      setReply("");
     } catch (error) {
       console.error("Reply error:", error);
     }
@@ -424,7 +655,8 @@ const Support = () => {
 
   return (
     <div className="support-container">
-      {/* Sidebar */}
+
+      {/* SIDEBAR */}
       <div className={`support-sidebar ${selected ? "mobile-hide" : ""}`}>
         <div className="sidebar-header">
           <h2>Support Inbox</h2>
@@ -437,17 +669,21 @@ const Support = () => {
           ) : (
             conversations.map((conv) => {
               const lastMsg = conv.messages[conv.messages.length - 1];
-              const unreadMsgs = conv.messages.filter((m) => !m.read).length;
+              const unreadMsgs = conv.messages.filter(
+                (m) => m.sender === "user" && !m.read
+              ).length;
+
               return (
                 <div
                   key={conv.user._id}
                   className={`support-item ${
-                    selected?.user._id === conv.user._id ? "active" : ""
+                    selected?.user?._id === conv.user._id ? "active" : ""
                   }`}
-                  onClick={() => setSelected(conv)}
+                  onClick={() => openConversation(conv)}
                 >
                   <div className="support-item-top">
                     <strong>{conv.user.email}</strong>
+
                     <span>
                       {lastMsg?.createdAt
                         ? new Date(lastMsg.createdAt).toLocaleTimeString([], {
@@ -457,8 +693,12 @@ const Support = () => {
                         : ""}
                     </span>
                   </div>
-                  <p>{lastMsg?.message || ""}</p>
-                  {unreadMsgs > 0 && <span className="unread-badge">{unreadMsgs}</span>}
+
+                  <p>{lastMsg?.message}</p>
+
+                  {unreadMsgs > 0 && (
+                    <span className="unread-badge">{unreadMsgs}</span>
+                  )}
                 </div>
               );
             })
@@ -466,7 +706,7 @@ const Support = () => {
         </div>
       </div>
 
-      {/* Chat Area */}
+      {/* CHAT AREA */}
       <div className={`support-chat ${selected ? "mobile-show" : ""}`}>
         {selected ? (
           <>
@@ -474,18 +714,21 @@ const Support = () => {
               <button className="back-btn" onClick={() => setSelected(null)}>
                 ←
               </button>
+
               <div>
                 <h3>{selected.user.email}</h3>
                 <p>Customer Support</p>
               </div>
             </div>
 
-            <div className="chat-body">
+            <div className="chat-body" ref={chatRef}>
               {selected.messages.map((msg) => (
                 <div
                   key={msg._id}
                   className={`message-bubble ${
-                    msg.sender === "admin" ? "admin-message" : "user-message"
+                    msg.sender === "admin"
+                      ? "admin-message"
+                      : "user-message"
                   }`}
                 >
                   {msg.message}
@@ -499,6 +742,7 @@ const Support = () => {
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
               />
+
               <button onClick={handleReply}>Send Reply</button>
             </div>
           </>
