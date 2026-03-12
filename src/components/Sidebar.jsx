@@ -144,7 +144,7 @@
 
 // export default Sidebar;
 
-```javascript
+
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -315,4 +315,5 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 export default Sidebar;
-```
+
+
