@@ -45,7 +45,7 @@
 
 //   /* ================= CONFIRM TRANSACTION ================= */
 //   const handleConfirm = async (id) => {
-//     if (!window.confirm(`Confirm this transaction?`)) return;
+//     if (!window.confirm("Confirm this transaction?")) return;
 
 //     try {
 //       const res = await fetch(
@@ -60,7 +60,12 @@
 
 //       const result = await res.json();
 //       if (result.success) {
-//         fetchTransactions();
+//         // Update the status locally without refetching all transactions
+//         setTransactions((prev) =>
+//           prev.map((t) =>
+//             t._id === id ? { ...t, status: "SUCCESS" } : t
+//           )
+//         );
 //       } else {
 //         alert(result.message || "Failed to confirm transaction");
 //       }
@@ -222,7 +227,6 @@
 
 // export default Transactions;
 
-
 import { useState, useEffect, useCallback } from "react";
 import "../styles/table.css";
 
@@ -296,6 +300,33 @@ const Transactions = () => {
       }
     } catch (error) {
       console.error("Confirm transaction error:", error);
+    }
+  };
+
+  /* ================= DELETE TRANSACTION ================= */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/admin/transactions/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
+
+      const result = await res.json();
+      if (result.success) {
+        // Remove the transaction from local state
+        setTransactions((prev) => prev.filter((t) => t._id !== id));
+      } else {
+        alert(result.message || "Failed to delete transaction");
+      }
+    } catch (error) {
+      console.error("Delete transaction error:", error);
     }
   };
 
@@ -416,6 +447,14 @@ const Transactions = () => {
                         onClick={() => handleConfirm(t._id)}
                       >
                         Confirm
+                      </button>
+                    )}
+                    {t.status === "SUCCESS" && (
+                      <button
+                        className="btn btn-delete"
+                        onClick={() => handleDelete(t._id)}
+                      >
+                        Delete
                       </button>
                     )}
                   </div>
