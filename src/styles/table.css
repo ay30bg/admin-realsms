@@ -400,7 +400,7 @@
   }
 
   .admin-table tbody td::before {
-    content: attr(data-label);
+    content: attr(data-label); 
     position: absolute;
     left: 10px;
     text-align: left;
