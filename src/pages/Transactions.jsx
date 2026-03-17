@@ -1,3 +1,232 @@
+// // import { useState, useEffect, useCallback } from "react";
+// // import "../styles/table.css";
+
+// // const Transactions = () => {
+// //   const [transactions, setTransactions] = useState([]);
+// //   const [search, setSearch] = useState("");
+// //   const [currentPage, setCurrentPage] = useState(1);
+// //   const [totalPages, setTotalPages] = useState(1);
+// //   const [loading, setLoading] = useState(false);
+
+// //   const rowsPerPage = 5;
+
+// //   const getToken = () => localStorage.getItem("adminToken");
+
+// //   /* ================= FETCH TRANSACTIONS ================= */
+// //   const fetchTransactions = useCallback(async () => {
+// //     try {
+// //       setLoading(true);
+
+// //       const res = await fetch(
+// //         `${process.env.REACT_APP_API_URL}/api/admin/transactions?search=${search}&page=${currentPage}&limit=${rowsPerPage}`,
+// //         {
+// //           headers: {
+// //             Authorization: `Bearer ${getToken()}`,
+// //           },
+// //         }
+// //       );
+
+// //       const data = await res.json();
+
+// //       if (data.success) {
+// //         setTransactions(data.data || []);
+// //         setTotalPages(data.totalPages || 1);
+// //       }
+// //     } catch (error) {
+// //       console.error("Fetch transactions error:", error);
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   }, [search, currentPage]);
+
+// //   useEffect(() => {
+// //     fetchTransactions();
+// //   }, [fetchTransactions]);
+
+// //   /* ================= CONFIRM TRANSACTION ================= */
+// //   const handleConfirm = async (id) => {
+// //     if (!window.confirm("Confirm this transaction?")) return;
+
+// //     try {
+// //       const res = await fetch(
+// //         `${process.env.REACT_APP_API_URL}/api/admin/transactions/${id}/confirm`,
+// //         {
+// //           method: "PATCH",
+// //           headers: {
+// //             Authorization: `Bearer ${getToken()}`,
+// //           },
+// //         }
+// //       );
+
+// //       const result = await res.json();
+// //       if (result.success) {
+// //         // Update the status locally without refetching all transactions
+// //         setTransactions((prev) =>
+// //           prev.map((t) =>
+// //             t._id === id ? { ...t, status: "SUCCESS" } : t
+// //           )
+// //         );
+// //       } else {
+// //         alert(result.message || "Failed to confirm transaction");
+// //       }
+// //     } catch (error) {
+// //       console.error("Confirm transaction error:", error);
+// //     }
+// //   };
+
+// //   /* ================= EXPORT CSV ================= */
+// //   const handleExport = () => {
+// //     const csv = [
+// //       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
+// //       ...transactions.map((t) => [
+// //         t.ref,
+// //         t.user,
+// //         `₦${t.amount?.toLocaleString()}`,
+// //         t.status,
+// //         t.method,
+// //         new Date(t.date).toLocaleDateString(),
+// //       ]),
+// //     ]
+// //       .map((row) => row.join(","))
+// //       .join("\n");
+
+// //     const blob = new Blob([csv], {
+// //       type: "text/csv;charset=utf-8;",
+// //     });
+
+// //     const link = document.createElement("a");
+// //     link.href = URL.createObjectURL(blob);
+// //     link.download = "transactions.csv";
+// //     link.click();
+// //   };
+
+// //   return (
+// //     <div className="table-page">
+// //       <h1>Transactions</h1>
+
+// //       {/* Top Controls */}
+// //       <div className="table-controls">
+// //         <input
+// //           type="text"
+// //           className="search-input"
+// //           placeholder="Search by user or reference..."
+// //           value={search}
+// //           onChange={(e) => {
+// //             setSearch(e.target.value);
+// //             setCurrentPage(1);
+// //           }}
+// //         />
+
+// //         <div className="buttons-right">
+// //           <button className="btn btn-export" onClick={handleExport}>
+// //             Export CSV
+// //           </button>
+// //         </div>
+// //       </div>
+
+// //       {/* Table */}
+// //       <table className="admin-table">
+// //         <thead>
+// //           <tr>
+// //             <th>Reference</th>
+// //             <th>User</th>
+// //             <th>Amount</th>
+// //             <th>Status</th>
+// //             <th>Payment Method</th>
+// //             <th>Date</th>
+// //             <th>Actions</th>
+// //           </tr>
+// //         </thead>
+
+// //         <tbody>
+// //           {loading ? (
+// //             <tr>
+// //               <td colSpan="7" style={{ textAlign: "center" }}>
+// //                 Loading...
+// //               </td>
+// //             </tr>
+// //           ) : transactions.length === 0 ? (
+// //             <tr>
+// //               <td colSpan="7" style={{ textAlign: "center" }}>
+// //                 No transactions found
+// //               </td>
+// //             </tr>
+// //           ) : (
+// //             transactions.map((t) => (
+// //               <tr key={t._id}>
+// //                 {/* Truncated Reference */}
+// //                 <td data-label="Reference" title={t.ref}>
+// //                   {t.ref.length > 10 ? t.ref.slice(0, 10) + "..." : t.ref}
+// //                 </td>
+
+// //                 <td data-label="User">{t.user || "Unknown"}</td>
+
+// //                 <td data-label="Amount">₦{t.amount?.toLocaleString()}</td>
+
+// //                 <td data-label="Status">
+// //                   <span
+// //                     className={`status-badge ${
+// //                       t.status === "SUCCESS"
+// //                         ? "active"
+// //                         : t.status === "PENDING"
+// //                         ? "pending"
+// //                         : "failed"
+// //                     }`}
+// //                   >
+// //                     {t.status}
+// //                   </span>
+// //                 </td>
+
+// //                 <td data-label="Payment Method">{t.method}</td>
+
+// //                 <td data-label="Date">
+// //                   {new Date(t.date).toLocaleDateString()}
+// //                 </td>
+
+// //                 <td data-label="Actions">
+// //                   <div className="action-buttons">
+// //                     {t.status === "PENDING" && (
+// //                       <button
+// //                         className="btn btn-confirm"
+// //                         onClick={() => handleConfirm(t._id)}
+// //                       >
+// //                         Confirm
+// //                       </button>
+// //                     )}
+// //                   </div>
+// //                 </td>
+// //               </tr>
+// //             ))
+// //           )}
+// //         </tbody>
+// //       </table>
+
+// //       {/* Pagination */}
+// //       <div className="pagination">
+// //         <button
+// //           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+// //           disabled={currentPage === 1}
+// //         >
+// //           Previous
+// //         </button>
+
+// //         <span className="current-page">{currentPage}</span>
+
+// //         <button
+// //           onClick={() =>
+// //             setCurrentPage((p) => Math.min(totalPages, p + 1))
+// //           }
+// //           disabled={currentPage === totalPages || totalPages === 0}
+// //         >
+// //           Next
+// //         </button>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // export default Transactions;
+
 // import { useState, useEffect, useCallback } from "react";
 // import "../styles/table.css";
 
@@ -71,6 +300,33 @@
 //       }
 //     } catch (error) {
 //       console.error("Confirm transaction error:", error);
+//     }
+//   };
+
+//   /* ================= DELETE TRANSACTION ================= */
+//   const handleDelete = async (id) => {
+//     if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+
+//     try {
+//       const res = await fetch(
+//         `${process.env.REACT_APP_API_URL}/api/admin/transactions/${id}`,
+//         {
+//           method: "DELETE",
+//           headers: {
+//             Authorization: `Bearer ${getToken()}`,
+//           },
+//         }
+//       );
+
+//       const result = await res.json();
+//       if (result.success) {
+//         // Remove the transaction from local state
+//         setTransactions((prev) => prev.filter((t) => t._id !== id));
+//       } else {
+//         alert(result.message || "Failed to delete transaction");
+//       }
+//     } catch (error) {
+//       console.error("Delete transaction error:", error);
 //     }
 //   };
 
@@ -193,6 +449,14 @@
 //                         Confirm
 //                       </button>
 //                     )}
+//                     {t.status === "SUCCESS" && (
+//                       <button
+//                         className="btn btn-delete"
+//                         onClick={() => handleDelete(t._id)}
+//                       >
+//                         Delete
+//                       </button>
+//                     )}
 //                   </div>
 //                 </td>
 //               </tr>
@@ -236,6 +500,7 @@ const Transactions = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null);
 
   const rowsPerPage = 5;
 
@@ -254,6 +519,13 @@ const Transactions = () => {
           },
         }
       );
+
+      if (res.status === 401) {
+        alert("Session expired. Please login again.");
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
 
       const data = await res.json();
 
@@ -277,6 +549,8 @@ const Transactions = () => {
     if (!window.confirm("Confirm this transaction?")) return;
 
     try {
+      setActionLoading(id);
+
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/admin/transactions/${id}/confirm`,
         {
@@ -288,8 +562,8 @@ const Transactions = () => {
       );
 
       const result = await res.json();
+
       if (result.success) {
-        // Update the status locally without refetching all transactions
         setTransactions((prev) =>
           prev.map((t) =>
             t._id === id ? { ...t, status: "SUCCESS" } : t
@@ -300,14 +574,18 @@ const Transactions = () => {
       }
     } catch (error) {
       console.error("Confirm transaction error:", error);
+    } finally {
+      setActionLoading(null);
     }
   };
 
   /* ================= DELETE TRANSACTION ================= */
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+    if (!window.confirm("Delete this transaction permanently?")) return;
 
     try {
+      setActionLoading(id);
+
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/admin/transactions/${id}`,
         {
@@ -319,14 +597,16 @@ const Transactions = () => {
       );
 
       const result = await res.json();
+
       if (result.success) {
-        // Remove the transaction from local state
         setTransactions((prev) => prev.filter((t) => t._id !== id));
       } else {
         alert(result.message || "Failed to delete transaction");
       }
     } catch (error) {
       console.error("Delete transaction error:", error);
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -335,11 +615,11 @@ const Transactions = () => {
     const csv = [
       ["Reference", "User", "Amount", "Status", "Payment Method", "Date"],
       ...transactions.map((t) => [
-        t.ref,
-        t.user,
+        t.ref || "",
+        t.user || "",
         `₦${t.amount?.toLocaleString()}`,
-        t.status,
-        t.method,
+        t.status || "",
+        t.method || "",
         new Date(t.date).toLocaleDateString(),
       ]),
     ]
@@ -410,14 +690,17 @@ const Transactions = () => {
           ) : (
             transactions.map((t) => (
               <tr key={t._id}>
-                {/* Truncated Reference */}
                 <td data-label="Reference" title={t.ref}>
-                  {t.ref.length > 10 ? t.ref.slice(0, 10) + "..." : t.ref}
+                  {t.ref && t.ref.length > 10
+                    ? t.ref.slice(0, 10) + "..."
+                    : t.ref}
                 </td>
 
                 <td data-label="User">{t.user || "Unknown"}</td>
 
-                <td data-label="Amount">₦{t.amount?.toLocaleString()}</td>
+                <td data-label="Amount">
+                  ₦{t.amount?.toLocaleString()}
+                </td>
 
                 <td data-label="Status">
                   <span
@@ -444,17 +727,24 @@ const Transactions = () => {
                     {t.status === "PENDING" && (
                       <button
                         className="btn btn-confirm"
+                        disabled={actionLoading === t._id}
                         onClick={() => handleConfirm(t._id)}
                       >
-                        Confirm
+                        {actionLoading === t._id
+                          ? "Processing..."
+                          : "Confirm"}
                       </button>
                     )}
+
                     {t.status === "SUCCESS" && (
                       <button
                         className="btn btn-delete"
+                        disabled={actionLoading === t._id}
                         onClick={() => handleDelete(t._id)}
                       >
-                        Delete
+                        {actionLoading === t._id
+                          ? "Deleting..."
+                          : "Delete"}
                       </button>
                     )}
                   </div>
@@ -468,7 +758,9 @@ const Transactions = () => {
       {/* Pagination */}
       <div className="pagination">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          onClick={() =>
+            setCurrentPage((p) => Math.max(1, p - 1))
+          }
           disabled={currentPage === 1}
         >
           Previous
@@ -478,7 +770,9 @@ const Transactions = () => {
 
         <button
           onClick={() =>
-            setCurrentPage((p) => Math.min(totalPages, p + 1))
+            setCurrentPage((p) =>
+              Math.min(totalPages, p + 1)
+            )
           }
           disabled={currentPage === totalPages || totalPages === 0}
         >
