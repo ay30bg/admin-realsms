@@ -13,6 +13,10 @@ const Transactions = () => {
 
   const getToken = () => localStorage.getItem("adminToken");
 
+   useEffect(() => {
+    document.title = "Transactions - Admin RealSMS";
+  }, []);
+
   /* ================= FETCH TRANSACTIONS ================= */
   const fetchTransactions = useCallback(async () => {
     try {
