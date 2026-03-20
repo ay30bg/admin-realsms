@@ -11,7 +11,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false); 
 
    useEffect(() => {
-    document.title = "Admin Login - RealSMS";
+    document.title = "Login - Admin RealSMS";
   }, []);
   
   const handleLogin = async (e) => {
