@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import heroImg from "../assets/hero-img.png";
 import logo from "../assets/logo.png";
 import "../styles/auth.css";
