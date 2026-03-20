@@ -11,7 +11,7 @@ const Support = () => {
   const [error, setError] = useState("");
 
    useEffect(() => {
-    document.title = "Login - Admin RealSMS";
+    document.title = "Support - Admin RealSMS";
   }, []);
 
   const API_URL = process.env.REACT_APP_API_URL;
