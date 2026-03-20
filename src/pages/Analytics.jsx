@@ -31,7 +31,7 @@ const Analytics = () => {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    document.title = "Analytics - Admin Dashboard";
+    document.title = "Analytics - Admin RealSMS";
 
     const fetchAnalytics = async () => {
       try {
