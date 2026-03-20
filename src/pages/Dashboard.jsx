@@ -16,7 +16,7 @@ const AdminDashboard = ({ darkMode }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    document.title = "Admin Dashboard";
+    document.title = "Dashboard - Admin RealSMS";
 
     const fetchStats = async () => {
       try {
