@@ -10,6 +10,9 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+   useEffect(() => {
+    document.title = "Admin Login - RealSMS";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
