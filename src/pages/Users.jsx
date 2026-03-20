@@ -13,6 +13,10 @@ const Users = () => {
 
   const getToken = () => localStorage.getItem("adminToken");
 
+   useEffect(() => {
+    document.title = "Users - Admin RealSMS";
+  }, []);
+
   /* ==============================
      FETCH USERS
   ============================== */
