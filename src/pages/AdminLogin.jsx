@@ -12,7 +12,8 @@ const AdminLogin = () => {
 
    useEffect(() => {
     document.title = "Admin Login - RealSMS";
-
+  }, []);
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
