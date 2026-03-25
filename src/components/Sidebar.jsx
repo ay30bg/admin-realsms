@@ -148,6 +148,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <span>Orders</span>
           </NavLink>
 
+         <NavLink to="/admin/orders" onClick={toggleSidebar}>
+            <FiDatabase className="sidebar-icon" />
+            <span>Logs Manager</span>
+          </NavLink>
+          
           <NavLink
             to="/admin/support"
             onClick={toggleSidebar}
@@ -161,11 +166,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 {unreadMessages}
               </span>
             )}
-          </NavLink>
-
-          <NavLink to="/admin/orders" onClick={toggleSidebar}>
-            <FiPlusCircle className="sidebar-icon" />
-            <span>Logs Manager</span>
           </NavLink>
         </nav>
       </aside>
