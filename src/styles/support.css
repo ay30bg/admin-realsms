@@ -92,7 +92,7 @@
   color: #777;
 }
 
-.chat-body {
+/* .chat-body {
   flex: 1;
   padding: 25px;
   overflow-y: auto;
@@ -155,6 +155,83 @@
   margin: auto;
   color: #999;
   font-size: 16px;
+} */
+
+/* ================= CHAT BODY ================= */
+
+.chat-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f5f7fb;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Date divider */
+.chat-date {
+  align-self: center;
+  background: #e5e7eb;
+  color: #555;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin: 15px 0;
+}
+
+/* Message row (controls left/right) */
+.message-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+/* LEFT (User) */
+.message-row.user {
+  justify-content: flex-start;
+}
+
+/* RIGHT (Admin) */
+.message-row.admin {
+  justify-content: flex-end;
+}
+
+/* Bubble base */
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  word-wrap: break-word;
+}
+
+/* USER bubble */
+.message-row.user .message-bubble {
+  background: #e5e7eb;
+  color: #111;
+  border-bottom-left-radius: 4px;
+}
+
+/* ADMIN bubble */
+.message-row.admin .message-bubble {
+  background: #2563eb;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+/* Message text */
+.message-text {
+  line-height: 1.4;
+}
+
+/* Time */
+.message-time {
+  font-size: 11px;
+  opacity: 0.7;
+  align-self: flex-end;
 }
 
 /* ================= RESPONSIVE ================= */
