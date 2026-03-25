@@ -148,7 +148,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <span>Orders</span>
           </NavLink>
 
-         <NavLink to="/admin/orders" onClick={toggleSidebar}>
+         <NavLink to="/admin/logs-manager" onClick={toggleSidebar}>
             <FiDatabase className="sidebar-icon" />
             <span>Logs Manager</span>
           </NavLink>
