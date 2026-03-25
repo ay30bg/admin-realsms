@@ -1,0 +1,46 @@
+.admin-logs {
+  padding: 20px;
+}
+
+.log-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.log-form input,
+.log-form select,
+.log-form textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.log-form textarea {
+  min-height: 80px;
+}
+
+.log-form button {
+  background: #4cafef;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logs-preview {
+  margin-top: 20px;
+}
+
+.log-card {
+  background: #f7f7f7;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.details {
+  font-size: 13px;
+  color: #555;
+}
