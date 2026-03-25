@@ -6,6 +6,7 @@ import {
   FiClock,
   FiPlusCircle,
   FiHeadphones,
+  FiDatabase,
 } from "react-icons/fi";
 import "../styles/sidebar.css";
 import logo from "../assets/logo.png";
@@ -160,6 +161,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 {unreadMessages}
               </span>
             )}
+          </NavLink>
+
+          <NavLink to="/admin/orders" onClick={toggleSidebar}>
+            <FiPlusCircle className="sidebar-icon" />
+            <span>Logs Manager</span>
           </NavLink>
         </nav>
       </aside>
