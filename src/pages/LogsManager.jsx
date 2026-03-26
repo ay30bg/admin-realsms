@@ -1,140 +1,5 @@
-// // import React, { useState } from "react";
-// // import "../styles/logs-manager.css";
-
-// // const AdminLogs = () => {
-// //   const [form, setForm] = useState({
-// //     platform: "",
-// //     name: "",
-// //     price: "",
-// //     stock: "",
-// //     type: "",
-// //     details: "",
-// //   });
-
-// //   const [logs, setLogs] = useState([]);
-
-// //   const handleChange = (e) => {
-// //     setForm({
-// //       ...form,
-// //       [e.target.name]: e.target.value,
-// //     });
-// //   };
-
-// //   const handleAddLog = () => {
-// //     if (!form.platform || !form.name || !form.price || !form.details) {
-// //       alert("Fill all required fields");
-// //       return;
-// //     }
-
-// //     const newLog = {
-// //       id: Date.now(),
-// //       ...form,
-// //     };
-
-// //     setLogs([newLog, ...logs]);
-
-// //     // Reset form
-// //     setForm({
-// //       platform: "",
-// //       name: "",
-// //       price: "",
-// //       stock: "",
-// //       type: "",
-// //       details: "",
-// //     });
-// //   };
-
-// //   return (
-// //     <div className="admin-logs">
-// //       <div className="log-card">
-// //         <h2>Logs Manager</h2>
-
-
-// //         {/* FORM */}
-// //         <div className="log-form">
-// //           <select
-// //             name="platform"
-// //             value={form.platform}
-// //             onChange={handleChange}
-// //           >
-// //             <option value="">Select Platform</option>
-// //             <option value="Instagram">Instagram</option>
-// //             <option value="Facebook">Facebook</option>
-// //             <option value="Twitter">Twitter (X)</option>
-// //             <option value="TikTok">TikTok</option>
-// //           </select>
-
-// //           <input
-// //             type="text"
-// //             name="name"
-// //             placeholder="Product Name (e.g Instagram Aged)"
-// //             value={form.name}
-// //             onChange={handleChange}
-// //           />
-
-// //           <input
-// //             type="number"
-// //             name="price"
-// //             placeholder="Price (₦)"
-// //             value={form.price}
-// //             onChange={handleChange}
-// //           />
-
-// //           <input
-// //             type="number"
-// //             name="stock"
-// //             placeholder="Stock Quantity"
-// //             value={form.stock}
-// //             onChange={handleChange}
-// //           />
-
-// //           <input
-// //             type="text"
-// //             name="type"
-// //             placeholder="Type (Aged / PVA / Verified)"
-// //             value={form.type}
-// //             onChange={handleChange}
-// //           />
-
-// //           <textarea
-// //             name="details"
-// //             placeholder="Account details (user:xxx | pass:xxx)"
-// //             value={form.details}
-// //             onChange={handleChange}
-// //           />
-
-// //           <button onClick={handleAddLog}>
-// //             Upload Log
-// //           </button>
-// //         </div>
-
-// //         {/* PREVIEW LIST */}
-// //         <div className="logs-preview">
-// //           <h3>Uploaded Logs</h3>
-
-// //           {logs.length === 0 ? (
-// //             <p>No logs uploaded yet</p>
-// //           ) : (
-// //             logs.map((log) => (
-// //               <div key={log.id} className="log-card">
-// //                 <p><strong>{log.name}</strong></p>
-// //                 <p>{log.platform}</p>
-// //                 <p>₦{log.price}</p>
-// //                 <p>Stock: {log.stock}</p>
-// //                 <p className="details">{log.details}</p>
-// //               </div>
-// //             ))
-// //           )}
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default AdminLogs;
-
 // import React, { useState } from "react";
-// import "../styles/table.css"; // ✅ reuse same table styles
+// import "../styles/table.css";
 
 // const AdminLogs = () => {
 //   const [form, setForm] = useState({
@@ -173,6 +38,7 @@
 
 //     setLogs([newLog, ...logs]);
 
+//     // Reset form
 //     setForm({
 //       platform: "",
 //       name: "",
@@ -183,12 +49,16 @@
 //     });
 //   };
 
+//   const handleCopy = (text) => {
+//     navigator.clipboard.writeText(text);
+//   };
+
 //   return (
 //     <div className="table-page">
 //       <h1>Logs Manager</h1>
 
 //       {/* FORM CONTROLS */}
-//       <div className="table-controls" style={{ flexWrap: "wrap", gap: "10px" }}>
+//       <div className="logs-table-controls">
 //         <select name="platform" value={form.platform} onChange={handleChange}>
 //           <option value="">Platform</option>
 //           <option value="Instagram">Instagram</option>
@@ -208,7 +78,7 @@
 //         <input
 //           type="number"
 //           name="price"
-//           placeholder="Price"
+//           placeholder="Price (₦)"
 //           value={form.price}
 //           onChange={handleChange}
 //         />
@@ -224,12 +94,20 @@
 //         <input
 //           type="text"
 //           name="type"
-//           placeholder="Type"
+//           placeholder="Type (Aged / PVA / Verified)"
 //           value={form.type}
 //           onChange={handleChange}
 //         />
 
-//         <button className="btn btn-export" onClick={handleAddLog}>
+//         <input
+//           type="text"
+//           name="details"
+//           placeholder="username:xxx | password:xxx"
+//           value={form.details}
+//           onChange={handleChange}
+//         />
+
+//         <button className="logs-btn" onClick={handleAddLog}>
 //           Upload
 //         </button>
 //       </div>
@@ -274,9 +152,17 @@
 //                   </span>
 //                 </td>
 
-//                 <td data-label="Details" style={{ maxWidth: "200px" }}>
-//                   <div className="truncate">
-//                     {formatValue(log.details)}
+//                 <td data-label="Details">
+//                   <div className="details-cell">
+//                     <span className="truncate">
+//                       {formatValue(log.details)}
+//                     </span>
+//                     <button
+//                       className="copy-btn"
+//                       onClick={() => handleCopy(log.details)}
+//                     >
+//                       Copy
+//                     </button>
 //                   </div>
 //                 </td>
 
@@ -321,7 +207,13 @@ const AdminLogs = () => {
   };
 
   const handleAddLog = () => {
-    if (!form.platform || !form.name || !form.price || !form.details) {
+    if (
+      !form.platform ||
+      !form.name ||
+      !form.price ||
+      !form.details ||
+      !form.type
+    ) {
       alert("Fill all required fields");
       return;
     }
@@ -334,7 +226,6 @@ const AdminLogs = () => {
 
     setLogs([newLog, ...logs]);
 
-    // Reset form
     setForm({
       platform: "",
       name: "",
@@ -387,13 +278,13 @@ const AdminLogs = () => {
           onChange={handleChange}
         />
 
-        <input
-          type="text"
-          name="type"
-          placeholder="Type (Aged / PVA / Verified)"
-          value={form.type}
-          onChange={handleChange}
-        />
+        {/* ✅ TYPE DROPDOWN */}
+        <select name="type" value={form.type} onChange={handleChange}>
+          <option value="">Type</option>
+          <option value="Aged">Aged</option>
+          <option value="PVA">PVA</option>
+          <option value="Verified">Verified</option>
+        </select>
 
         <input
           type="text"
@@ -442,8 +333,11 @@ const AdminLogs = () => {
 
                 <td data-label="Stock">{formatValue(log.stock)}</td>
 
+                {/* ✅ COLORED TYPE BADGE */}
                 <td data-label="Type">
-                  <span className="status-badge">
+                  <span
+                    className={`status-badge ${log.type?.toLowerCase()}`}
+                  >
                     {formatValue(log.type)}
                   </span>
                 </td>
