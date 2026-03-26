@@ -421,7 +421,7 @@
 /* =========================
    BUTTON (PRIMARY ACTION)
 ========================= */
-.table-controls .btn {
+.logs-table-controls .logs-btn {
   height: 42px;
   padding: 0 18px;
   border-radius: 10px;
@@ -438,18 +438,18 @@
 }
 
 /* Hover */
-.table-controls .btn:hover {
+.logs-table-controls .logs-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25);
 }
 
 /* Click */
-.table-controls .btn:active {
+.logs-table-controls .logs-btn:active {
   transform: scale(0.98);
 }
 
 /* Disabled */
-.table-controls .btn:disabled {
+.logs-table-controls .logs-btn:disabled {
   background: #d1d5db;
   cursor: not-allowed;
   box-shadow: none;
@@ -479,14 +479,14 @@
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
-  .table-controls {
+  .logs-table-controls {
     flex-direction: column;
     padding: 14px;
   }
 
-  .table-controls input,
-  .table-controls select,
-  .table-controls .btn {
+  .logs-table-controls input,
+  .logs-table-controls select,
+  .logs-table-controls .logs-btn {
     width: 100%;
   }
 }
