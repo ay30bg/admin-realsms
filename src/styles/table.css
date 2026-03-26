@@ -367,7 +367,7 @@
    FORM CONTROLS - PRO LEVEL
 ========================= */
 
-.table-controls {
+.logs-table-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
@@ -380,8 +380,8 @@
 }
 
 /* Shared input style */
-.table-controls input,
-.table-controls select {
+.logs-table-controls input,
+.logs-table-controls select {
   height: 42px;
   padding: 0 14px;
   border-radius: 10px;
@@ -395,26 +395,26 @@
 }
 
 /* Focus = premium glow */
-.table-controls input:focus,
-.table-controls select:focus {
+.logs-table-controls input:focus,
+.logs-table-controls select:focus {
   background: #fff;
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 /* Hover effect */
-.table-controls input:hover,
-.table-controls select:hover {
+.logs-table-controls input:hover,
+.logs-table-controls select:hover {
   border-color: #c7d2fe;
 }
 
 /* Placeholder */
-.table-controls input::placeholder {
+.logs-table-controls input::placeholder {
   color: #9ca3af;
 }
 
 /* Select cursor */
-.table-controls select {
+.logs-table-controls select {
   cursor: pointer;
 }
 
