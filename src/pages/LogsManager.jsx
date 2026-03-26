@@ -354,7 +354,7 @@ const AdminLogs = () => {
       <h1>Logs Manager</h1>
 
       {/* FORM CONTROLS */}
-      <div className="table-controls">
+      <div className="logs-table-controls">
         <select name="platform" value={form.platform} onChange={handleChange}>
           <option value="">Platform</option>
           <option value="Instagram">Instagram</option>
@@ -403,7 +403,7 @@ const AdminLogs = () => {
           onChange={handleChange}
         />
 
-        <button className="btn" onClick={handleAddLog}>
+        <button className="logs-btn" onClick={handleAddLog}>
           Upload
         </button>
       </div>
