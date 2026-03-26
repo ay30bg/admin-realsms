@@ -364,73 +364,124 @@
 }
 
 /* =========================
-   FORM CONTROLS (MODERN UI)
+   FORM CONTROLS - PRO LEVEL
 ========================= */
+
 .table-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
-/* Inputs + Select */
+/* Shared input style */
 .table-controls input,
 .table-controls select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #dcdcdc;
-  background: #fff;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
   font-size: 14px;
+  color: #111827;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   min-width: 160px;
 }
 
-/* Focus effect */
+/* Focus = premium glow */
 .table-controls input:focus,
 .table-controls select:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+  background: #fff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-/* Placeholder style */
+/* Hover effect */
+.table-controls input:hover,
+.table-controls select:hover {
+  border-color: #c7d2fe;
+}
+
+/* Placeholder */
 .table-controls input::placeholder {
-  color: #999;
+  color: #9ca3af;
 }
 
-/* Select arrow improvement */
+/* Select cursor */
 .table-controls select {
   cursor: pointer;
 }
 
-/* Button style upgrade */
+/* =========================
+   BUTTON (PRIMARY ACTION)
+========================= */
 .table-controls .btn {
-  padding: 10px 16px;
-  border-radius: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
   border: none;
-  background: #4f46e5;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: #fff;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Hover */
 .table-controls .btn:hover {
-  background: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25);
 }
 
-/* Disabled state */
+/* Click */
+.table-controls .btn:active {
+  transform: scale(0.98);
+}
+
+/* Disabled */
 .table-controls .btn:disabled {
-  background: #ccc;
+  background: #d1d5db;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* Responsive (mobile) */
-@media (max-width: 600px) {
+/* =========================
+   DETAILS FIELD (OPTIONAL)
+========================= */
+.table-controls textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  font-size: 14px;
+  resize: none;
+}
+
+.table-controls textarea:focus {
+  background: #fff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
   .table-controls {
     flex-direction: column;
-    align-items: stretch;
+    padding: 14px;
   }
 
   .table-controls input,
