@@ -46,8 +46,15 @@
 }
 
 @media (max-width: 768px) {
-  .log-card{
-   border-radius: 6px;
-   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
- }
+  .admin-logs {
+    padding: 0;
+  }
+
+  .log-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
 }
