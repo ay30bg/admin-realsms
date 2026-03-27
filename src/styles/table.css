@@ -523,7 +523,7 @@
 
 /* Toggle Button */
 .toggle-btn{
-  background: #2563eb; /* blue */
+  background: #16a34a; /* green */
   color: #fff;
   border: none;
   padding: 6px 10px;
@@ -536,7 +536,7 @@
 
 /* Hover */
 .toggle-btn:hover {
-  background: #1d4ed8;
+  background: #15803d;
   transform: translateY(-1px);
 }
 
