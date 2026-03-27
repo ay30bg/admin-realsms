@@ -507,6 +507,45 @@
   color: #166534;
 }
 
+/* Copy Button */
+.copy-btn {
+  background: #2563eb; /* blue */
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Hover */
+.copy-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Click effect */
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Optional: make it softer in table */
+.details-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Truncate text properly */
+.truncate {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* =======================
    RESPONSIVE STYLING
 ======================= */
