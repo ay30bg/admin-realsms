@@ -521,6 +521,30 @@
   color: #166534;
 }
 
+/* Toggle Button */
+.toggle-btn{
+  background: #2563eb; /* blue */
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Hover */
+.toggle-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Click effect */
+.toggle-btn:active {
+  transform: scale(0.95);
+}
+
 /* Copy Button */
 .copy-btn {
   background: #2563eb; /* blue */
