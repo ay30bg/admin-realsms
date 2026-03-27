@@ -256,12 +256,9 @@ const AdminLogs = () => {
 
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
   const [showDetails, setShowDetails] = useState({});
-
   const logsPerPage = 10;
 
   useEffect(() => {
@@ -386,6 +383,7 @@ const AdminLogs = () => {
         <input name="details" placeholder="username:xxx | password:xxx" value={form.details} onChange={handleChange} />
 
         <button onClick={handleAddLog}>Upload</button>
+      </div>
 
       {/* TABLE */}
       <table className="admin-table">
