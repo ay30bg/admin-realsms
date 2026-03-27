@@ -450,7 +450,7 @@ const AdminLogs = () => {
                 <td data-label="Date">{new Date(log.createdAt).toLocaleDateString()}</td>
 
                 <td data-label="Action">
-                  <button onClick={() => handleDelete(log._id)}>Delete</button>
+                  <button  className="btn btn-delete" onClick={() => handleDelete(log._id)}>Delete</button>
                 </td>
               </tr>
             ))
