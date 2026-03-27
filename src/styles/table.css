@@ -488,6 +488,8 @@
   .logs-table-controls select,
   .logs-table-controls .logs-btn {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
