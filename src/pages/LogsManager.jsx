@@ -1,5 +1,8 @@
-// import React, { useState } from "react";
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
 // import "../styles/table.css";
+
+// const API = process.env.REACT_APP_API_URL;
 
 // const AdminLogs = () => {
 //   const [form, setForm] = useState({
@@ -12,6 +15,29 @@
 //   });
 
 //   const [logs, setLogs] = useState([]);
+//   const [loading, setLoading] = useState(false);
+
+//   // ✅ Static Page Title
+//   useEffect(() => {
+//     document.title = "Logs Manager - Admin RealSMS";
+//   }, []);
+
+//   // ✅ Fetch logs
+//   useEffect(() => {
+//     fetchLogs();
+//   }, []);
+
+//   const fetchLogs = async () => {
+//     try {
+//       setLoading(true);
+//       const res = await axios.get(`${API}/api/log`);
+//       setLogs(res.data);
+//     } catch (err) {
+//       console.error("Fetch error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
 //   const formatValue = (val) => {
 //     return val && val.toString().trim() !== "" ? val : "-";
@@ -24,7 +50,8 @@
 //     });
 //   };
 
-//   const handleAddLog = () => {
+//   // ✅ Add log
+//   const handleAddLog = async () => {
 //     if (
 //       !form.platform ||
 //       !form.name ||
@@ -36,22 +63,23 @@
 //       return;
 //     }
 
-//     const newLog = {
-//       id: Date.now(),
-//       ...form,
-//       createdAt: new Date(),
-//     };
+//     try {
+//       const res = await axios.post(`${API}/api/log`, form);
 
-//     setLogs([newLog, ...logs]);
+//       setLogs((prev) => [res.data, ...prev]);
 
-//     setForm({
-//       platform: "",
-//       name: "",
-//       price: "",
-//       stock: "",
-//       type: "",
-//       details: "",
-//     });
+//       setForm({
+//         platform: "",
+//         name: "",
+//         price: "",
+//         stock: "",
+//         type: "",
+//         details: "",
+//       });
+//     } catch (err) {
+//       console.error("Upload error:", err);
+//       alert("Failed to upload log");
+//     }
 //   };
 
 //   const handleCopy = (text) => {
@@ -62,7 +90,7 @@
 //     <div className="table-page">
 //       <h1>Logs Manager</h1>
 
-//       {/* FORM CONTROLS */}
+//       {/* FORM */}
 //       <div className="logs-table-controls">
 //         <select name="platform" value={form.platform} onChange={handleChange}>
 //           <option value="">Platform</option>
@@ -96,7 +124,6 @@
 //           onChange={handleChange}
 //         />
 
-//         {/* ✅ TYPE DROPDOWN */}
 //         <select name="type" value={form.type} onChange={handleChange}>
 //           <option value="">Type</option>
 //           <option value="Aged">Aged</option>
@@ -132,7 +159,13 @@
 //         </thead>
 
 //         <tbody>
-//           {logs.length === 0 ? (
+//           {loading ? (
+//             <tr>
+//               <td colSpan="7" style={{ textAlign: "center" }}>
+//                 Loading...
+//               </td>
+//             </tr>
+//           ) : logs.length === 0 ? (
 //             <tr>
 //               <td colSpan="7" style={{ textAlign: "center" }}>
 //                 No logs uploaded
@@ -140,19 +173,13 @@
 //             </tr>
 //           ) : (
 //             logs.map((log) => (
-//               <tr key={log.id}>
-//                 <td data-label="Platform">{formatValue(log.platform)}</td>
+//               <tr key={log._id}>
+//                 <td>{formatValue(log.platform)}</td>
+//                 <td>{formatValue(log.name)}</td>
+//                 <td>₦{Number(log.price).toLocaleString()}</td>
+//                 <td>{formatValue(log.stock)}</td>
 
-//                 <td data-label="Name">{formatValue(log.name)}</td>
-
-//                 <td data-label="Price">
-//                   ₦{Number(log.price).toLocaleString()}
-//                 </td>
-
-//                 <td data-label="Stock">{formatValue(log.stock)}</td>
-
-//                 {/* ✅ COLORED TYPE BADGE */}
-//                 <td data-label="Type">
+//                 <td>
 //                   <span
 //                     className={`status-badge ${log.type?.toLowerCase()}`}
 //                   >
@@ -160,7 +187,7 @@
 //                   </span>
 //                 </td>
 
-//                 <td data-label="Details">
+//                 <td>
 //                   <div className="details-cell">
 //                     <span className="truncate">
 //                       {formatValue(log.details)}
@@ -174,7 +201,7 @@
 //                   </div>
 //                 </td>
 
-//                 <td data-label="Date">
+//                 <td>
 //                   {new Date(log.createdAt).toLocaleDateString()}
 //                 </td>
 //               </tr>
@@ -207,12 +234,12 @@ const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Static Page Title
+  // ✅ Page Title
   useEffect(() => {
     document.title = "Logs Manager - Admin RealSMS";
   }, []);
 
-  // ✅ Fetch logs
+  // ✅ Fetch Logs
   useEffect(() => {
     fetchLogs();
   }, []);
@@ -220,7 +247,7 @@ const AdminLogs = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/api/log`);
+      const res = await axios.get(`${API}/logs`);
       setLogs(res.data);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -240,7 +267,6 @@ const AdminLogs = () => {
     });
   };
 
-  // ✅ Add log
   const handleAddLog = async () => {
     if (
       !form.platform ||
@@ -254,7 +280,7 @@ const AdminLogs = () => {
     }
 
     try {
-      const res = await axios.post(`${API}/api/log`, form);
+      const res = await axios.post(`${API}/logs`, form);
 
       setLogs((prev) => [res.data, ...prev]);
 
@@ -364,12 +390,23 @@ const AdminLogs = () => {
           ) : (
             logs.map((log) => (
               <tr key={log._id}>
-                <td>{formatValue(log.platform)}</td>
-                <td>{formatValue(log.name)}</td>
-                <td>₦{Number(log.price).toLocaleString()}</td>
-                <td>{formatValue(log.stock)}</td>
+                <td data-label="Platform">
+                  {formatValue(log.platform)}
+                </td>
 
-                <td>
+                <td data-label="Name">
+                  {formatValue(log.name)}
+                </td>
+
+                <td data-label="Price">
+                  ₦{Number(log.price).toLocaleString()}
+                </td>
+
+                <td data-label="Stock">
+                  {formatValue(log.stock)}
+                </td>
+
+                <td data-label="Type">
                   <span
                     className={`status-badge ${log.type?.toLowerCase()}`}
                   >
@@ -377,7 +414,7 @@ const AdminLogs = () => {
                   </span>
                 </td>
 
-                <td>
+                <td data-label="Details">
                   <div className="details-cell">
                     <span className="truncate">
                       {formatValue(log.details)}
@@ -391,7 +428,7 @@ const AdminLogs = () => {
                   </div>
                 </td>
 
-                <td>
+                <td data-label="Date">
                   {new Date(log.createdAt).toLocaleDateString()}
                 </td>
               </tr>
