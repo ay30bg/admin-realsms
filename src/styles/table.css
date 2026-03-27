@@ -546,6 +546,28 @@
   white-space: nowrap;
 }
 
+/* Mobile fix for Details + Copy button */
+@media (max-width: 768px) {
+  .details-cell {
+    display: flex;
+    flex-direction: column; /* stack vertically */
+    align-items: flex-start; /* left align */
+    gap: 6px; /* space between text and button */
+  }
+
+  .truncate {
+    max-width: 100%;         /* full width */
+    white-space: normal;     /* allow wrapping */
+    word-break: break-word;  /* break long text */
+  }
+
+  .copy-btn {
+    width: fit-content;      /* shrink to content */
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
 /* =======================
    RESPONSIVE STYLING
 ======================= */
