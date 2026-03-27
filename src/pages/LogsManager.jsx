@@ -294,7 +294,7 @@ const AdminLogs = () => {
     price: "",
     stock: 0,
     type: "",
-    details: [], // array for uploaded file
+    details: [], // array for uploaded file temporarily
   });
 
   const [logs, setLogs] = useState([]);
@@ -350,6 +350,7 @@ const AdminLogs = () => {
     reader.readAsText(file);
   };
 
+  // Add log (details sent as string to avoid backend 500)
   const handleAddLog = async () => {
     if (!form.platform || !form.name || !form.price || !form.type || form.details.length === 0) {
       return alert("Fill all required fields and upload a details file");
@@ -358,6 +359,7 @@ const AdminLogs = () => {
     try {
       const res = await axios.post(`${API}/api/log`, {
         ...form,
+        details: form.details.join("\n"), // convert array to string
         stock: form.details.length,
       });
       setLogs((prev) => [res.data, ...prev]);
@@ -371,7 +373,8 @@ const AdminLogs = () => {
         details: [],
       });
     } catch (err) {
-      alert("Upload failed");
+      console.error("Upload failed:", err.response?.data || err);
+      alert("Upload failed: " + (err.response?.data?.message || err.message));
     }
   };
 
@@ -431,8 +434,20 @@ const AdminLogs = () => {
           <option value="TikTok">TikTok</option>
         </select>
 
-        <input name="name" placeholder="Product Name" value={form.name} onChange={handleChange} />
-        <input type="number" name="price" placeholder="Price" value={form.price} onChange={handleChange} />
+        <input
+          name="name"
+          placeholder="Product Name"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+        />
 
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="">Type</option>
@@ -442,7 +457,9 @@ const AdminLogs = () => {
         </select>
 
         <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
-        <button className="logs-btn" onClick={handleAddLog}>Upload</button>
+        <button className="logs-btn" onClick={handleAddLog}>
+          Upload
+        </button>
       </div>
 
       {/* TABLE */}
@@ -463,11 +480,15 @@ const AdminLogs = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="8" style={{ textAlign: "center" }}>Loading...</td>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                Loading...
+              </td>
             </tr>
           ) : currentLogs.length === 0 ? (
             <tr>
-              <td colSpan="8" style={{ textAlign: "center" }}>No logs found</td>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No logs found
+              </td>
             </tr>
           ) : (
             currentLogs.map((log) => (
@@ -486,24 +507,37 @@ const AdminLogs = () => {
                 <td data-label="Stock">{formatValue(log.stock)}</td>
 
                 <td data-label="Type">
-                  <span className={`status-badge ${log.type?.toLowerCase()}`}>{log.type}</span>
+                  <span className={`status-badge ${log.type?.toLowerCase()}`}>
+                    {log.type}
+                  </span>
                 </td>
 
                 <td data-label="Details">
                   <div className="details-cell">
-                    <span>{showDetails[log._id] ? log.details.join("\n") : "••••••••••••"}</span>
+                    <span>
+                      {showDetails[log._id] ? log.details : "••••••••••••"}
+                    </span>
                     <div className="button-group">
                       <button onClick={() => toggleDetails(log._id)}>
                         {showDetails[log._id] ? "Hide" : "Show"}
                       </button>
-                      <button onClick={() => handleCopy(log.details.join("\n"))}>Copy</button>
+                      <button onClick={() => handleCopy(log.details)}>
+                        Copy
+                      </button>
                     </div>
                   </div>
                 </td>
 
-                <td data-label="Date">{new Date(log.createdAt).toLocaleDateString()}</td>
+                <td data-label="Date">
+                  {new Date(log.createdAt).toLocaleDateString()}
+                </td>
                 <td data-label="Action">
-                  <button className="btn btn-delete" onClick={() => handleDelete(log._id)}>Delete</button>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => handleDelete(log._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
@@ -513,9 +547,21 @@ const AdminLogs = () => {
 
       {/* PAGINATION */}
       <div className="pagination">
-        <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>Prev</button>
-        <span>{currentPage} / {totalPages || 1}</span>
-        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>Next</button>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+        >
+          Prev
+        </button>
+        <span>
+          {currentPage} / {totalPages || 1}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
