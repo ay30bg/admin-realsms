@@ -382,7 +382,7 @@ const AdminLogs = () => {
 
         <input name="details" placeholder="username:xxx | password:xxx" value={form.details} onChange={handleChange} />
 
-        <button onClick={handleAddLog}>Upload</button>
+        <button className="logs-btn" onClick={handleAddLog}>Upload</button>
       </div>
 
       {/* TABLE */}
