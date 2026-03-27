@@ -600,10 +600,24 @@
     word-break: break-word;
   }
 
+   .details-cell span {
+    max-width: 100%;
+    text-align: right;
+    overflow-wrap: break-word;
+  }
+
+  /* Wrap both buttons in a flex row */
+  .details-cell .button-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  .toggle-btn,
   .copy-btn {
-    align-self: flex-end;     /* button right */
+    /* align-self: flex-end; */
     font-size: 11px;
     padding: 4px 8px;
+    white-space: nowrap;
   }
 }
 
