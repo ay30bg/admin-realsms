@@ -546,25 +546,26 @@
   white-space: nowrap;
 }
 
-/* Mobile fix for Details + Copy button */
 @media (max-width: 768px) {
   .details-cell {
     display: flex;
-    flex-direction: column; /* stack vertically */
-    align-items: flex-start; /* left align */
-    gap: 6px; /* space between text and button */
+    flex-direction: column;   /* stack text + button */
+    align-items: flex-end;    /* push to right */
+    gap: 5px;
+    width: 100%;
   }
 
   .truncate {
-    max-width: 100%;         /* full width */
-    white-space: normal;     /* allow wrapping */
-    word-break: break-word;  /* break long text */
+    text-align: right;        /* align text right */
+    max-width: 160px;
+    white-space: normal;
+    word-break: break-word;
   }
 
   .copy-btn {
-    width: fit-content;      /* shrink to content */
-    padding: 5px 10px;
-    font-size: 12px;
+    align-self: flex-end;     /* button right */
+    font-size: 11px;
+    padding: 4px 8px;
   }
 }
 
