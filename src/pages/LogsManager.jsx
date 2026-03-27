@@ -349,31 +349,6 @@ const AdminLogs = () => {
   const currentLogs = filteredLogs.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
-  // BULK UPLOAD
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const text = await file.text();
-    const lines = text.split("\n");
-
-    try {
-      for (let line of lines) {
-        if (!line.trim()) continue;
-
-        await axios.post(`${API}/api/log`, {
-          ...form,
-          details: line.trim(),
-        });
-      }
-
-      alert("Bulk upload successful");
-      fetchLogs();
-    } catch {
-      alert("Bulk upload failed");
-    }
-  };
-
   return (
     <div className="table-page">
       <h1>Logs Manager</h1>
@@ -411,10 +386,6 @@ const AdminLogs = () => {
         <input name="details" placeholder="username:xxx | password:xxx" value={form.details} onChange={handleChange} />
 
         <button onClick={handleAddLog}>Upload</button>
-
-        {/* BULK */}
-        <input type="file" accept=".txt" onChange={handleFileUpload} />
-      </div>
 
       {/* TABLE */}
       <table className="admin-table">
