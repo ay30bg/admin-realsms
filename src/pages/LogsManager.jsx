@@ -439,11 +439,11 @@ const AdminLogs = () => {
                       {showDetails[log._id] ? log.details : "••••••••••••"}
                     </span>
 
-                    <button onClick={() => toggleDetails(log._id)}>
+                    <button className="toggle-btn" onClick={() => toggleDetails(log._id)}>
                       {showDetails[log._id] ? "Hide" : "Show"}
                     </button>
 
-                    <button onClick={() => handleCopy(log.details)}>Copy</button>
+                    <button className="copy-btn" onClick={() => handleCopy(log.details)}>Copy</button>
                   </div>
                 </td>
 
