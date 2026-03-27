@@ -1,8 +1,248 @@
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import "../styles/table.css";
+
+// const API = process.env.REACT_APP_API_URL;
+
+// const AdminLogs = () => {
+//   const [form, setForm] = useState({
+//     platform: "",
+//     name: "",
+//     price: "",
+//     stock: "",
+//     type: "",
+//     details: "",
+//   });
+
+//   const [logs, setLogs] = useState([]);
+//   const [loading, setLoading] = useState(false);
+
+//   // ✅ Page Title
+//   useEffect(() => {
+//     document.title = "Logs Manager - Admin RealSMS";
+//   }, []);
+
+//   // ✅ Fetch Logs
+//   useEffect(() => {
+//     fetchLogs();
+//   }, []);
+
+//   const fetchLogs = async () => {
+//     try {
+//       setLoading(true);
+//       const res = await axios.get(`${API}/api/log`);
+//       setLogs(res.data);
+//     } catch (err) {
+//       console.error("Fetch error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const formatValue = (val) => {
+//     return val && val.toString().trim() !== "" ? val : "-";
+//   };
+
+//   const handleChange = (e) => {
+//     setForm({
+//       ...form,
+//       [e.target.name]: e.target.value,
+//     });
+//   };
+
+//   const handleAddLog = async () => {
+//     if (
+//       !form.platform ||
+//       !form.name ||
+//       !form.price ||
+//       !form.details ||
+//       !form.type
+//     ) {
+//       alert("Fill all required fields");
+//       return;
+//     }
+
+//     try {
+//       const res = await axios.post(`${API}/api/log`, form);
+
+//       setLogs((prev) => [res.data, ...prev]);
+
+//       setForm({
+//         platform: "",
+//         name: "",
+//         price: "",
+//         stock: "",
+//         type: "",
+//         details: "",
+//       });
+//     } catch (err) {
+//       console.error("Upload error:", err);
+//       alert("Failed to upload log");
+//     }
+//   };
+
+//   const handleCopy = (text) => {
+//     navigator.clipboard.writeText(text);
+//   };
+
+//   return (
+//     <div className="table-page">
+//       <h1>Logs Manager</h1>
+
+//       {/* FORM */}
+//       <div className="logs-table-controls">
+//         <select name="platform" value={form.platform} onChange={handleChange}>
+//           <option value="">Platform</option>
+//           <option value="Instagram">Instagram</option>
+//           <option value="Facebook">Facebook</option>
+//           <option value="Twitter">Twitter (X)</option>
+//           <option value="TikTok">TikTok</option>
+//         </select>
+
+//         <input
+//           type="text"
+//           name="name"
+//           placeholder="Product Name"
+//           value={form.name}
+//           onChange={handleChange}
+//         />
+
+//         <input
+//           type="number"
+//           name="price"
+//           placeholder="Price (₦)"
+//           value={form.price}
+//           onChange={handleChange}
+//         />
+
+//         <input
+//           type="number"
+//           name="stock"
+//           placeholder="Stock"
+//           value={form.stock}
+//           onChange={handleChange}
+//         />
+
+//         <select name="type" value={form.type} onChange={handleChange}>
+//           <option value="">Type</option>
+//           <option value="Aged">Aged</option>
+//           <option value="PVA">PVA</option>
+//           <option value="Verified">Verified</option>
+//         </select>
+
+//         <input
+//           type="text"
+//           name="details"
+//           placeholder="username:xxx | password:xxx"
+//           value={form.details}
+//           onChange={handleChange}
+//         />
+
+//         <button className="logs-btn" onClick={handleAddLog}>
+//           Upload
+//         </button>
+//       </div>
+
+//       {/* TABLE */}
+//       <table className="admin-table">
+//         <thead>
+//           <tr>
+//             <th>Platform</th>
+//             <th>Name</th>
+//             <th>Price</th>
+//             <th>Stock</th>
+//             <th>Type</th>
+//             <th>Details</th>
+//             <th>Date</th>
+//           </tr>
+//         </thead>
+
+//         <tbody>
+//           {loading ? (
+//             <tr>
+//               <td colSpan="7" style={{ textAlign: "center" }}>
+//                 Loading...
+//               </td>
+//             </tr>
+//           ) : logs.length === 0 ? (
+//             <tr>
+//               <td colSpan="7" style={{ textAlign: "center" }}>
+//                 No logs uploaded
+//               </td>
+//             </tr>
+//           ) : (
+//             logs.map((log) => (
+//               <tr key={log._id}>
+//                 <td data-label="Platform">
+//                   {formatValue(log.platform)}
+//                 </td>
+
+//                 <td data-label="Name">
+//                   {formatValue(log.name)}
+//                 </td>
+
+//                 <td data-label="Price">
+//                   ₦{Number(log.price).toLocaleString()}
+//                 </td>
+
+//                 <td data-label="Stock">
+//                   {formatValue(log.stock)}
+//                 </td>
+
+//                 <td data-label="Type">
+//                   <span
+//                     className={`status-badge ${log.type?.toLowerCase()}`}
+//                   >
+//                     {formatValue(log.type)}
+//                   </span>
+//                 </td>
+
+//                 <td data-label="Details">
+//                   <div className="details-cell">
+//                     <span className="truncate">
+//                       {formatValue(log.details)}
+//                     </span>
+//                     <button
+//                       className="copy-btn"
+//                       onClick={() => handleCopy(log.details)}
+//                     >
+//                       Copy
+//                     </button>
+//                   </div>
+//                 </td>
+
+//                 <td data-label="Date">
+//                   {new Date(log.createdAt).toLocaleDateString()}
+//                 </td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// };
+
+// export default AdminLogs;
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/table.css";
 
+// icons
+import instagramIcon from "../assets/instagram.png";
+import facebookIcon from "../assets/facebook.png";
+import twitterIcon from "../assets/twitter.png";
+import tiktokIcon from "../assets/tiktok.png";
+
 const API = process.env.REACT_APP_API_URL;
+
+const platformIcons = {
+  Instagram: instagramIcon,
+  Facebook: facebookIcon,
+  Twitter: twitterIcon,
+  TikTok: tiktokIcon,
+};
 
 const AdminLogs = () => {
   const [form, setForm] = useState({
@@ -17,13 +257,15 @@ const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Page Title
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [showDetails, setShowDetails] = useState({});
+
+  const logsPerPage = 10;
+
   useEffect(() => {
     document.title = "Logs Manager - Admin RealSMS";
-  }, []);
-
-  // ✅ Fetch Logs
-  useEffect(() => {
     fetchLogs();
   }, []);
 
@@ -33,7 +275,7 @@ const AdminLogs = () => {
       const res = await axios.get(`${API}/api/log`);
       setLogs(res.data);
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -51,20 +293,12 @@ const AdminLogs = () => {
   };
 
   const handleAddLog = async () => {
-    if (
-      !form.platform ||
-      !form.name ||
-      !form.price ||
-      !form.details ||
-      !form.type
-    ) {
-      alert("Fill all required fields");
-      return;
+    if (!form.platform || !form.name || !form.price || !form.details || !form.type) {
+      return alert("Fill all required fields");
     }
 
     try {
       const res = await axios.post(`${API}/api/log`, form);
-
       setLogs((prev) => [res.data, ...prev]);
 
       setForm({
@@ -76,18 +310,82 @@ const AdminLogs = () => {
         details: "",
       });
     } catch (err) {
-      console.error("Upload error:", err);
-      alert("Failed to upload log");
+      alert("Upload failed");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this log?")) return;
+
+    try {
+      await axios.delete(`${API}/api/log/${id}`);
+      setLogs((prev) => prev.filter((log) => log._id !== id));
+    } catch {
+      alert("Delete failed");
     }
   };
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
+    alert("Copied!");
+  };
+
+  const toggleDetails = (id) => {
+    setShowDetails((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  // ✅ SEARCH FILTER
+  const filteredLogs = logs.filter((log) =>
+    log.name.toLowerCase().includes(search.toLowerCase()) ||
+    log.platform.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // ✅ PAGINATION
+  const indexOfLast = currentPage * logsPerPage;
+  const indexOfFirst = indexOfLast - logsPerPage;
+  const currentLogs = filteredLogs.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+
+  // ✅ BULK UPLOAD
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const text = await file.text();
+    const lines = text.split("\n");
+
+    try {
+      for (let line of lines) {
+        if (!line.trim()) continue;
+
+        await axios.post(`${API}/api/log`, {
+          ...form,
+          details: line.trim(),
+        });
+      }
+
+      alert("Bulk upload successful");
+      fetchLogs();
+    } catch {
+      alert("Bulk upload failed");
+    }
   };
 
   return (
     <div className="table-page">
       <h1>Logs Manager</h1>
+
+      {/* SEARCH */}
+      <input
+        type="text"
+        placeholder="Search logs..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="search-input"
+      />
 
       {/* FORM */}
       <div className="logs-table-controls">
@@ -95,33 +393,13 @@ const AdminLogs = () => {
           <option value="">Platform</option>
           <option value="Instagram">Instagram</option>
           <option value="Facebook">Facebook</option>
-          <option value="Twitter">Twitter (X)</option>
+          <option value="Twitter">Twitter</option>
           <option value="TikTok">TikTok</option>
         </select>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Product Name"
-          value={form.name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="number"
-          name="price"
-          placeholder="Price (₦)"
-          value={form.price}
-          onChange={handleChange}
-        />
-
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock"
-          value={form.stock}
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="Product Name" value={form.name} onChange={handleChange} />
+        <input type="number" name="price" placeholder="Price" value={form.price} onChange={handleChange} />
+        <input type="number" name="stock" placeholder="Stock" value={form.stock} onChange={handleChange} />
 
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="">Type</option>
@@ -130,17 +408,12 @@ const AdminLogs = () => {
           <option value="Verified">Verified</option>
         </select>
 
-        <input
-          type="text"
-          name="details"
-          placeholder="username:xxx | password:xxx"
-          value={form.details}
-          onChange={handleChange}
-        />
+        <input name="details" placeholder="username:xxx | password:xxx" value={form.details} onChange={handleChange} />
 
-        <button className="logs-btn" onClick={handleAddLog}>
-          Upload
-        </button>
+        <button onClick={handleAddLog}>Upload</button>
+
+        {/* BULK */}
+        <input type="file" accept=".txt" onChange={handleFileUpload} />
       </div>
 
       {/* TABLE */}
@@ -154,71 +427,91 @@ const AdminLogs = () => {
             <th>Type</th>
             <th>Details</th>
             <th>Date</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
-                Loading...
-              </td>
+              <td colSpan="8">Loading...</td>
             </tr>
-          ) : logs.length === 0 ? (
+          ) : currentLogs.length === 0 ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
-                No logs uploaded
-              </td>
+              <td colSpan="8">No logs found</td>
             </tr>
           ) : (
-            logs.map((log) => (
+            currentLogs.map((log) => (
               <tr key={log._id}>
-                <td data-label="Platform">
-                  {formatValue(log.platform)}
+                <td>
+                  <img
+                    src={platformIcons[log.platform]}
+                    alt=""
+                    style={{ width: 20, marginRight: 5 }}
+                  />
+                  {log.platform}
                 </td>
 
-                <td data-label="Name">
-                  {formatValue(log.name)}
-                </td>
+                <td>{log.name}</td>
 
-                <td data-label="Price">
-                  ₦{Number(log.price).toLocaleString()}
-                </td>
+                <td>₦{Number(log.price).toLocaleString()}</td>
 
-                <td data-label="Stock">
-                  {formatValue(log.stock)}
-                </td>
+                <td>{formatValue(log.stock)}</td>
 
-                <td data-label="Type">
-                  <span
-                    className={`status-badge ${log.type?.toLowerCase()}`}
-                  >
-                    {formatValue(log.type)}
+                <td>
+                  <span className={`status-badge ${log.type?.toLowerCase()}`}>
+                    {log.type}
                   </span>
                 </td>
 
-                <td data-label="Details">
+                <td>
                   <div className="details-cell">
-                    <span className="truncate">
-                      {formatValue(log.details)}
+                    <span>
+                      {showDetails[log._id]
+                        ? log.details
+                        : "••••••••••••"}
                     </span>
-                    <button
-                      className="copy-btn"
-                      onClick={() => handleCopy(log.details)}
-                    >
+
+                    <button onClick={() => toggleDetails(log._id)}>
+                      {showDetails[log._id] ? "Hide" : "Show"}
+                    </button>
+
+                    <button onClick={() => handleCopy(log.details)}>
                       Copy
                     </button>
                   </div>
                 </td>
 
-                <td data-label="Date">
-                  {new Date(log.createdAt).toLocaleDateString()}
+                <td>{new Date(log.createdAt).toLocaleDateString()}</td>
+
+                <td>
+                  <button onClick={() => handleDelete(log._id)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
           )}
         </tbody>
       </table>
+
+      {/* PAGINATION */}
+      <div className="pagination">
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>
+          Prev
+        </button>
+
+        <span>
+          {currentPage} / {totalPages || 1}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
