@@ -366,6 +366,17 @@
 /* =========================
    FORM CONTROLS - PRO LEVEL
 ========================= */
+ .search-input {
+  flex: 1;
+  max-width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
 
 .logs-table-controls {
   display: flex;
