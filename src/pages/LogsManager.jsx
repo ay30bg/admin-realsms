@@ -229,7 +229,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/table.css";
 
-// icons
+// platform icons
 import instagramIcon from "../assets/instagram.png";
 import facebookIcon from "../assets/facebook.png";
 import twitterIcon from "../assets/twitter.png";
@@ -337,19 +337,19 @@ const AdminLogs = () => {
     }));
   };
 
-  // ✅ SEARCH FILTER
+  // SEARCH FILTER
   const filteredLogs = logs.filter((log) =>
     log.name.toLowerCase().includes(search.toLowerCase()) ||
     log.platform.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ✅ PAGINATION
+  // PAGINATION
   const indexOfLast = currentPage * logsPerPage;
   const indexOfFirst = indexOfLast - logsPerPage;
   const currentLogs = filteredLogs.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
-  // ✅ BULK UPLOAD
+  // BULK UPLOAD
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -434,16 +434,16 @@ const AdminLogs = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="8">Loading...</td>
+              <td colSpan="8" style={{ textAlign: "center" }}>Loading...</td>
             </tr>
           ) : currentLogs.length === 0 ? (
             <tr>
-              <td colSpan="8">No logs found</td>
+              <td colSpan="8" style={{ textAlign: "center" }}>No logs found</td>
             </tr>
           ) : (
             currentLogs.map((log) => (
               <tr key={log._id}>
-                <td>
+                <td data-label="Platform">
                   <img
                     src={platformIcons[log.platform]}
                     alt=""
@@ -452,42 +452,36 @@ const AdminLogs = () => {
                   {log.platform}
                 </td>
 
-                <td>{log.name}</td>
+                <td data-label="Name">{log.name}</td>
 
-                <td>₦{Number(log.price).toLocaleString()}</td>
+                <td data-label="Price">₦{Number(log.price).toLocaleString()}</td>
 
-                <td>{formatValue(log.stock)}</td>
+                <td data-label="Stock">{formatValue(log.stock)}</td>
 
-                <td>
+                <td data-label="Type">
                   <span className={`status-badge ${log.type?.toLowerCase()}`}>
                     {log.type}
                   </span>
                 </td>
 
-                <td>
+                <td data-label="Details">
                   <div className="details-cell">
                     <span>
-                      {showDetails[log._id]
-                        ? log.details
-                        : "••••••••••••"}
+                      {showDetails[log._id] ? log.details : "••••••••••••"}
                     </span>
 
                     <button onClick={() => toggleDetails(log._id)}>
                       {showDetails[log._id] ? "Hide" : "Show"}
                     </button>
 
-                    <button onClick={() => handleCopy(log.details)}>
-                      Copy
-                    </button>
+                    <button onClick={() => handleCopy(log.details)}>Copy</button>
                   </div>
                 </td>
 
-                <td>{new Date(log.createdAt).toLocaleDateString()}</td>
+                <td data-label="Date">{new Date(log.createdAt).toLocaleDateString()}</td>
 
-                <td>
-                  <button onClick={() => handleDelete(log._id)}>
-                    Delete
-                  </button>
+                <td data-label="Action">
+                  <button onClick={() => handleDelete(log._id)}>Delete</button>
                 </td>
               </tr>
             ))
