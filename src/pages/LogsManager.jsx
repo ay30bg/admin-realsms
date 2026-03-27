@@ -247,7 +247,7 @@ const AdminLogs = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/logs`);
+      const res = await axios.get(`${API}/api/log`);
       setLogs(res.data);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -280,7 +280,7 @@ const AdminLogs = () => {
     }
 
     try {
-      const res = await axios.post(`${API}/logs`, form);
+      const res = await axios.post(`${API}/api/log`, form);
 
       setLogs((prev) => [res.data, ...prev]);
 
