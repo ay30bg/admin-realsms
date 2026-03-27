@@ -609,6 +609,7 @@
   /* Wrap both buttons in a flex row */
   .details-cell .button-group {
     display: flex;
+    flex-direction: row; 
     gap: 6px;
   }
 
