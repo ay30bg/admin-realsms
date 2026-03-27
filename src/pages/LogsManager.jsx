@@ -192,6 +192,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/table.css";
 
+const API = process.env.REACT_APP_API_URL;
+
 const AdminLogs = () => {
   const [form, setForm] = useState({
     platform: "",
@@ -207,7 +209,7 @@ const AdminLogs = () => {
 
   // ✅ Static Page Title
   useEffect(() => {
-    document.title = "Logs - Admin RealSMS";
+    document.title = "Logs Manager - Admin RealSMS";
   }, []);
 
   // ✅ Fetch logs
@@ -218,7 +220,7 @@ const AdminLogs = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/logs");
+      const res = await axios.get(`${API}/logs`);
       setLogs(res.data);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -238,7 +240,7 @@ const AdminLogs = () => {
     });
   };
 
-  // ✅ Add log (POST)
+  // ✅ Add log
   const handleAddLog = async () => {
     if (
       !form.platform ||
@@ -252,10 +254,7 @@ const AdminLogs = () => {
     }
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/logs",
-        form
-      );
+      const res = await axios.post(`${API}/logs`, form);
 
       setLogs((prev) => [res.data, ...prev]);
 
@@ -364,18 +363,13 @@ const AdminLogs = () => {
             </tr>
           ) : (
             logs.map((log) => (
-              <tr key={log._id || log.id}>
-                <td data-label="Platform">{formatValue(log.platform)}</td>
+              <tr key={log._id}>
+                <td>{formatValue(log.platform)}</td>
+                <td>{formatValue(log.name)}</td>
+                <td>₦{Number(log.price).toLocaleString()}</td>
+                <td>{formatValue(log.stock)}</td>
 
-                <td data-label="Name">{formatValue(log.name)}</td>
-
-                <td data-label="Price">
-                  ₦{Number(log.price).toLocaleString()}
-                </td>
-
-                <td data-label="Stock">{formatValue(log.stock)}</td>
-
-                <td data-label="Type">
+                <td>
                   <span
                     className={`status-badge ${log.type?.toLowerCase()}`}
                   >
@@ -383,7 +377,7 @@ const AdminLogs = () => {
                   </span>
                 </td>
 
-                <td data-label="Details">
+                <td>
                   <div className="details-cell">
                     <span className="truncate">
                       {formatValue(log.details)}
@@ -397,7 +391,7 @@ const AdminLogs = () => {
                   </div>
                 </td>
 
-                <td data-label="Date">
+                <td>
                   {new Date(log.createdAt).toLocaleDateString()}
                 </td>
               </tr>
