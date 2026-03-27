@@ -254,7 +254,7 @@ const AdminLogs = () => {
     }
 
     try {
-      const res = await axios.post(`${API}/logs`, form);
+      const res = await axios.post(`${API}/api/log`, form);
 
       setLogs((prev) => [res.data, ...prev]);
 
