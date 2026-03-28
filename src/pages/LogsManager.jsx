@@ -708,10 +708,10 @@ const AdminLogs = () => {
                     </span>
 
                     <div className="button-group">
-                      <button onClick={() => toggleDetails(log._id)}>
+                      <button className="toggle-btn" onClick={() => toggleDetails(log._id)}>
                         {showDetails[log._id] ? "Hide" : "Show"}
                       </button>
-                      <button onClick={() => handleCopy(log.details)}>
+                      <button className="copy-btn" onClick={() => handleCopy(log.details)}>
                         Copy
                       </button>
                     </div>
@@ -723,8 +723,8 @@ const AdminLogs = () => {
                 </td>
 
                 <td>
-                  <button onClick={() => handleEdit(log)}>Edit</button>
-                  <button onClick={() => handleDelete(log._id)}>
+                  <button className="btn btn-edit" onClick={() => handleEdit(log)}>Edit</button>
+                  <button className="btn btn-delete" onClick={() => handleDelete(log._id)}>
                     Delete
                   </button>
                 </td>
