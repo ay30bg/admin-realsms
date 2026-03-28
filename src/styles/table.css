@@ -299,7 +299,6 @@
 
 .btn-delete {
   background-color: #ef4444;
-  /* Red */
   color: white;
 }
 
@@ -523,7 +522,7 @@
 
 /* Toggle Button */
 .toggle-btn{
-  background: #16a34a; /* green */
+  background: #16a34a; 
   color: #fff;
   border: none;
   padding: 6px 10px;
@@ -547,7 +546,7 @@
 
 /* Copy Button */
 .copy-btn {
-  background: #2563eb; /* blue */
+  background: #2563eb; 
   color: #fff;
   border: none;
   padding: 6px 10px;
@@ -576,6 +575,10 @@
   gap: 8px;
 }
 
+ .details-cell .button-group {
+    gap: 6px;
+  }
+
 /* Truncate text properly */ 
 .truncate {
   max-width: 180px;
@@ -587,14 +590,14 @@
 @media (max-width: 768px) {
   .details-cell {
     display: flex;
-    flex-direction: column;   /* stack text + button */
-    align-items: flex-end;    /* push to right */
+    flex-direction: column;   
+    align-items: flex-end;  
     gap: 5px;
     width: 100%;
   }
 
   .truncate {
-    text-align: right;        /* align text right */
+    text-align: right;       
     max-width: 160px;
     white-space: normal;
     word-break: break-word;
@@ -615,7 +618,6 @@
 
   .toggle-btn,
   .copy-btn {
-    /* align-self: flex-end; */
     font-size: 11px;
     padding: 4px 8px;
     white-space: nowrap;
