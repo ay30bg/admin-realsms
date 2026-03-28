@@ -341,6 +341,7 @@ const AdminLogs = () => {
                 </td>
 
                 <td data-label="Action">
+                  <div className="action-buttons">
                   <button
                     className="btn btn-edit"
                     onClick={() => handleEdit(log)}
@@ -354,6 +355,7 @@ const AdminLogs = () => {
                   >
                     Delete
                   </button>
+                  </div>
                 </td>
               </tr>
             ))
