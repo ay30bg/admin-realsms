@@ -267,7 +267,23 @@ const AdminLogs = () => {
           <option value="Verified">Verified</option>
         </select>
 
-        <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
+        {/* <input type="file" accept=".txt,.csv" onChange={handleFileUpload} /> */}
+
+        <div className="file-upload-wrapper">
+  <input
+    type="file"
+    id="fileUpload"
+    accept=".txt,.csv"
+    onChange={handleFileUpload}
+    className="file-input"
+  />
+  <label htmlFor="fileUpload" className="file-label">
+    Choose File
+  </label>
+  <span className="file-name">
+    {form.details.length > 0 ? `${form.details.length} lines uploaded` : "No file chosen"}
+  </span>
+</div>
 
         <button className="logs-btn" onClick={handleAddLog}>
           Upload
