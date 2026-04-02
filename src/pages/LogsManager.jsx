@@ -495,7 +495,7 @@ import facebookIcon from "../assets/facebook.png";
 import twitterIcon from "../assets/twitter.png";
 import tiktokIcon from "../assets/tiktok.png";
 
-// ✅ NEW (add these images to your assets folder)
+// ✅ NEW ICONS (add these files)
 import mailIcon from "../assets/mail.png";
 import netflixIcon from "../assets/netflix.png";
 import googleVoiceIcon from "../assets/google-voice.png";
@@ -549,7 +549,6 @@ const AdminLogs = () => {
   const fetchLogs = async (showLoader = true) => {
     try {
       if (showLoader) setLoading(true);
-
       const res = await axios.get(`${API}/api/log`);
       setLogs(res.data);
     } catch (err) {
@@ -793,21 +792,118 @@ const AdminLogs = () => {
 
       {/* TABLE */}
       <table className="admin-table">
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
         <tbody>
-          {currentLogs.map((log) => (
-            <tr key={log._id}>
-              <td>
-                <img
-                  src={platformIcons[log.platform] || instagramIcon}
-                  alt=""
-                  style={{ width: 20, marginRight: 5 }}
-                />
-                {log.platform}
+          {loading ? (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                Loading...
               </td>
             </tr>
-          ))}
+          ) : currentLogs.length === 0 ? (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No logs found
+              </td>
+            </tr>
+          ) : (
+            currentLogs.map((log) => (
+              <tr key={log._id}>
+                <td>
+                  <img
+                    src={platformIcons[log.platform] || instagramIcon}
+                    alt=""
+                    style={{ width: 20, marginRight: 5 }}
+                  />
+                  {log.platform}
+                </td>
+
+                <td title={log.name}>
+                  {truncateText(log.name, 25)}
+                </td>
+
+                <td>₦{Number(log.price).toLocaleString()}</td>
+
+                <td>
+                  <span style={{ color: log.stock < 5 ? "red" : "inherit" }}>
+                    {formatValue(log.stock)}
+                  </span>
+                </td>
+
+                <td>
+                  <span className={`status-badge ${log.type?.toLowerCase()}`}>
+                    {log.type}
+                  </span>
+                </td>
+
+                <td>
+                  <div className="details-cell">
+                    <span title={log.details}>
+                      {showDetails[log._id]
+                        ? truncateText(log.details, 40)
+                        : "••••••••••"}
+                    </span>
+
+                    <div className="button-group">
+                      <button onClick={() => toggleDetails(log._id)}>
+                        {showDetails[log._id] ? "Hide" : "Show"}
+                      </button>
+
+                      <button onClick={() => handleCopy(log.details)}>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  {new Date(log.createdAt).toLocaleDateString()}
+                </td>
+
+                <td>
+                  <button onClick={() => handleEdit(log)}>Edit</button>
+                  <button onClick={() => handleDelete(log._id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
+
+      {/* PAGINATION */}
+      <div className="pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+        >
+          Prev
+        </button>
+
+        <span>
+          {currentPage} / {totalPages || 1}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+        >
+          Next
+        </button>
+      </div>
 
       {/* EDIT MODAL */}
       {showEditModal && (
@@ -828,7 +924,43 @@ const AdminLogs = () => {
               <option value="Google Voice">Google Voice</option>
             </select>
 
-            {/* rest unchanged */}
+            <input name="name" value={form.name} onChange={handleChange} />
+
+            <input
+              type="number"
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+            />
+
+            <select name="type" value={form.type} onChange={handleChange}>
+              <option value="">Type</option>
+              <option value="Aged">Aged</option>
+              <option value="PVA">PVA</option>
+              <option value="Verified">Verified</option>
+            </select>
+
+            <textarea
+              rows={6}
+              value={form.details.join("\n")}
+              onChange={(e) => {
+                const arr = e.target.value.split("\n");
+                setForm({
+                  ...form,
+                  details: arr,
+                  stock: arr.length,
+                });
+              }}
+            />
+
+            <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
+
+            <div className="modal-actions">
+              <button onClick={handleUpdateLog}>Update</button>
+              <button onClick={() => setShowEditModal(false)}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
