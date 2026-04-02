@@ -494,7 +494,7 @@ import instagramIcon from "../assets/instagram.png";
 import facebookIcon from "../assets/facebook.png";
 import twitterIcon from "../assets/twitter.png";
 import tiktokIcon from "../assets/tiktok.png";
-import mailIcon from "../assets/mmail.png";
+import mailIcon from "../assets/mail.png";
 import googleVoiceIcon from "../assets/google-voice.png";
 import netflixIcon from "../assets/netflix.png";
 
