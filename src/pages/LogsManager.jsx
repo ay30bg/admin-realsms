@@ -327,10 +327,10 @@ const AdminLogs = () => {
               <tr key={log._id}>
                 <td data-label="Platform">
                   <img
-                    src={platformIcons[log.platform]}
-                    alt=""
-                    style={{ width: 20, marginRight: 5 }}
-                  />
+  src={platformIcons[log.platform] || mailIcon}
+  alt={log.platform}
+  className="platform-icon"
+/>
                   {log.platform}
                 </td>
 
