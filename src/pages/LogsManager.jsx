@@ -325,15 +325,24 @@ const AdminLogs = () => {
           ) : (
             currentLogs.map((log) => (
               <tr key={log._id}>
-                <td data-label="Platform">
+                {/* <td data-label="Platform">
                   <img
   src={platformIcons[log.platform] || mailIcon}
   alt={log.platform}
   className="platform-icon"
 />
                   {log.platform}
-                </td>
+                </td> */}
 
+                <td data-label="Platform" className="platform-cell">
+  <img
+    src={platformIcons[log.platform] || mailIcon}
+    alt={log.platform}
+    className="platform-icon"
+  />
+  <span>{log.platform}</span>
+</td>
+        
                 <td data-label="Name" title={log.name}>
                   {truncateText(log.name, 25)}
                 </td>
