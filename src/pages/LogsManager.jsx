@@ -758,6 +758,9 @@ const AdminLogs = () => {
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="">Type (Optional)</option>
           <option value="Aged">Aged</option>
+          <option value="Dating">Dating</option>
+          <option value="Followers">Followers</option>
+          <option value="Softreg">Softreg</option>
           <option value="PVA">PVA</option>
           <option value="Verified">Verified</option>
         </select>
