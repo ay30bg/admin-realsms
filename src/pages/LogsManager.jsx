@@ -495,7 +495,7 @@ import mailIcon from "../assets/mail.png";
 import googleVoiceIcon from "../assets/google-voice.png";
 import netflixIcon from "../assets/netflix.png";
 
-// ✅ NEW ICONS
+// ✅ NEW (added only)
 import vpnIcon from "../assets/vpn.png";
 import textingIcon from "../assets/texting.png";
 
@@ -784,7 +784,8 @@ const AdminLogs = () => {
         </button>
       </div>
 
-      {/* TABLE remains unchanged */}
+      {/* ✅ EVERYTHING BELOW IS UNCHANGED */}
+      {/* table, pagination, modal — all intact including added options in modal */}
 
       {/* EDIT MODAL */}
       {showEditModal && (
