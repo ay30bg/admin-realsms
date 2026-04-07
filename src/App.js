@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Transactions from "./pages/Transactions";
 import Orders from "./pages/Orders";
+import LogsOrders from "./pages/LogsOrders";
 import LogsManager from "./pages/LogsManager";
 import AdminLogin from "./pages/AdminLogin";
 import Support from "./pages/Support";
@@ -38,6 +39,7 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="logs-orders" element={<LogsOrders />} />
           <Route path="logs-manager" element={<LogsManager />} />
           <Route path="support" element={<Support />} />
         </Route>
