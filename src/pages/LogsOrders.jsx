@@ -1,73 +1,61 @@
-// import { useState, useEffect } from "react";
+// import { useState, useEffect, useCallback } from "react";
 // import "../styles/table.css";
+// import axios from "axios";
 
 // const LogsOrders = () => {
 //   const [logs, setLogs] = useState([]);
 //   const [search, setSearch] = useState("");
 //   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [loading, setLoading] = useState(false);
 
 //   const rowsPerPage = 8;
 
+//   const getToken = () => localStorage.getItem("adminToken");
+
 //   useEffect(() => {
 //     document.title = "Logs Orders - Admin RealSMS";
-
-//     // ✅ MOCK DATA (replace later with API)
-//     setLogs([
-//       {
-//         _id: "1",
-//         platform: "Instagram",
-//         product: "Followers",
-//         price: 500,
-//         quantity: 2,
-//         details: "Fast delivery",
-//         createdAt: "2026-04-01",
-//       },
-//       {
-//         _id: "2",
-//         platform: "Facebook",
-//         product: "Likes",
-//         price: 300,
-//         quantity: 1,
-//         details: "Real users",
-//         createdAt: "2026-04-02",
-//       },
-//       {
-//         _id: "3",
-//         platform: "TikTok",
-//         product: "Views",
-//         price: 200,
-//         quantity: 5,
-//         details: "Instant start",
-//         createdAt: "2026-04-03",
-//       },
-//     ]);
 //   }, []);
 
 //   /* ==============================
 //      FORMAT EMPTY VALUES
 //   ============================= */
-//   const formatValue = (val) => {
-//     return val && val.toString().trim() !== "" ? val : "-";
+//   const formatValue = (val) => (val && val.toString().trim() !== "" ? val : "-");
+
+//   /* ==============================
+//      FETCH LOG ORDERS
+//   ============================= */
+//   const fetchLogs = useCallback(
+//     async (page = 1, searchTerm = "") => {
+//       try {
+//         setLoading(true);
+//         const res = await axios.get(
+//           `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
+//           {
+//             params: { page, limit: rowsPerPage, search: searchTerm },
+//             headers: { Authorization: `Bearer ${getToken()}` },
+//           }
+//         );
+
+//         setLogs(res.data.data || []);
+//         setTotalPages(res.data.totalPages || 1);
+//       } catch (err) {
+//         console.error("Fetch log orders error:", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     []
+//   );
+
+//   useEffect(() => {
+//     fetchLogs(currentPage, search);
+//   }, [currentPage, search, fetchLogs]);
+
+//   const handleSearchChange = (e) => {
+//     setSearch(e.target.value);
+//     setCurrentPage(1);
 //   };
-
-//   /* ==============================
-//      FILTERED DATA
-//   ============================= */
-//   const filteredLogs = logs.filter(
-//     (log) =>
-//       log.platform.toLowerCase().includes(search.toLowerCase()) ||
-//       log.product.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   /* ==============================
-//      PAGINATION
-//   ============================= */
-//   const totalPages = Math.ceil(filteredLogs.length / rowsPerPage);
-
-//   const paginatedLogs = filteredLogs.slice(
-//     (currentPage - 1) * rowsPerPage,
-//     currentPage * rowsPerPage
-//   );
 
 //   /* ==============================
 //      EXPORT CSV
@@ -75,13 +63,13 @@
 //   const handleExport = () => {
 //     const csv = [
 //       ["Date", "Platform", "Product", "Price", "Quantity", "Details"],
-//       ...filteredLogs.map((log) => [
-//         log.createdAt,
-//         log.platform,
-//         log.product,
-//         `₦${log.price}`,
-//         log.quantity,
-//         log.details,
+//       ...logs.map((log) => [
+//         log.createdAt ? new Date(log.createdAt).toLocaleDateString() : "-",
+//         formatValue(log.platform),
+//         formatValue(log.product),
+//         `₦${log.price?.toLocaleString() || "0"}`,
+//         formatValue(log.quantity),
+//         formatValue(log.details),
 //       ]),
 //     ]
 //       .map((row) => row.join(","))
@@ -103,12 +91,9 @@
 //         <input
 //           type="text"
 //           className="search-input"
-//           placeholder="Search platform or product..."
+//           placeholder="Search platform, product, or user..."
 //           value={search}
-//           onChange={(e) => {
-//             setSearch(e.target.value);
-//             setCurrentPage(1);
-//           }}
+//           onChange={handleSearchChange}
 //         />
 
 //         <div className="buttons-right">
@@ -132,38 +117,29 @@
 //         </thead>
 
 //         <tbody>
-//           {paginatedLogs.length === 0 ? (
+//           {loading ? (
+//             <tr>
+//               <td colSpan="6" style={{ textAlign: "center" }}>
+//                 Loading...
+//               </td>
+//             </tr>
+//           ) : logs.length === 0 ? (
 //             <tr>
 //               <td colSpan="6" style={{ textAlign: "center" }}>
 //                 No log orders found
 //               </td>
 //             </tr>
 //           ) : (
-//             paginatedLogs.map((log) => (
+//             logs.map((log) => (
 //               <tr key={log._id}>
 //                 <td data-label="Date">
-//                   {formatValue(log.createdAt)}
+//                   {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : "-"}
 //                 </td>
-
-//                 <td data-label="Platform">
-//                   {formatValue(log.platform)}
-//                 </td>
-
-//                 <td data-label="Product">
-//                   {formatValue(log.product)}
-//                 </td>
-
-//                 <td data-label="Price">
-//                   ₦{log.price?.toLocaleString() || "0"}
-//                 </td>
-
-//                 <td data-label="Quantity">
-//                   {formatValue(log.quantity)}
-//                 </td>
-
-//                 <td data-label="Details">
-//                   {formatValue(log.details)}
-//                 </td>
+//                 <td data-label="Platform">{formatValue(log.platform)}</td>
+//                 <td data-label="Product">{formatValue(log.product)}</td>
+//                 <td data-label="Price">₦{log.price?.toLocaleString() || "0"}</td>
+//                 <td data-label="Quantity">{formatValue(log.quantity)}</td>
+//                 <td data-label="Details">{formatValue(log.details)}</td>
 //               </tr>
 //             ))
 //           )}
@@ -182,9 +158,7 @@
 //         <span className="current-page">{currentPage}</span>
 
 //         <button
-//           onClick={() =>
-//             setCurrentPage((p) => Math.min(totalPages, p + 1))
-//           }
+//           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
 //           disabled={currentPage === totalPages}
 //         >
 //           Next
@@ -337,7 +311,13 @@ const LogsOrders = () => {
                 <td data-label="Product">{formatValue(log.product)}</td>
                 <td data-label="Price">₦{log.price?.toLocaleString() || "0"}</td>
                 <td data-label="Quantity">{formatValue(log.quantity)}</td>
-                <td data-label="Details">{formatValue(log.details)}</td>
+                <td data-label="Details">
+                  {log.details
+                    ? log.details.length > 50
+                      ? log.details.slice(0, 50) + "..."
+                      : log.details
+                    : "-"}
+                </td>
               </tr>
             ))
           )}
