@@ -145,7 +145,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
           <NavLink to="/admin/orders" onClick={toggleSidebar}>
             <FiPlusCircle className="sidebar-icon" />
-            <span>Orders</span>
+            <span>Number Orders</span>
+          </NavLink>
+
+           <NavLink to="/admin/logs-orders" onClick={toggleSidebar}>
+            <FiPlusCircle className="sidebar-icon" />
+            <span>Logs Orders</span>
           </NavLink>
 
          <NavLink to="/admin/logs-manager" onClick={toggleSidebar}>
