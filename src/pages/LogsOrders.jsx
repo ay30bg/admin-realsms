@@ -309,7 +309,7 @@ const LogsOrders = () => {
               <tr key={log._id}>
                 {/* USER EMAIL */}
                 <td data-label="User">
-                  {formatValue(log.user?.email)}
+                  {formatValue(log.user)}
                 </td>
 
                 <td data-label="Date">
