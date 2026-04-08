@@ -139,7 +139,13 @@
 //                 <td data-label="Product">{formatValue(log.product)}</td>
 //                 <td data-label="Price">₦{log.price?.toLocaleString() || "0"}</td>
 //                 <td data-label="Quantity">{formatValue(log.quantity)}</td>
-//                 <td data-label="Details">{formatValue(log.details)}</td>
+//                 <td data-label="Details">
+//                   {log.details
+//                     ? log.details.length > 50
+//                       ? log.details.slice(0, 50) + "..."
+//                       : log.details
+//                     : "-"}
+//                 </td>
 //               </tr>
 //             ))
 //           )}
@@ -189,36 +195,28 @@ const LogsOrders = () => {
     document.title = "Logs Orders - Admin RealSMS";
   }, []);
 
-  /* ==============================
-     FORMAT EMPTY VALUES
-  ============================= */
-  const formatValue = (val) => (val && val.toString().trim() !== "" ? val : "-");
+  const formatValue = (val) =>
+    val && val.toString().trim() !== "" ? val : "-";
 
-  /* ==============================
-     FETCH LOG ORDERS
-  ============================= */
-  const fetchLogs = useCallback(
-    async (page = 1, searchTerm = "") => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
-          {
-            params: { page, limit: rowsPerPage, search: searchTerm },
-            headers: { Authorization: `Bearer ${getToken()}` },
-          }
-        );
+  const fetchLogs = useCallback(async (page = 1, searchTerm = "") => {
+    try {
+      setLoading(true);
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
+        {
+          params: { page, limit: rowsPerPage, search: searchTerm },
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
 
-        setLogs(res.data.data || []);
-        setTotalPages(res.data.totalPages || 1);
-      } catch (err) {
-        console.error("Fetch log orders error:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+      setLogs(res.data.data || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err) {
+      console.error("Fetch log orders error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchLogs(currentPage, search);
@@ -234,9 +232,12 @@ const LogsOrders = () => {
   ============================= */
   const handleExport = () => {
     const csv = [
-      ["Date", "Platform", "Product", "Price", "Quantity", "Details"],
+      ["User", "Date", "Platform", "Product", "Price", "Quantity", "Details"],
       ...logs.map((log) => [
-        log.createdAt ? new Date(log.createdAt).toLocaleDateString() : "-",
+        formatValue(log.user),
+        log.createdAt
+          ? new Date(log.createdAt).toLocaleDateString()
+          : "-",
         formatValue(log.platform),
         formatValue(log.product),
         `₦${log.price?.toLocaleString() || "0"}`,
@@ -258,7 +259,6 @@ const LogsOrders = () => {
     <div className="table-page">
       <h1>Logs Orders</h1>
 
-      {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
@@ -275,10 +275,10 @@ const LogsOrders = () => {
         </div>
       </div>
 
-      {/* Table */}
       <table className="admin-table">
         <thead>
           <tr>
+            <th>User</th>
             <th>Date</th>
             <th>Platform</th>
             <th>Product</th>
@@ -291,26 +291,43 @@ const LogsOrders = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center" }}>
+              <td colSpan="7" style={{ textAlign: "center" }}>
                 Loading...
               </td>
             </tr>
           ) : logs.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center" }}>
+              <td colSpan="7" style={{ textAlign: "center" }}>
                 No log orders found
               </td>
             </tr>
           ) : (
             logs.map((log) => (
               <tr key={log._id}>
+                <td data-label="User">{formatValue(log.user)}</td>
+
                 <td data-label="Date">
-                  {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : "-"}
+                  {log.createdAt
+                    ? new Date(log.createdAt).toLocaleDateString()
+                    : "-"}
                 </td>
-                <td data-label="Platform">{formatValue(log.platform)}</td>
-                <td data-label="Product">{formatValue(log.product)}</td>
-                <td data-label="Price">₦{log.price?.toLocaleString() || "0"}</td>
-                <td data-label="Quantity">{formatValue(log.quantity)}</td>
+
+                <td data-label="Platform">
+                  {formatValue(log.platform)}
+                </td>
+
+                <td data-label="Product">
+                  {formatValue(log.product)}
+                </td>
+
+                <td data-label="Price">
+                  ₦{log.price?.toLocaleString() || "0"}
+                </td>
+
+                <td data-label="Quantity">
+                  {formatValue(log.quantity)}
+                </td>
+
                 <td data-label="Details">
                   {log.details
                     ? log.details.length > 50
@@ -324,7 +341,6 @@ const LogsOrders = () => {
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -336,7 +352,9 @@ const LogsOrders = () => {
         <span className="current-page">{currentPage}</span>
 
         <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          onClick={() => setCurrentPage((p) =>
+            Math.min(totalPages, p + 1)
+          )}
           disabled={currentPage === totalPages}
         >
           Next
