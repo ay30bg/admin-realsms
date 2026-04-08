@@ -198,6 +198,9 @@ const LogsOrders = () => {
   const formatValue = (val) =>
     val && val.toString().trim() !== "" ? val : "-";
 
+  /* ==============================
+     FETCH LOG ORDERS
+  ============================= */
   const fetchLogs = useCallback(async (page = 1, searchTerm = "") => {
     try {
       setLoading(true);
@@ -234,7 +237,7 @@ const LogsOrders = () => {
     const csv = [
       ["User", "Date", "Platform", "Product", "Price", "Quantity", "Details"],
       ...logs.map((log) => [
-        formatValue(log.user),
+        log.user && log.user !== "Guest" ? log.user : "Guest",
         log.createdAt
           ? new Date(log.createdAt).toLocaleDateString()
           : "-",
@@ -259,6 +262,7 @@ const LogsOrders = () => {
     <div className="table-page">
       <h1>Logs Orders</h1>
 
+      {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
@@ -275,6 +279,7 @@ const LogsOrders = () => {
         </div>
       </div>
 
+      {/* Table */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -304,30 +309,45 @@ const LogsOrders = () => {
           ) : (
             logs.map((log) => (
               <tr key={log._id}>
-                <td data-label="User">{formatValue(log.user)}</td>
+                {/* USER */}
+                <td data-label="User">
+                  {log.user && log.user !== "Guest" ? (
+                    log.user.length > 20
+                      ? log.user.slice(0, 20) + "..."
+                      : log.user
+                  ) : (
+                    <span className="guest-badge">Guest</span>
+                  )}
+                </td>
 
+                {/* DATE */}
                 <td data-label="Date">
                   {log.createdAt
                     ? new Date(log.createdAt).toLocaleDateString()
                     : "-"}
                 </td>
 
+                {/* PLATFORM */}
                 <td data-label="Platform">
                   {formatValue(log.platform)}
                 </td>
 
+                {/* PRODUCT */}
                 <td data-label="Product">
                   {formatValue(log.product)}
                 </td>
 
+                {/* PRICE */}
                 <td data-label="Price">
                   ₦{log.price?.toLocaleString() || "0"}
                 </td>
 
+                {/* QUANTITY */}
                 <td data-label="Quantity">
                   {formatValue(log.quantity)}
                 </td>
 
+                {/* DETAILS */}
                 <td data-label="Details">
                   {log.details
                     ? log.details.length > 50
@@ -341,6 +361,7 @@ const LogsOrders = () => {
         </tbody>
       </table>
 
+      {/* Pagination */}
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -352,9 +373,9 @@ const LogsOrders = () => {
         <span className="current-page">{currentPage}</span>
 
         <button
-          onClick={() => setCurrentPage((p) =>
-            Math.min(totalPages, p + 1)
-          )}
+          onClick={() =>
+            setCurrentPage((p) => Math.min(totalPages, p + 1))
+          }
           disabled={currentPage === totalPages}
         >
           Next
