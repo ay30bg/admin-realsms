@@ -195,31 +195,38 @@ const LogsOrders = () => {
     document.title = "Logs Orders - Admin RealSMS";
   }, []);
 
+  /* ==============================
+     FORMAT EMPTY VALUES
+  ============================= */
   const formatValue = (val) =>
     val && val.toString().trim() !== "" ? val : "-";
 
   /* ==============================
      FETCH LOG ORDERS
   ============================= */
-  const fetchLogs = useCallback(async (page = 1, searchTerm = "") => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
-        {
-          params: { page, limit: rowsPerPage, search: searchTerm },
-          headers: { Authorization: `Bearer ${getToken()}` },
-        }
-      );
+  const fetchLogs = useCallback(
+    async (page = 1, searchTerm = "") => {
+      try {
+        setLoading(true);
 
-      setLogs(res.data.data || []);
-      setTotalPages(res.data.totalPages || 1);
-    } catch (err) {
-      console.error("Fetch log orders error:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
+          {
+            params: { page, limit: rowsPerPage, search: searchTerm },
+            headers: { Authorization: `Bearer ${getToken()}` },
+          }
+        );
+
+        setLogs(res.data.data || []);
+        setTotalPages(res.data.totalPages || 1);
+      } catch (err) {
+        console.error("Fetch log orders error:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     fetchLogs(currentPage, search);
@@ -235,9 +242,17 @@ const LogsOrders = () => {
   ============================= */
   const handleExport = () => {
     const csv = [
-      ["User Email", "Date", "Platform", "Product", "Price", "Quantity", "Details"],
+      [
+        "User Email",
+        "Date",
+        "Platform",
+        "Product",
+        "Price",
+        "Quantity",
+        "Details",
+      ],
       ...logs.map((log) => [
-        formatValue(log.user?.email),
+        formatValue(log.user), // ✅ FIXED
         log.createdAt
           ? new Date(log.createdAt).toLocaleDateString()
           : "-",
@@ -251,7 +266,10 @@ const LogsOrders = () => {
       .map((row) => row.join(","))
       .join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "log-orders.csv";
@@ -262,6 +280,7 @@ const LogsOrders = () => {
     <div className="table-page">
       <h1>Logs Orders</h1>
 
+      {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
@@ -278,10 +297,11 @@ const LogsOrders = () => {
         </div>
       </div>
 
+      {/* Table */}
       <table className="admin-table">
         <thead>
           <tr>
-            <th>User</th> {/* NEW */}
+            <th>User</th>
             <th>Date</th>
             <th>Platform</th>
             <th>Product</th>
@@ -294,22 +314,22 @@ const LogsOrders = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
+              <td colSpan="7" className="table-center">
                 Loading...
               </td>
             </tr>
           ) : logs.length === 0 ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
+              <td colSpan="7" className="table-center">
                 No log orders found
               </td>
             </tr>
           ) : (
             logs.map((log) => (
               <tr key={log._id}>
-                {/* USER EMAIL */}
+                {/* ✅ USER EMAIL FIXED */}
                 <td data-label="User">
-                  {formatValue(log.user?.email)}
+                  {formatValue(log.user)}
                 </td>
 
                 <td data-label="Date">
@@ -334,7 +354,7 @@ const LogsOrders = () => {
                   {formatValue(log.quantity)}
                 </td>
 
-                <td data-label="Details">
+                <td data-label="Details" className="truncate">
                   {log.details
                     ? log.details.length > 50
                       ? log.details.slice(0, 50) + "..."
@@ -347,19 +367,28 @@ const LogsOrders = () => {
         </tbody>
       </table>
 
+      {/* Pagination */}
       <div className="pagination">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          className="btn"
+          onClick={() =>
+            setCurrentPage((p) => Math.max(1, p - 1))
+          }
           disabled={currentPage === 1}
         >
           Previous
         </button>
 
-        <span className="current-page">{currentPage}</span>
+        <span className="current-page">
+          Page {currentPage} of {totalPages}
+        </span>
 
         <button
+          className="btn"
           onClick={() =>
-            setCurrentPage((p) => Math.min(totalPages, p + 1))
+            setCurrentPage((p) =>
+              Math.min(totalPages, p + 1)
+            )
           }
           disabled={currentPage === totalPages}
         >
