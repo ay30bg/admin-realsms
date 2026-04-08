@@ -178,52 +178,56 @@
 
 import { useState, useEffect, useCallback } from "react";
 import "../styles/table.css";
-import axios from "axios";
 
-const LogsOrders = () => {
-  const [logs, setLogs] = useState([]);
+const Orders = () => {
+  const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const rowsPerPage = 8;
-
   const getToken = () => localStorage.getItem("adminToken");
 
   useEffect(() => {
-    document.title = "Logs Orders - Admin RealSMS";
+    document.title = "Orders - Admin RealSMS";
   }, []);
 
   const formatValue = (val) =>
     val && val.toString().trim() !== "" ? val : "-";
 
   /* ==============================
-     FETCH LOG ORDERS
+     FETCH ORDERS
   ============================= */
-  const fetchLogs = useCallback(async (page = 1, searchTerm = "") => {
+  const fetchOrders = useCallback(async (page = 1, searchTerm = "") => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/admin/log-orders`,
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/admin/orders?search=${searchTerm}&page=${page}&limit=${rowsPerPage}`,
         {
-          params: { page, limit: rowsPerPage, search: searchTerm },
-          headers: { Authorization: `Bearer ${getToken()}` },
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
         }
       );
 
-      setLogs(res.data.data || []);
-      setTotalPages(res.data.totalPages || 1);
+      if (!res.ok) throw new Error("Failed to fetch orders");
+
+      const json = await res.json();
+
+      setOrders(json.data || []);
+      setTotalPages(json.totalPages || 1);
     } catch (err) {
-      console.error("Fetch log orders error:", err);
+      console.error("Fetch orders error:", err);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchLogs(currentPage, search);
-  }, [currentPage, search, fetchLogs]);
+    fetchOrders(currentPage, search);
+  }, [currentPage, search, fetchOrders]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -235,17 +239,18 @@ const LogsOrders = () => {
   ============================= */
   const handleExport = () => {
     const csv = [
-      ["User", "Date", "Platform", "Product", "Price", "Quantity", "Details"],
-      ...logs.map((log) => [
-        log.user && log.user !== "Guest" ? log.user : "Guest",
-        log.createdAt
-          ? new Date(log.createdAt).toLocaleDateString()
+      ["User", "OTP", "Service", "Country", "Number", "Amount", "Status", "Date"],
+      ...orders.map((o) => [
+        o.user && o.user !== "Guest" ? o.user : "Guest",
+        formatValue(o.otp),
+        formatValue(o.service),
+        formatValue(o.country),
+        formatValue(o.number),
+        `₦${o.priceCharged?.toLocaleString() || "0"}`,
+        formatValue(o.status),
+        o.createdAt
+          ? new Date(o.createdAt).toLocaleDateString()
           : "-",
-        formatValue(log.platform),
-        formatValue(log.product),
-        `₦${log.price?.toLocaleString() || "0"}`,
-        formatValue(log.quantity),
-        formatValue(log.details),
       ]),
     ]
       .map((row) => row.join(","))
@@ -254,20 +259,20 @@ const LogsOrders = () => {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "log-orders.csv";
+    link.download = "orders.csv";
     link.click();
   };
 
   return (
     <div className="table-page">
-      <h1>Logs Orders</h1>
+      <h1>Orders</h1>
 
       {/* Controls */}
       <div className="table-controls">
         <input
           type="text"
           className="search-input"
-          placeholder="Search platform, product, or user..."
+          placeholder="Search by User or OTP..."
           value={search}
           onChange={handleSearchChange}
         />
@@ -284,75 +289,71 @@ const LogsOrders = () => {
         <thead>
           <tr>
             <th>User</th>
+            <th>OTP</th>
+            <th>Service</th>
+            <th>Country</th>
+            <th>Number</th>
+            <th>Amount</th>
+            <th>Status</th>
             <th>Date</th>
-            <th>Platform</th>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Details</th>
           </tr>
         </thead>
 
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
+              <td colSpan="8" style={{ textAlign: "center" }}>
                 Loading...
               </td>
             </tr>
-          ) : logs.length === 0 ? (
+          ) : orders.length === 0 ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
-                No log orders found
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No orders found
               </td>
             </tr>
           ) : (
-            logs.map((log) => (
-              <tr key={log._id}>
+            orders.map((order) => (
+              <tr key={order._id}>
                 {/* USER */}
                 <td data-label="User">
-                  {log.user && log.user !== "Guest" ? (
-                    log.user.length > 20
-                      ? log.user.slice(0, 20) + "..."
-                      : log.user
+                  {order.user && order.user !== "Guest" ? (
+                    order.user.length > 20
+                      ? order.user.slice(0, 20) + "..."
+                      : order.user
                   ) : (
                     <span className="guest-badge">Guest</span>
                   )}
                 </td>
 
+                {/* OTP */}
+                <td data-label="OTP">{formatValue(order.otp)}</td>
+
+                {/* SERVICE */}
+                <td data-label="Service">{formatValue(order.service)}</td>
+
+                {/* COUNTRY */}
+                <td data-label="Country">{formatValue(order.country)}</td>
+
+                {/* NUMBER */}
+                <td data-label="Number">{formatValue(order.number)}</td>
+
+                {/* AMOUNT */}
+                <td data-label="Amount">
+                  ₦{order.priceCharged?.toLocaleString() || "0"}
+                </td>
+
+                {/* STATUS */}
+                <td data-label="Status">
+                  <span className={`status-badge ${order.status?.toLowerCase()}`}>
+                    {formatValue(order.status)}
+                  </span>
+                </td>
+
                 {/* DATE */}
                 <td data-label="Date">
-                  {log.createdAt
-                    ? new Date(log.createdAt).toLocaleDateString()
-                    : "-"}
-                </td>
-
-                {/* PLATFORM */}
-                <td data-label="Platform">
-                  {formatValue(log.platform)}
-                </td>
-
-                {/* PRODUCT */}
-                <td data-label="Product">
-                  {formatValue(log.product)}
-                </td>
-
-                {/* PRICE */}
-                <td data-label="Price">
-                  ₦{log.price?.toLocaleString() || "0"}
-                </td>
-
-                {/* QUANTITY */}
-                <td data-label="Quantity">
-                  {formatValue(log.quantity)}
-                </td>
-
-                {/* DETAILS */}
-                <td data-label="Details">
-                  {log.details
-                    ? log.details.length > 50
-                      ? log.details.slice(0, 50) + "..."
-                      : log.details
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleDateString()
                     : "-"}
                 </td>
               </tr>
@@ -385,4 +386,4 @@ const LogsOrders = () => {
   );
 };
 
-export default LogsOrders;
+export default Orders;
