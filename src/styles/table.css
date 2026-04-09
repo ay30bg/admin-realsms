@@ -649,7 +649,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 500px; /* optional for desktop */
+  max-width: 300px; /* optional for desktop */
 }
 
 /* Mobile truncation */
