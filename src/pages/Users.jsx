@@ -150,14 +150,15 @@ const Users = () => {
   ============================== */
   const handleExport = () => {
     const csv = [
-      ["Email", "Balance", "Date Joined", "Status"],
-      ...data.map((u) => [
-        u.email,
-        `₦${u.balance?.toLocaleString()}`,
-        new Date(u.dateJoined).toLocaleDateString(),
-        u.status,
-      ]),
-    ]
+  ["Email", "Balance", "Total Deposit", "Date Joined", "Status"],
+  ...data.map((u) => [
+    u.email,
+    `₦${u.balance?.toLocaleString()}`,
+    `₦${u.totalDeposits?.toLocaleString() || 0}`,
+    new Date(u.dateJoined).toLocaleDateString(),
+    u.status,
+  ]),
+]
       .map((row) => row.join(","))
       .join("\n");
 
@@ -195,6 +196,7 @@ const Users = () => {
           <tr>
             <th>Email</th>
             <th>Balance</th>
+            <th>Total Deposit</th>
             <th>Date Joined</th>
             <th>Status</th>
             <th>Actions</th>
@@ -221,6 +223,9 @@ const Users = () => {
                 <td data-label="Balance">
                   ₦{user.balance?.toLocaleString()}
                 </td>
+                 <td data-label="Total Deposit">
+                ₦{user.totalDeposits?.toLocaleString() || 0}
+                 </td>
                 <td data-label="Date Joined">
                   {new Date(user.dateJoined).toLocaleDateString()}
                 </td>
