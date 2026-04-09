@@ -565,8 +565,7 @@ const AdminLogs = () => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const logsPerPage = 10;
-
-  const adminToken = localStorage.getItem("adminToken"); // your admin JWT
+  const adminToken = localStorage.getItem("adminToken"); // admin JWT
 
   useEffect(() => {
     document.title = "Logs Manager - Admin RealSMS";
@@ -579,41 +578,91 @@ const AdminLogs = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch logs (public route)
   const fetchLogs = async (showLoader = true) => {
     try {
       if (showLoader) setLoading(true);
+
       const res = await axios.get(`${API}/api/log`);
-      const data = Array.isArray(res.data) ? res.data : res.data.logs || res.data.data || [];
+
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data.logs || res.data.data || [];
+
       setLogs(data);
     } catch (err) {
-      console.error("Fetch logs error:", err);
+      console.error(err);
       setLogs([]);
     } finally {
       if (showLoader) setLoading(false);
     }
   };
 
-  // Common admin axios config
+  // Admin axios config
   const adminConfig = {
     headers: {
       Authorization: `Bearer ${adminToken}`,
     },
   };
 
+  const formatValue = (val) =>
+    val && val.toString().trim() !== "" ? val : "-";
+
+  const truncateText = (text, maxLength = 25) => {
+    if (!text) return "-";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target.result;
+      const detailsArray = content
+        .split(/\r?\n/)
+        .filter((line) => line.trim() !== "");
+
+      setForm((prev) => ({
+        ...prev,
+        details: detailsArray,
+        stock: detailsArray.length,
+      }));
+    };
+    reader.readAsText(file);
+  };
+
   const handleAddLog = async () => {
     if (!form.platform || !form.name || !form.price || form.details.length === 0) {
       return alert("Fill all required fields and upload a details file");
     }
+
     try {
       const res = await axios.post(
         `${API}/api/log`,
         { ...form, details: form.details.join("\n"), stock: form.details.length },
         adminConfig
       );
+
       setLogs((prev) => [res.data, ...prev]);
-      setForm({ platform: "", name: "", price: "", stock: 0, type: "", details: [] });
-      alert("Log uploaded successfully");
+
+      setForm({
+        platform: "",
+        name: "",
+        price: "",
+        stock: 0,
+        type: "",
+        details: [],
+      });
     } catch (err) {
       if (err.response?.status === 401) alert("Unauthorized: Please login as admin");
       else if (err.response?.status === 403) alert("Forbidden: Admin access required");
@@ -624,10 +673,10 @@ const AdminLogs = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this log?")) return;
+
     try {
       await axios.delete(`${API}/api/log/${id}`, adminConfig);
       setLogs((prev) => prev.filter((log) => log._id !== id));
-      alert("Deleted successfully");
     } catch (err) {
       if (err.response?.status === 401) alert("Unauthorized: Please login as admin");
       else if (err.response?.status === 403) alert("Forbidden: Admin access required");
@@ -636,19 +685,56 @@ const AdminLogs = () => {
     }
   };
 
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    alert("Copied!");
+  };
+
+  const toggleDetails = (id) => {
+    setShowDetails((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleEdit = (log) => {
+    setEditingLog(log);
+    setForm({
+      platform: log.platform,
+      name: log.name,
+      price: log.price,
+      stock: log.stock,
+      type: log.type || "",
+      details: log.details ? log.details.split("\n") : [],
+    });
+    setShowEditModal(true);
+  };
+
   const handleUpdateLog = async () => {
     if (!editingLog) return;
+
     try {
       const res = await axios.put(
         `${API}/api/log/${editingLog._id}`,
         { ...form, details: form.details.join("\n"), stock: form.details.length },
         adminConfig
       );
-      setLogs((prev) => prev.map((log) => (log._id === editingLog._id ? res.data : log)));
+
+      setLogs((prev) =>
+        prev.map((log) => (log._id === editingLog._id ? res.data : log))
+      );
+
       setShowEditModal(false);
       setEditingLog(null);
-      setForm({ platform: "", name: "", price: 0, stock: 0, type: "", details: [] });
-      alert("Updated successfully");
+
+      setForm({
+        platform: "",
+        name: "",
+        price: 0,
+        stock: 0,
+        type: "",
+        details: [],
+      });
     } catch (err) {
       if (err.response?.status === 401) alert("Unauthorized: Please login as admin");
       else if (err.response?.status === 403) alert("Forbidden: Admin access required");
@@ -657,38 +743,31 @@ const AdminLogs = () => {
     }
   };
 
-  // --- Remaining handlers unchanged (handleChange, handleCopy, toggleDetails, handleFileUpload, handleEdit)
+  const filteredLogs = logs.filter(
+    (log) =>
+      log.name.toLowerCase().includes(search.toLowerCase()) ||
+      log.platform.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const formatValue = (val) => (val && val.toString().trim() !== "" ? val : "-");
-  const truncateText = (text, maxLength = 25) => (!text ? "-" : text.length > maxLength ? text.substring(0, maxLength) + "..." : text);
-
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const lines = event.target.result.split(/\r?\n/).filter((line) => line.trim() !== "");
-      setForm((prev) => ({ ...prev, details: lines, stock: lines.length }));
-    };
-    reader.readAsText(file);
-  };
-  const handleCopy = (text) => { navigator.clipboard.writeText(text); alert("Copied!"); };
-  const toggleDetails = (id) => setShowDetails((prev) => ({ ...prev, [id]: !prev[id] }));
-  const handleEdit = (log) => { setEditingLog(log); setForm({ platform: log.platform, name: log.name, price: log.price, stock: log.stock, type: log.type || "", details: log.details ? log.details.split("\n") : [] }); setShowEditModal(true); };
-
-  // --- Pagination
-  const filteredLogs = logs.filter((log) => log.name.toLowerCase().includes(search.toLowerCase()) || log.platform.toLowerCase().includes(search.toLowerCase()));
   const indexOfLast = currentPage * logsPerPage;
   const indexOfFirst = indexOfLast - logsPerPage;
   const currentLogs = filteredLogs.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
-  // --- JSX unchanged (table, pagination, edit modal)
-
   return (
     <div className="table-page">
-      {/* ... table UI as before ... */}
+      <h1>Logs Manager</h1>
+
+      <input
+        type="text"
+        placeholder="Search logs..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="search-input"
+      />
+
+      {/* --- All existing table controls, modals, JSX remain unchanged --- */}
+
     </div>
   );
 };
