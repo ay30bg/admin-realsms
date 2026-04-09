@@ -754,7 +754,7 @@ const AdminLogs = () => {
   const currentLogs = filteredLogs.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
-  return (
+   return (
     <div className="table-page">
       <h1>Logs Manager</h1>
 
@@ -766,8 +766,263 @@ const AdminLogs = () => {
         className="search-input"
       />
 
-      {/* --- All existing table controls, modals, JSX remain unchanged --- */}
+      <div className="logs-table-controls">
+        <select name="platform" value={form.platform} onChange={handleChange}>
+          <option value="">Platform</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Twitter">Twitter</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Mail">Mail</option>
+          <option value="Google Voice">Google Voice</option>
+          <option value="Netflix">Netflix</option>
+          <option value="VPN">VPN</option>
+          <option value="Texting Apps">Texting Apps</option>
+        </select>
 
+        <input
+          name="name"
+          placeholder="Product Name"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+        />
+
+        {/* ✅ OPTIONAL */}
+        <select name="type" value={form.type} onChange={handleChange}>
+          <option value="">Type (Optional)</option>
+          <option value="Aged">Aged</option>
+          <option value="Dating">Dating</option>
+          <option value="Followers">Followers</option>
+          <option value="Softreg">Softreg</option>
+          <option value="PVA">PVA</option>
+          <option value="Verified">Verified</option>
+        </select>
+
+        <div className="file-upload-wrapper">
+          <input
+            type="file"
+            id="fileUpload"
+            accept=".txt,.csv"
+            onChange={handleFileUpload}
+            className="file-input"
+          />
+          <label htmlFor="fileUpload" className="file-label">
+            Choose File
+          </label>
+          <span className="file-name">
+            {form.details.length > 0
+              ? `${form.details.length} lines uploaded`
+              : "No file chosen"}
+          </span>
+        </div>
+
+        <button className="logs-btn" onClick={handleAddLog}>
+          Upload
+        </button>
+      </div>
+
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                Loading...
+              </td>
+            </tr>
+          ) : currentLogs.length === 0 ? (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No logs found
+              </td>
+            </tr>
+          ) : (
+            currentLogs.map((log) => (
+              <tr key={log._id}>
+                <td data-label="Platform" className="platform-cell">
+                  <img
+                    src={platformIcons[log.platform] || mailIcon}
+                    alt={log.platform}
+                    className="platform-icon"
+                  />
+                  <span>{log.platform}</span>
+                </td>
+
+                <td data-label="Name" title={log.name}>
+                  {truncateText(log.name, 25)}
+                </td>
+
+                <td data-label="Price">
+                  ₦{Number(log.price).toLocaleString()}
+                </td>
+
+                <td data-label="Stock">
+                  <span style={{ color: log.stock < 5 ? "red" : "inherit" }}>
+                    {formatValue(log.stock)}
+                  </span>
+                </td>
+
+                <td data-label="Type">
+                  <span
+                    className={`status-badge ${
+                      log.type ? log.type.toLowerCase() : "na"
+                    }`}
+                  >
+                    {log.type || "N/A"}
+                  </span>
+                </td>
+
+                <td data-label="Details">
+                  <div className="details-cell">
+                    <span title={log.details}>
+                      {showDetails[log._id]
+                        ? truncateText(log.details, 40)
+                        : "••••••••••"}
+                    </span>
+
+                    <div className="button-group">
+                      <button
+                        className="toggle-btn"
+                        onClick={() => toggleDetails(log._id)}
+                      >
+                        {showDetails[log._id] ? "Hide" : "Show"}
+                      </button>
+
+                      <button
+                        className="copy-btn"
+                        onClick={() => handleCopy(log.details)}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                </td>
+
+                <td data-label="Date">
+                  {new Date(log.createdAt).toLocaleDateString()}
+                </td>
+
+                <td data-label="Action">
+                  <div className="action-buttons">
+                    <button
+                      className="btn btn-edit"
+                      onClick={() => handleEdit(log)}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="btn btn-delete"
+                      onClick={() => handleDelete(log._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      <div className="pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+        >
+          Prev
+        </button>
+
+        <span>
+          {currentPage} / {totalPages || 1}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+        >
+          Next
+        </button>
+      </div>
+
+      {showEditModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Edit Log</h2>
+
+            <select name="platform" value={form.platform} onChange={handleChange}>
+              <option value="">Platform</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Twitter">Twitter</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Mail">Mail</option>
+              <option value="Google Voice">Google Voice</option>
+              <option value="Netflix">Netflix</option>
+              <option value="VPN">VPN</option>
+              <option value="Texting Apps">Texting Apps</option>
+            </select>
+
+            <input name="name" value={form.name} onChange={handleChange} />
+
+            <input
+              type="number"
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+            />
+
+            <select name="type" value={form.type} onChange={handleChange}>
+              <option value="">Type (Optional)</option>
+              <option value="Aged">Aged</option>
+              <option value="PVA">PVA</option>
+              <option value="Verified">Verified</option>
+            </select>
+
+            <textarea
+              rows={6}
+              value={form.details.join("\n")}
+              onChange={(e) => {
+                const arr = e.target.value.split("\n");
+                setForm({
+                  ...form,
+                  details: arr,
+                  stock: arr.length,
+                });
+              }}
+            />
+
+            <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
+
+            <div className="modal-actions">
+              <button onClick={handleUpdateLog}>Update</button>
+              <button onClick={() => setShowEditModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
