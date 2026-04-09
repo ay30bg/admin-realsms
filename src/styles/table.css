@@ -671,6 +671,15 @@
     border: 1px solid #ccc;
     z-index: 10;
   }
+
+  .admin-table td[data-label="Details"] {
+    justify-content: flex-end;
+    font-weight: bold;
+    max-width: 140px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 @media (max-width: 768px) {
