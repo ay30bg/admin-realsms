@@ -13,7 +13,6 @@
 // import textingIcon from "../assets/texting.png";
 // import vpnIcon from "../assets/vpn.png";
 
-
 // const API = process.env.REACT_APP_API_URL;
 
 // const platformIcons = {
@@ -24,7 +23,7 @@
 //   Mail: mailIcon,
 //   "Google Voice": googleVoiceIcon,
 //   Netflix: netflixIcon,
-//  VPN: vpnIcon,
+//   VPN: vpnIcon,
 //   "Texting Apps": textingIcon,
 // };
 
@@ -111,6 +110,7 @@
 //   };
 
 //   const handleAddLog = async () => {
+//     // ✅ type is optional
 //     if (
 //       !form.platform ||
 //       !form.name ||
@@ -173,7 +173,7 @@
 //       name: log.name,
 //       price: log.price,
 //       stock: log.stock,
-//       type: log.type,
+//       type: log.type || "",
 //       details: log.details ? log.details.split("\n") : [],
 //     });
 //     setShowEditModal(true);
@@ -264,9 +264,13 @@
 //           onChange={handleChange}
 //         />
 
+//         {/* ✅ OPTIONAL */}
 //         <select name="type" value={form.type} onChange={handleChange}>
-//           <option value="">Type</option>
+//           <option value="">Type (Optional)</option>
 //           <option value="Aged">Aged</option>
+//           <option value="Dating">Dating</option>
+//           <option value="Followers">Followers</option>
+//           <option value="Softreg">Softreg</option>
 //           <option value="PVA">PVA</option>
 //           <option value="Verified">Verified</option>
 //         </select>
@@ -325,14 +329,14 @@
 //             currentLogs.map((log) => (
 //               <tr key={log._id}>
 //                 <td data-label="Platform" className="platform-cell">
-//   <img
-//     src={platformIcons[log.platform] || mailIcon}
-//     alt={log.platform}
-//     className="platform-icon"
-//   />
-//   <span>{log.platform}</span>
-// </td>
-        
+//                   <img
+//                     src={platformIcons[log.platform] || mailIcon}
+//                     alt={log.platform}
+//                     className="platform-icon"
+//                   />
+//                   <span>{log.platform}</span>
+//                 </td>
+
 //                 <td data-label="Name" title={log.name}>
 //                   {truncateText(log.name, 25)}
 //                 </td>
@@ -348,8 +352,12 @@
 //                 </td>
 
 //                 <td data-label="Type">
-//                   <span className={`status-badge ${log.type?.toLowerCase()}`}>
-//                     {log.type}
+//                   <span
+//                     className={`status-badge ${
+//                       log.type ? log.type.toLowerCase() : "na"
+//                     }`}
+//                   >
+//                     {log.type || "N/A"}
 //                   </span>
 //                 </td>
 
@@ -440,6 +448,8 @@
 //               <option value="Mail">Mail</option>
 //               <option value="Google Voice">Google Voice</option>
 //               <option value="Netflix">Netflix</option>
+//               <option value="VPN">VPN</option>
+//               <option value="Texting Apps">Texting Apps</option>
 //             </select>
 
 //             <input name="name" value={form.name} onChange={handleChange} />
@@ -452,7 +462,7 @@
 //             />
 
 //             <select name="type" value={form.type} onChange={handleChange}>
-//               <option value="">Type</option>
+//               <option value="">Type (Optional)</option>
 //               <option value="Aged">Aged</option>
 //               <option value="PVA">PVA</option>
 //               <option value="Verified">Verified</option>
@@ -539,7 +549,6 @@ const AdminLogs = () => {
 
   useEffect(() => {
     document.title = "Logs Manager - Admin RealSMS";
-
     fetchLogs();
 
     const interval = setInterval(() => {
@@ -549,14 +558,21 @@ const AdminLogs = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ SAFE FETCH
   const fetchLogs = async (showLoader = true) => {
     try {
       if (showLoader) setLoading(true);
 
       const res = await axios.get(`${API}/api/log`);
-      setLogs(res.data);
+
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data.logs || res.data.data || [];
+
+      setLogs(data);
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
+      setLogs([]);
     } finally {
       if (showLoader) setLoading(false);
     }
@@ -586,9 +602,11 @@ const AdminLogs = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target.result;
+
       const detailsArray = content
         .split(/\r?\n/)
-        .filter((line) => line.trim() !== "");
+        .map((line) => line.trim())
+        .filter(Boolean);
 
       setForm((prev) => ({
         ...prev,
@@ -596,11 +614,11 @@ const AdminLogs = () => {
         stock: detailsArray.length,
       }));
     };
+
     reader.readAsText(file);
   };
 
   const handleAddLog = async () => {
-    // ✅ type is optional
     if (
       !form.platform ||
       !form.name ||
@@ -645,7 +663,7 @@ const AdminLogs = () => {
   };
 
   const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text || "");
     alert("Copied!");
   };
 
@@ -659,10 +677,10 @@ const AdminLogs = () => {
   const handleEdit = (log) => {
     setEditingLog(log);
     setForm({
-      platform: log.platform,
-      name: log.name,
-      price: log.price,
-      stock: log.stock,
+      platform: log.platform || "",
+      name: log.name || "",
+      price: log.price || "",
+      stock: log.stock || 0,
       type: log.type || "",
       details: log.details ? log.details.split("\n") : [],
     });
@@ -702,11 +720,16 @@ const AdminLogs = () => {
     }
   };
 
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.name.toLowerCase().includes(search.toLowerCase()) ||
-      log.platform.toLowerCase().includes(search.toLowerCase())
-  );
+  // ✅ SAFE FILTER
+  const filteredLogs = Array.isArray(logs)
+    ? logs.filter((log) => {
+        const name = (log.name || "").toLowerCase();
+        const platform = (log.platform || "").toLowerCase();
+        const term = search.toLowerCase();
+
+        return name.includes(term) || platform.includes(term);
+      })
+    : [];
 
   const indexOfLast = currentPage * logsPerPage;
   const indexOfFirst = indexOfLast - logsPerPage;
@@ -725,18 +748,13 @@ const AdminLogs = () => {
         className="search-input"
       />
 
+      {/* FORM */}
       <div className="logs-table-controls">
         <select name="platform" value={form.platform} onChange={handleChange}>
           <option value="">Platform</option>
-          <option value="Instagram">Instagram</option>
-          <option value="Facebook">Facebook</option>
-          <option value="Twitter">Twitter</option>
-          <option value="TikTok">TikTok</option>
-          <option value="Mail">Mail</option>
-          <option value="Google Voice">Google Voice</option>
-          <option value="Netflix">Netflix</option>
-          <option value="VPN">VPN</option>
-          <option value="Texting Apps">Texting Apps</option>
+          {Object.keys(platformIcons).map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
         </select>
 
         <input
@@ -754,7 +772,6 @@ const AdminLogs = () => {
           onChange={handleChange}
         />
 
-        {/* ✅ OPTIONAL */}
         <select name="type" value={form.type} onChange={handleChange}>
           <option value="">Type (Optional)</option>
           <option value="Aged">Aged</option>
@@ -765,29 +782,14 @@ const AdminLogs = () => {
           <option value="Verified">Verified</option>
         </select>
 
-        <div className="file-upload-wrapper">
-          <input
-            type="file"
-            id="fileUpload"
-            accept=".txt,.csv"
-            onChange={handleFileUpload}
-            className="file-input"
-          />
-          <label htmlFor="fileUpload" className="file-label">
-            Choose File
-          </label>
-          <span className="file-name">
-            {form.details.length > 0
-              ? `${form.details.length} lines uploaded`
-              : "No file chosen"}
-          </span>
-        </div>
+        <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
 
         <button className="logs-btn" onClick={handleAddLog}>
           Upload
         </button>
       </div>
 
+      {/* TABLE */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -804,99 +806,56 @@ const AdminLogs = () => {
 
         <tbody>
           {loading ? (
-            <tr>
-              <td colSpan="8" style={{ textAlign: "center" }}>
-                Loading...
-              </td>
-            </tr>
+            <tr><td colSpan="8">Loading...</td></tr>
           ) : currentLogs.length === 0 ? (
-            <tr>
-              <td colSpan="8" style={{ textAlign: "center" }}>
-                No logs found
-              </td>
-            </tr>
+            <tr><td colSpan="8">No logs found</td></tr>
           ) : (
             currentLogs.map((log) => (
               <tr key={log._id}>
-                <td data-label="Platform" className="platform-cell">
+                <td className="platform-cell">
                   <img
                     src={platformIcons[log.platform] || mailIcon}
-                    alt={log.platform}
+                    alt=""
                     className="platform-icon"
                   />
-                  <span>{log.platform}</span>
+                  {log.platform || "-"}
                 </td>
 
-                <td data-label="Name" title={log.name}>
-                  {truncateText(log.name, 25)}
+                <td>{truncateText(log.name)}</td>
+
+                <td>₦{Number(log.price || 0).toLocaleString()}</td>
+
+                <td style={{ color: log.stock < 5 ? "red" : "" }}>
+                  {formatValue(log.stock)}
                 </td>
 
-                <td data-label="Price">
-                  ₦{Number(log.price).toLocaleString()}
+                <td>{log.type || "N/A"}</td>
+
+                <td>
+                  {showDetails[log._id]
+                    ? truncateText(log.details, 40)
+                    : "••••••••••"}
+
+                  <button onClick={() => toggleDetails(log._id)}>
+                    Toggle
+                  </button>
+
+                  <button onClick={() => handleCopy(log.details)}>
+                    Copy
+                  </button>
                 </td>
 
-                <td data-label="Stock">
-                  <span style={{ color: log.stock < 5 ? "red" : "inherit" }}>
-                    {formatValue(log.stock)}
-                  </span>
+                <td>
+                  {log.createdAt
+                    ? new Date(log.createdAt).toLocaleDateString()
+                    : "-"}
                 </td>
 
-                <td data-label="Type">
-                  <span
-                    className={`status-badge ${
-                      log.type ? log.type.toLowerCase() : "na"
-                    }`}
-                  >
-                    {log.type || "N/A"}
-                  </span>
-                </td>
-
-                <td data-label="Details">
-                  <div className="details-cell">
-                    <span title={log.details}>
-                      {showDetails[log._id]
-                        ? truncateText(log.details, 40)
-                        : "••••••••••"}
-                    </span>
-
-                    <div className="button-group">
-                      <button
-                        className="toggle-btn"
-                        onClick={() => toggleDetails(log._id)}
-                      >
-                        {showDetails[log._id] ? "Hide" : "Show"}
-                      </button>
-
-                      <button
-                        className="copy-btn"
-                        onClick={() => handleCopy(log.details)}
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                </td>
-
-                <td data-label="Date">
-                  {new Date(log.createdAt).toLocaleDateString()}
-                </td>
-
-                <td data-label="Action">
-                  <div className="action-buttons">
-                    <button
-                      className="btn btn-edit"
-                      onClick={() => handleEdit(log)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="btn btn-delete"
-                      onClick={() => handleDelete(log._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                <td>
+                  <button onClick={() => handleEdit(log)}>Edit</button>
+                  <button onClick={() => handleDelete(log._id)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
@@ -904,6 +863,7 @@ const AdminLogs = () => {
         </tbody>
       </table>
 
+      {/* PAGINATION */}
       <div className="pagination">
         <button
           disabled={currentPage === 1}
@@ -912,9 +872,7 @@ const AdminLogs = () => {
           Prev
         </button>
 
-        <span>
-          {currentPage} / {totalPages || 1}
-        </span>
+        <span>{currentPage} / {totalPages || 1}</span>
 
         <button
           disabled={currentPage === totalPages}
@@ -923,65 +881,6 @@ const AdminLogs = () => {
           Next
         </button>
       </div>
-
-      {showEditModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Edit Log</h2>
-
-            <select name="platform" value={form.platform} onChange={handleChange}>
-              <option value="">Platform</option>
-              <option value="Instagram">Instagram</option>
-              <option value="Facebook">Facebook</option>
-              <option value="Twitter">Twitter</option>
-              <option value="TikTok">TikTok</option>
-              <option value="Mail">Mail</option>
-              <option value="Google Voice">Google Voice</option>
-              <option value="Netflix">Netflix</option>
-              <option value="VPN">VPN</option>
-              <option value="Texting Apps">Texting Apps</option>
-            </select>
-
-            <input name="name" value={form.name} onChange={handleChange} />
-
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-            />
-
-            <select name="type" value={form.type} onChange={handleChange}>
-              <option value="">Type (Optional)</option>
-              <option value="Aged">Aged</option>
-              <option value="PVA">PVA</option>
-              <option value="Verified">Verified</option>
-            </select>
-
-            <textarea
-              rows={6}
-              value={form.details.join("\n")}
-              onChange={(e) => {
-                const arr = e.target.value.split("\n");
-                setForm({
-                  ...form,
-                  details: arr,
-                  stock: arr.length,
-                });
-              }}
-            />
-
-            <input type="file" accept=".txt,.csv" onChange={handleFileUpload} />
-
-            <div className="modal-actions">
-              <button onClick={handleUpdateLog}>Update</button>
-              <button onClick={() => setShowEditModal(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
