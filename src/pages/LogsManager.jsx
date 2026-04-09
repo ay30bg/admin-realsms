@@ -743,11 +743,16 @@ const AdminLogs = () => {
     }
   };
 
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.name.toLowerCase().includes(search.toLowerCase()) ||
-      log.platform.toLowerCase().includes(search.toLowerCase())
-  );
+  // const filteredLogs = logs.filter(
+  //   (log) =>
+  //     log.name.toLowerCase().includes(search.toLowerCase()) ||
+  //     log.platform.toLowerCase().includes(search.toLowerCase())
+  // );
+
+  const filteredLogs = logs.filter((log) =>
+  (log.name || "").toLowerCase().includes(search.toLowerCase()) ||
+  (log.platform || "").toLowerCase().includes(search.toLowerCase())
+);
 
   const indexOfLast = currentPage * logsPerPage;
   const indexOfFirst = indexOfLast - logsPerPage;
