@@ -644,6 +644,35 @@
   gap: 6px;
 }
 
+/* Default: show full details */
+.details-column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px; /* optional for desktop */
+}
+
+/* Mobile truncation */
+@media (max-width: 768px) {
+  .details-column {
+    max-width: 120px; /* adjust as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Optionally, show tooltip on hover for full text */
+  .details-column:hover {
+    overflow: visible;
+    white-space: normal;
+    position: relative;
+    background: #fff;
+    padding: 4px;
+    border: 1px solid #ccc;
+    z-index: 10;
+  }
+}
+
 @media (max-width: 768px) {
   .details-cell {
     display: flex;
