@@ -655,19 +655,13 @@
 /* Mobile truncation */
 @media (max-width: 768px) {
   .details-column {
-    max-width: 120px; /* adjust as needed */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-.admin-table td.details-column {
-  text-align: left;
+  max-width: 120px; 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
-}
+  margin-left: auto;
+  text-align: right;
+  }
   
   /* Optionally, show tooltip on hover for full text */
   .details-column:hover {
