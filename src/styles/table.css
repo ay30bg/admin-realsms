@@ -668,7 +668,7 @@
     max-width: 150px;
     word-break: break-word;
   }
-}
+
   
   /* Optionally, show tooltip on hover for full text */
   .details-column:hover {
