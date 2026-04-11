@@ -654,14 +654,21 @@
 
 /* Mobile truncation */
 @media (max-width: 768px) {
-  .details-column {
+  /* .details-column {
   max-width: 120px; 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-left: auto;
   text-align: right;
+  } */
+
+  .details-column {
+    text-align: right;
+    max-width: 150px;
+    word-break: break-word;
   }
+}
   
   /* Optionally, show tooltip on hover for full text */
   .details-column:hover {
