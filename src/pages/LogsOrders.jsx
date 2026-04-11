@@ -156,7 +156,7 @@ const LogsOrders = () => {
                   {formatValue(log.quantity)}
                 </td>
 
-                <td data-label="Details" className="details-column">
+                <td data-label="Details">
                   {log.details
                     ? log.details.length > 50
                       ? log.details.slice(0, 50) + "..."
