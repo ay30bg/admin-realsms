@@ -158,8 +158,8 @@ const LogsOrders = () => {
 
                 <td data-label="Details">
                   {log.details
-                    ? log.details.length > 50
-                      ? log.details.slice(0, 50) + "..."
+                    ? log.details.length > 20
+                      ? log.details.slice(0, 20) + "..."
                       : log.details
                     : "-"}
                 </td>
