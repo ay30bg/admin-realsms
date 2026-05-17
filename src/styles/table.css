@@ -340,7 +340,7 @@
   flex-wrap: wrap;
 }
 
-.search-input,
+
 .table-controls .search-input {
   flex: 1;
 
@@ -350,7 +350,7 @@
 
   border: 1px solid var(--border-color);
 
-  border-radius: 8px;
+  border-radius: 4px;
 
   font-size: 14px;
 
@@ -365,6 +365,20 @@
     box-shadow 0.2s ease,
     background 0.3s ease;
 }
+
+.search-input {
+  flex: 1;
+  max-width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-color);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
 
 .search-input:focus,
 .table-controls .search-input:focus {
