@@ -374,6 +374,7 @@
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 14px;
+  background: var(--card-bg);
   color: var(--text-color);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
