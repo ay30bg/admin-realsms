@@ -27,7 +27,7 @@ body[data-theme="dark"] {
 ========================= */
 body {
   margin: 0;
-  padding-top: 65px;
+  padding-top: 20px;
 
   background: var(--bg-color);
   color: var(--text-color);
