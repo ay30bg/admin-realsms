@@ -1,7 +1,72 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+// import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+// import AdminLayout from "./components/AdminLayout";
+// import ProtectedRoute from "./components/ProtectedRoute";
+
+// import Analytics from "./pages/Analytics";
+// import Dashboard from "./pages/Dashboard";
+// import Users from "./pages/Users";
+// import Transactions from "./pages/Transactions";
+// import Orders from "./pages/Orders";
+// import LogsOrders from "./pages/LogsOrders";
+// import LogsManager from "./pages/LogsManager";
+// import AdminLogin from "./pages/AdminLogin";
+// import Support from "./pages/Support";
+
+// function App() {
+//   return (
+//     <Router>
+//       <Routes>
+
+//         {/* Redirect root to admin dashboard */}
+//         <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
+
+//         {/* Admin Login */}
+//         <Route path="/" element={<AdminLogin />} />
+
+//         {/* Protected Admin Routes */}
+//         <Route
+//           path="/admin"
+//           element={
+//             <ProtectedRoute>
+//               <AdminLayout />
+//             </ProtectedRoute>
+//           }
+//         >
+          
+//           <Route index element={<Dashboard />} />
+//           <Route path="analytics" element={<Analytics />} />
+//           <Route path="users" element={<Users />} />
+//           <Route path="transactions" element={<Transactions />} />
+//           <Route path="orders" element={<Orders />} />
+//           <Route path="logs-orders" element={<LogsOrders />} />
+//           <Route path="logs-manager" element={<LogsManager />} />
+//           <Route path="support" element={<Support />} />
+//         </Route>
+
+//         {/* 404 Page (Optional) */}
+//         <Route path="*" element={<h2 style={{ padding: "40px" }}>404 - Page Not Found</h2>} />
+
+//       </Routes>
+//     </Router>
+//   );
+// }
+
+// export default App;
+
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import AdminLayout from "./components/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Theme Context
+import { ThemeProvider } from "./context/ThemeContext";
 
 import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
@@ -15,40 +80,77 @@ import Support from "./pages/Support";
 
 function App() {
   return (
-    <Router>
-      <Routes>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          {/* Redirect old dashboard route */}
+          <Route
+            path="/admin/dashboard"
+            element={<Navigate to="/admin" replace />}
+          />
 
-        {/* Redirect root to admin dashboard */}
-        <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
+          {/* Admin Login */}
+          <Route path="/" element={<AdminLogin />} />
 
-        {/* Admin Login */}
-        <Route path="/" element={<AdminLogin />} />
+          {/* Protected Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
 
-        {/* Protected Admin Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          
-          <Route index element={<Dashboard />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="users" element={<Users />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="logs-orders" element={<LogsOrders />} />
-          <Route path="logs-manager" element={<LogsManager />} />
-          <Route path="support" element={<Support />} />
-        </Route>
+            <Route
+              path="analytics"
+              element={<Analytics />}
+            />
 
-        {/* 404 Page (Optional) */}
-        <Route path="*" element={<h2 style={{ padding: "40px" }}>404 - Page Not Found</h2>} />
+            <Route
+              path="users"
+              element={<Users />}
+            />
 
-      </Routes>
-    </Router>
+            <Route
+              path="transactions"
+              element={<Transactions />}
+            />
+
+            <Route
+              path="orders"
+              element={<Orders />}
+            />
+
+            <Route
+              path="logs-orders"
+              element={<LogsOrders />}
+            />
+
+            <Route
+              path="logs-manager"
+              element={<LogsManager />}
+            />
+
+            <Route
+              path="support"
+              element={<Support />}
+            />
+          </Route>
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={
+              <h2 style={{ padding: "40px" }}>
+                404 - Page Not Found
+              </h2>
+            }
+          />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
