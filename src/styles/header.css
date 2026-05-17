@@ -4,36 +4,52 @@
 .admin-topbar {
   position: fixed;
   top: 0;
-  left: 260px; /* push beside sidebar */
+  left: 260px;
   right: 0;
   height: 65px;
 
-  background: #ffffff;
+  background: var(--topbar-bg);
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 0 25px;
 
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
+
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
   z-index: 1000;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
+/* Avatar */
 .admin-avatar {
   width: 34px;
   height: 34px;
+
   border-radius: 50%;
+
   background: #367e3a;
   color: #fff;
+
   font-weight: 600;
   font-size: 13px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   margin-right: 6px;
 }
 
-/* Left */
+/* ===========================
+   LEFT
+=========================== */
 .topbar-left {
   display: flex;
   align-items: center;
@@ -43,49 +59,99 @@
 .admin-title {
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+
+  color: var(--text-color);
 }
 
-/* Right */
+/* ===========================
+   RIGHT
+=========================== */
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
+/* Greeting */
 .greeting {
   margin-left: 14px;
+
   font-size: 14px;
   font-weight: 500;
-  color: #444;
+
+  color: var(--secondary-text);
 }
 
 .greeting strong {
-  color: #000;
+  color: var(--text-color);
 }
 
-/* Notification */
+/* ===========================
+   THEME TOGGLE
+=========================== */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+
+  background: var(--card-bg);
+  color: var(--text-color);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   NOTIFICATION
+=========================== */
 .notification {
   position: relative;
+
   cursor: pointer;
+
+  color: var(--text-color);
+
+  transition: color 0.3s ease;
 }
 
 .badge {
   position: absolute;
   top: -6px;
   right: -8px;
+
   background: #ef4444;
   color: #fff;
+
   font-size: 10px;
+
   padding: 2px 6px;
+
   border-radius: 50%;
 }
 
-/* Profile */
+/* ===========================
+   PROFILE
+=========================== */
 .profile {
   display: flex;
   align-items: center;
   gap: 8px;
+
   cursor: pointer;
   position: relative;
 }
@@ -93,48 +159,76 @@
 .avatar {
   width: 32px;
   height: 32px;
+
   border-radius: 50%;
 }
 
 .username {
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+
+  color: var(--text-color);
 }
 
 .arrow {
-  transition: transform 0.3s ease;
+  color: var(--text-color);
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
 }
 
 .arrow.rotate {
   transform: rotate(180deg);
 }
 
-/* Dropdown */
+/* ===========================
+   DROPDOWN
+=========================== */
 .dropdown-menu {
   position: absolute;
   top: 45px;
   right: 0;
-  width: 150px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+  width: 160px;
+
+  background: var(--card-bg);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 10px;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
   padding: 6px 0;
+
   animation: fadeIn 0.15s ease;
+
+  overflow: hidden;
 }
 
 .dropdown-menu p {
   margin: 0;
-  padding: 10px 15px;
+
+  padding: 11px 15px;
+
   font-size: 14px;
+
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
+
   cursor: pointer;
+
+  color: var(--text-color);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .dropdown-menu p:hover {
-  background: #f3f4f6;
+  background: rgba(127, 127, 127, 0.08);
 }
 
 .dropdown-menu .logout {
@@ -145,21 +239,32 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* ===========================
+   ANIMATION
+=========================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Hamburger */
+/* ===========================
+   HAMBURGER
+=========================== */
 .hamburger {
   display: none;
+
   cursor: pointer;
+
+  color: var(--text-color);
+
+  transition: color 0.3s ease;
 }
 
 /* ===========================
@@ -168,6 +273,7 @@
 @media (max-width: 768px) {
   .admin-topbar {
     left: 0;
+    padding: 0 16px;
   }
 
   .hamburger {
@@ -178,5 +284,12 @@
     display: none;
   }
 
-}
+  .greeting {
+    font-size: 13px;
+    margin-left: 6px;
+  }
 
+  .topbar-right {
+    gap: 12px;
+  }
+}
