@@ -1,71 +1,129 @@
+/* =========================
+   ANALYTICS PAGE
+========================= */
 .analytics-page {
   padding: 5px;
+
+  color: var(--text-color);
+
+  transition: color 0.3s ease;
 }
 
+/* =========================
+   FILTER
+========================= */
 .analytics-filter {
   margin-bottom: 15px;
+
   display: flex;
   align-items: center;
   gap: 10px;
+
+  flex-wrap: wrap;
 }
 
 .analytics-filter select {
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  border: 1px solid var(--border-color);
+
+  background: var(--card-bg);
+
+  color: var(--text-color);
+
+  outline: none;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
 }
 
+.analytics-filter select:focus {
+  border-color: #367e3a;
+}
+
+/* =========================
+   ALERTS
+========================= */
 .analytics-alerts {
   margin-bottom: 15px;
 }
 
 .analytics-alert {
-  background-color: #fef3c7;
-  color: #b45309;
-  padding: 10px 15px;
-  border-radius: 6px;
+  background-color: rgba(245, 158, 11, 0.12);
+
+  color: #d97706;
+
+  padding: 12px 15px;
+
+  border-radius: 8px;
+
   margin-bottom: 8px;
+
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
+/* =========================
+   KPI CARDS
+========================= */
 .analytics-kpis {
   display: flex;
+
   gap: 20px;
+
   flex-wrap: wrap;
+
   margin-bottom: 20px;
 }
 
 .kpi-card {
   flex: 1 1 200px;
-  background-color: #fff;
-  padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  font-weight: 600;
-  text-align: center;
-}
 
-.kpi-card {
-  flex: 1 1 200px;
-  background-color: #fff;
+  background: var(--card-bg);
+
+  border: 1px solid var(--border-color);
+
   padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  font-weight: 600;
+
+  border-radius: 12px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
   text-align: center;
+
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  transition:
+    transform 0.25s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
 }
 
 .kpi-label {
   font-size: 14px;
-  color: #6b7280;
+  font-weight: 500;
+
+  color: var(--secondary-text);
+
+  transition: color 0.3s ease;
 }
 
 .kpi-value {
   font-size: 22px;
   font-weight: 700;
-  color: #111827;
+
+  color: var(--text-color);
+
+  transition: color 0.3s ease;
 }
 
 .kpi-growth {
@@ -73,16 +131,71 @@
   font-weight: 600;
 }
 
+.kpi-growth.positive {
+  color: #10b981;
+}
+
+.kpi-growth.negative {
+  color: #ef4444;
+}
+
+/* =========================
+   ANALYTICS SECTION
+========================= */
 .analytics-section {
-  background-color: #fff;
+  background: var(--card-bg);
+
+  border: 1px solid var(--border-color);
+
   padding: 20px;
-  border-radius: 12px;
+
+  border-radius: 14px;
+
   margin-bottom: 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .analytics-section h3 {
   margin-bottom: 15px;
+
   font-size: 18px;
-  color: #6b7280;
+  font-weight: 600;
+
+  color: var(--secondary-text);
+
+  transition: color 0.3s ease;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+  .analytics-page {
+    padding: 0;
+  }
+
+  .analytics-kpis {
+    gap: 14px;
+  }
+
+  .kpi-card {
+    flex: 1 1 100%;
+  }
+
+  .analytics-section {
+    padding: 16px;
+  }
+
+  .analytics-section h3 {
+    font-size: 16px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
 }
