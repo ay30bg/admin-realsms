@@ -3,26 +3,37 @@
 ======================= */
 .sidebar {
   width: 220px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+
+  background: var(--card-bg);
+
+  border-right: 1px solid var(--border-color);
 
   display: flex;
   flex-direction: column;
+
   padding: 25px 20px;
 
   position: fixed;
   top: 0;
   left: 0;
+
   height: 100vh;
+
   z-index: 1200;
 
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
-/* Logo */
+/* =======================
+   LOGO
+======================= */
 .sidebar-logo {
   display: flex;
   justify-content: center;
+
   margin-bottom: 40px;
 }
 
@@ -30,7 +41,9 @@
   width: 180px;
 }
 
-/* Navigation */
+/* =======================
+   NAVIGATION
+======================= */
 .sidebar nav {
   display: flex;
   flex-direction: column;
@@ -43,31 +56,44 @@
   gap: 14px;
 
   padding: 12px 14px;
+
   border-radius: 10px;
+
   text-decoration: none;
+
   font-weight: 500;
   font-size: 14px;
 
-  color: #4b5563;
-  transition: all 0.25s ease;
+  color: var(--secondary-text);
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
 }
 
 /* Hover */
 .sidebar nav a:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: rgba(127, 127, 127, 0.08);
+
+  color: var(--text-color);
 }
 
 /* Active */
 .sidebar nav a.active {
   background: #367e3a;
+
   color: #ffffff;
+
   box-shadow: 0 4px 10px rgba(54, 126, 58, 0.25);
 }
 
-/* Icons */
+/* =======================
+   ICONS
+======================= */
 .sidebar-icon {
   font-size: 18px;
+
   transition: transform 0.2s ease;
 }
 
@@ -80,9 +106,12 @@
 ======================= */
 .main-content {
   margin-left: 220px;
+
   flex: 1;
+
   display: flex;
   flex-direction: column;
+
   transition: margin 0.3s ease;
 }
 
@@ -92,57 +121,82 @@
 .sidebar-overlay {
   position: fixed;
   inset: 0;
+
   background: rgba(0, 0, 0, 0.35);
+
   z-index: 1100;
+
+  backdrop-filter: blur(2px);
 }
 
-/* Sidebar notification badge */
+/* =======================
+   BADGES
+======================= */
 .nav-with-badge {
   position: relative;
 }
 
-/* Shared badge styles */
-.badge{
-   margin-top: 3px;
-}
-
-.nav-with-badge {
-  position: relative;
+.badge {
+  margin-top: 3px;
 }
 
 .nav-with-badge .badge {
   position: absolute;
+
   top: 50%;
   right: 12px;
+
   transform: translateY(-50%);
+
   color: white;
+
   font-size: 10px;
   font-weight: bold;
+
   padding: 2px 6px;
+
   border-radius: 12px;
 }
 
-/* Pending transactions (red) */
+/* Pending transactions */
 .nav-with-badge .badge.pulse {
-  background-color: #dc2626; /* red */
+  background-color: #dc2626;
+
   animation: pulse 1s infinite;
 }
 
-/* Unread messages (blue) */
+/* Unread messages */
 .nav-with-badge .badge.unread {
-  background-color: #2563eb; /* blue */
+  background-color: #2563eb;
+
   animation: pulse 1s infinite;
+}
+
+/* =======================
+   PULSE ANIMATION
+======================= */
+@keyframes pulse {
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+
+  50% {
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
 }
 
 /* =======================
    MOBILE SIDEBAR
 ======================= */
 @media (max-width: 768px) {
-
-  /* Hide using transform (NO left shifting) */
   .sidebar {
     transform: translateX(-100%);
-    border-right: none; /* remove 1px border leak */
+
+    border-right: none;
   }
 
   .sidebar.open {
@@ -159,17 +213,19 @@
 
   .close-btn {
     display: block;
+
     text-align: right;
+
     font-size: 24px;
+
     cursor: pointer;
+
     margin-bottom: 10px;
+
+    color: var(--text-color);
   }
 
-   .badge{
-   margin-top: 0;
+  .badge {
+    margin-top: 0;
+  }
 }
-}
-
-
-
-
