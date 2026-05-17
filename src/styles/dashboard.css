@@ -1,32 +1,20 @@
 /* ================= Admin Dashboard Container ================= */
 .admin-dashboard {
   padding: 25px;
-
-  color: var(--text-color);
-
-  transition: color 0.3s ease;
 }
 
 /* ================= Welcome Card ================= */
 .admin-welcome-card {
   background: linear-gradient(90deg, #111827, #1f2937);
-
   color: #fff;
-
   padding: 25px;
-
   margin-top: 20px;
-  margin-bottom: 30px;
-
-  border-radius: 12px;
-
+  border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  flex-wrap: wrap;
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  flex-wrap: wrap; 
 }
 
 /* Scope text inside welcome card */
@@ -38,84 +26,56 @@
 
 .admin-welcome-card .welcome-text h2 {
   margin: 0;
-
   font-size: 22px;
-  font-weight: 700;
 }
 
 .admin-welcome-card .welcome-text p {
   margin: 5px 0 0;
-
   font-size: 14px;
-
   opacity: 0.9;
 }
 
 /* Button inside welcome card */
 .admin-welcome-card .welcome-btn {
-  background-color: #3b82f6;
-
+  background-color: #3b82f6; 
   color: #fff;
-
   font-weight: 600;
-
   padding: 10px 20px;
-
-  border-radius: 8px;
-
+  border-radius: 6px;
   border: none;
-
   cursor: pointer;
-
   flex-shrink: 0;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .admin-welcome-card .welcome-btn:hover {
   transform: scale(1.05);
-
-  background-color: #2563eb;
+  background-color: #2e6b2f;
 }
 
 /* ================= Stat Card ================= */
 .stats-container {
   display: grid;
-
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-
   gap: 20px;
 }
 
 .stat-card {
-  background: var(--card-bg);
-
-  border: 1px solid var(--border-color);
-
+  background-color: #ffffff;
   padding: 22px;
-
-  border-radius: 14px;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-
   gap: 18px;
-
-  transition:
-    transform 0.25s ease,
-    background 0.3s ease,
-    border-color 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
 }
 
-/* ================= Top section ================= */
+/* Top section */
 .stat-card-top {
   display: flex;
   align-items: center;
@@ -125,27 +85,21 @@
 .stat-card-top h4 {
   font-size: 14px;
   font-weight: 500;
-
-  color: var(--secondary-text);
-
-  margin: 0;
+  color: #6b7280;
 }
 
-/* ================= Icon ================= */
+/* Icon */
 .stat-icon {
   width: 42px;
   height: 42px;
-
   border-radius: 10px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 18px;
 }
 
-/* ================= Body ================= */
+/* Body */
 .stat-card-body {
   display: flex;
   flex-direction: column;
@@ -155,80 +109,71 @@
 .stat-value {
   font-size: 26px;
   font-weight: 700;
-
-  color: var(--text-color);
-
-  transition: color 0.3s ease;
+  color: #111827;
 }
 
 .stat-subtitle {
   font-size: 13px;
-
-  color: var(--secondary-text);
-
-  transition: color 0.3s ease;
+  color: #9ca3af;
 }
 
-/* ================= Weekly Change ================= */
+/* Dark mode */
+.stat-card.dark {
+  background-color: #1f2937;
+}
+
+.stat-card.dark .stat-value {
+  color: #f9fafb;
+}
+
+.stat-card.dark h4,
+.stat-card.dark .stat-subtitle {
+  color: #d1d5db;
+}
+
 .stat-weekly-change {
   font-size: 0.85rem;
-
   margin-top: 4px;
+  color: #555;
 }
 
 .stat-weekly-change.positive {
-  color: #10b981;
+  color: #10b981; /* green */
 }
 
 .stat-weekly-change.negative {
-  color: #ef4444;
+  color: #ef4444; /* red */
 }
 
-/* ================= Stats Grid ================= */
+/* Stats Grid */
 .admin-stats-container {
   display: grid;
-
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
   gap: 20px;
 }
 
-/* ================= Loading ================= */
+/* Loading */ 
 .loading-spinner {
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   height: 60vh;
-
-  color: var(--text-color);
 }
 
 .spinner {
-  border: 4px solid rgba(127, 127, 127, 0.15);
-
+  border: 4px solid rgba(0, 0, 0, 0.1);
   border-top: 4px solid #367e3a;
-
   border-radius: 50%;
-
   width: 45px;
   height: 45px;
-
   animation: spin 1s linear infinite;
-
   margin-bottom: 15px;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ================= Mobile ================= */
@@ -237,14 +182,10 @@
     padding: 15px;
   }
 
-  .admin-welcome-card {
+.admin-welcome-card {
     flex-direction: column;
-
     align-items: flex-start;
-
     gap: 12px;
-
-    padding: 20px;
   }
 
   .admin-welcome-card .welcome-text h2 {
@@ -257,19 +198,16 @@
 
   .admin-welcome-card .welcome-btn {
     width: 100%;
-
     padding: 12px;
-
     font-size: 14px;
   }
-
+  
   .admin-stats-container {
     grid-template-columns: 1fr;
   }
 
   .stats-container {
     grid-template-columns: 1fr;
-
     gap: 14px;
   }
 
@@ -284,7 +222,14 @@
   .stat-icon {
     width: 36px;
     height: 36px;
-
     font-size: 16px;
   }
 }
+
+
+
+
+
+
+
+
