@@ -1,3 +1,102 @@
+// import React, { useState, useEffect } from "react";
+// import {
+//   FiChevronDown,
+//   FiSettings,
+//   FiLogOut,
+//   FiMenu,
+//   FiBell,
+// } from "react-icons/fi";
+// import { useNavigate } from "react-router-dom";
+// import "../styles/header.css";
+
+// const AdminTopbar = ({ toggleSidebar }) => {
+//   const [dropdownOpen, setDropdownOpen] = useState(false);
+//   const [adminName, setAdminName] = useState("Admin");
+//   const [greeting, setGreeting] = useState("");
+//   const [initials, setInitials] = useState("A");
+
+//   const navigate = useNavigate();
+
+//   const toggleDropdown = () => {
+//     setDropdownOpen((prev) => !prev);
+//   };
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("isAdmin");
+//     setDropdownOpen(false);
+//     navigate("/");
+//   };
+
+//   useEffect(() => {
+//     const name = localStorage.getItem("adminName") || "Admin";
+//     setAdminName(name);
+
+//     // Generate initials
+//     const nameParts = name.split(" ");
+//     const generatedInitials =
+//       nameParts.length > 1
+//         ? nameParts[0][0] + nameParts[1][0]
+//         : nameParts[0][0];
+
+//     setInitials(generatedInitials.toUpperCase());
+
+//     // Greeting logic
+//     const hour = new Date().getHours();
+
+//     if (hour < 12) {
+//       setGreeting("Good morning");
+//     } else if (hour < 18) {
+//       setGreeting("Good afternoon");
+//     } else {
+//       setGreeting("Good evening");
+//     }
+//   }, []);
+
+//   return (
+//     <div className="admin-topbar">
+//       <div className="topbar-left">
+//         <div className="hamburger" onClick={toggleSidebar}>
+//           <FiMenu size={22} />
+//         </div>
+
+//         <div className="greeting">
+//           {greeting}, <strong>{adminName}</strong>
+//         </div>
+//       </div>
+
+//       <div className="topbar-right">
+//         <div className="notification">
+//           <FiBell size={18} />
+//           <span className="badge">3</span>
+//         </div>
+
+//         <div className="profile" onClick={toggleDropdown}>
+//           {/* Initials Avatar */}
+//           <div className="admin-avatar">{initials}</div>
+
+//           <FiChevronDown
+//             className={`arrow ${dropdownOpen ? "rotate" : ""}`}
+//           />
+
+//           {dropdownOpen && (
+//             <div className="dropdown-menu">
+//               <p>
+//                 <FiSettings /> ACCOUNT
+//               </p>
+//               <p className="logout" onClick={handleLogout}>
+//                 <FiLogOut /> LOGOUT
+//               </p>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminTopbar;
+
+
 import React, { useState, useEffect } from "react";
 import {
   FiChevronDown,
@@ -5,8 +104,13 @@ import {
   FiLogOut,
   FiMenu,
   FiBell,
+  FiMoon,
+  FiSun,
 } from "react-icons/fi";
+
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
+
 import "../styles/header.css";
 
 const AdminTopbar = ({ toggleSidebar }) => {
@@ -16,6 +120,9 @@ const AdminTopbar = ({ toggleSidebar }) => {
   const [initials, setInitials] = useState("A");
 
   const navigate = useNavigate();
+
+  // Theme
+  const { darkMode, toggleTheme } = useTheme();
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -29,10 +136,12 @@ const AdminTopbar = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const name = localStorage.getItem("adminName") || "Admin";
+
     setAdminName(name);
 
     // Generate initials
     const nameParts = name.split(" ");
+
     const generatedInitials =
       nameParts.length > 1
         ? nameParts[0][0] + nameParts[1][0]
@@ -54,6 +163,7 @@ const AdminTopbar = ({ toggleSidebar }) => {
 
   return (
     <div className="admin-topbar">
+      {/* Left */}
       <div className="topbar-left">
         <div className="hamburger" onClick={toggleSidebar}>
           <FiMenu size={22} />
@@ -64,14 +174,21 @@ const AdminTopbar = ({ toggleSidebar }) => {
         </div>
       </div>
 
+      {/* Right */}
       <div className="topbar-right">
+        {/* Theme Toggle */}
+        <button className="theme-toggle" onClick={toggleTheme}>
+          {darkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
+        </button>
+
+        {/* Notification */}
         <div className="notification">
           <FiBell size={18} />
           <span className="badge">3</span>
         </div>
 
+        {/* Profile */}
         <div className="profile" onClick={toggleDropdown}>
-          {/* Initials Avatar */}
           <div className="admin-avatar">{initials}</div>
 
           <FiChevronDown
@@ -83,6 +200,7 @@ const AdminTopbar = ({ toggleSidebar }) => {
               <p>
                 <FiSettings /> ACCOUNT
               </p>
+
               <p className="logout" onClick={handleLogout}>
                 <FiLogOut /> LOGOUT
               </p>
@@ -95,7 +213,3 @@ const AdminTopbar = ({ toggleSidebar }) => {
 };
 
 export default AdminTopbar;
-
-
-
-
