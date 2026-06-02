@@ -1,0 +1,201 @@
+/* =========================
+   BROADCAST EMAIL PAGE
+========================= */
+
+.broadcast-page {
+  padding: 24px;
+}
+
+.broadcast-card {
+  max-width: 900px;
+  margin: 0 auto;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+
+  border-radius: 20px;
+  padding: 28px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.broadcast-header {
+  margin-bottom: 24px;
+}
+
+.broadcast-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.broadcast-header p {
+  margin-top: 8px;
+  color: var(--secondary-text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.broadcast-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+
+  background: var(--bg-color);
+  color: var(--text-color);
+
+  font-size: 15px;
+
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--secondary-text);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 220px;
+  line-height: 1.6;
+}
+
+/* =========================
+   PREVIEW BOX
+========================= */
+
+.preview-box {
+  padding: 20px;
+
+  border-radius: 16px;
+  border: 1px dashed var(--border-color);
+
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.preview-box h4 {
+  margin: 0 0 16px;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.preview-subject {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-color);
+
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.preview-message {
+  color: var(--secondary-text);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.send-btn {
+  border: none;
+  outline: none;
+
+  padding: 14px 22px;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 20px rgba(
+    37,
+    99,
+    235,
+    0.25
+  );
+}
+
+.send-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .broadcast-page {
+    padding: 16px;
+  }
+
+  .broadcast-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .broadcast-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .form-group textarea {
+    min-height: 180px;
+  }
+}
