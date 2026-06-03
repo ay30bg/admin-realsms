@@ -26,7 +26,7 @@ const BroadcastEmail = () => {
     <div className="broadcast-page">
       <div className="broadcast-card">
         <div className="broadcast-header">
-          <h2>📧 Broadcast Email</h2>
+          <h2>Broadcast Email</h2>
           <p>
             Send announcements, updates, and promotions to all users.
           </p>
