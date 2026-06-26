@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
+  FiUpload,
   FiHome,
   FiMail,
   FiUsers,
@@ -162,6 +163,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
            <NavLink to="/admin/email-broadcast" onClick={toggleSidebar}>
             <FiMail className="sidebar-icon" />
             <span>Email Broadcast</span>
+          </NavLink>
+
+           <NavLink to="/admin/upload-tutorials" onClick={toggleSidebar}>
+            <FiUpload className="sidebar-icon" />
+            <span>Upload Tutorials</span>
           </NavLink>
           
           <NavLink
