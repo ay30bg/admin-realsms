@@ -104,6 +104,106 @@
     gap:10px;
 }
 
+.tutorial-manager{
+    margin-top:40px;
+}
+
+.tutorial-manager h2{
+    margin-bottom:20px;
+    font-size:26px;
+}
+
+.tutorial-list{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.tutorial-card{
+    background:#111827;
+    border-radius:18px;
+    padding:15px;
+    display:flex;
+    gap:15px;
+    align-items:center;
+}
+
+.tutorial-card img{
+    width:130px;
+    height:80px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.tutorial-content{
+    flex:1;
+}
+
+.tutorial-content h3{
+    margin-bottom:6px;
+}
+
+.tutorial-content p{
+    color:#94a3b8;
+    margin-bottom:8px;
+}
+
+.tutorial-content span{
+    font-size:13px;
+    color:#64748b;
+}
+
+.tutorial-actions{
+    display:flex;
+    gap:10px;
+}
+
+.edit-btn,
+.delete-btn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    color:white;
+}
+
+.edit-btn{
+    background:linear-gradient(
+    135deg,
+    #3b82f6,
+    #2563eb
+    );
+}
+
+.delete-btn{
+    background:linear-gradient(
+    135deg,
+    #ef4444,
+    #dc2626
+    );
+}
+
+@media(max-width:768px){
+
+.tutorial-card{
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.tutorial-card img{
+    width:100%;
+    height:180px;
+}
+
+.tutorial-actions{
+    width:100%;
+    justify-content:flex-end;
+}
+}
+
+
+
 @media(max-width:768px){
 
 .upload-container{
