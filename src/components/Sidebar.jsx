@@ -165,7 +165,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <span>Email Broadcast</span>
           </NavLink>
 
-           <NavLink to="/admin/upload-tutorials" onClick={toggleSidebar}>
+           <NavLink to="/admin/upload-tutorial" onClick={toggleSidebar}>
             <FiUpload className="sidebar-icon" />
             <span>Upload Tutorials</span>
           </NavLink>
