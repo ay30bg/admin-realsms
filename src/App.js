@@ -20,6 +20,7 @@ import LogsOrders from "./pages/LogsOrders";
 import LogsManager from "./pages/LogsManager";
 import AdminLogin from "./pages/AdminLogin";
 import BroadcastEmail from "./pages/BroadcastEmail";
+import UploadTutorial from "./pages/UploadTutorial";
 import Support from "./pages/Support";
 
 function App() {
@@ -81,6 +82,11 @@ function App() {
               path="email-broadcast"
               element={<BroadcastEmail />}
             />
+
+            <Route
+              path="upload-tutorial"
+              element={<UploadTutorial />}
+            />   
 
             <Route
               path="support"
