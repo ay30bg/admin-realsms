@@ -399,17 +399,18 @@ const UploadTutorial = () => {
   //   }
   // };
 
-  const handleVideo = (e) => {
-  const file = e.target.files[0];
+ const handleVideo = (e) => {
+  const file = e.target.files?.[0];
 
   if (!file) return;
 
-  const videoUrl =
+  // preview URL
+  const previewUrl =
     URL.createObjectURL(file);
 
-  setVideo(videoUrl);
+  setVideo(previewUrl);
 
-  // create temporary video element
+  // get duration
   const videoElement =
     document.createElement(
       "video"
@@ -419,7 +420,7 @@ const UploadTutorial = () => {
     "metadata";
 
   videoElement.src =
-    videoUrl;
+    previewUrl;
 
   videoElement.onloadedmetadata =
     () => {
@@ -437,25 +438,17 @@ const UploadTutorial = () => {
       const seconds =
         totalSeconds % 60;
 
-      const formattedDuration =
-        `${minutes}:${String(
-          seconds
-        ).padStart(
-          2,
-          "0"
-        )}`;
-
-      // auto-fill duration input
       setFormData(
         (prev) => ({
           ...prev,
           duration:
-            formattedDuration,
+            `${minutes}:${String(
+              seconds
+            ).padStart(
+              2,
+              "0"
+            )}`,
         })
-      );
-
-      URL.revokeObjectURL(
-        videoUrl
       );
     };
 };
