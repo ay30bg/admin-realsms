@@ -64,13 +64,64 @@ const UploadTutorial = () => {
     });
   };
 
+  // const handleVideo = (e) => {
+  //   if (e.target.files[0]) {
+  //     setVideo(
+  //       e.target.files[0]
+  //     );
+  //   }
+  // };
+
   const handleVideo = (e) => {
-    if (e.target.files[0]) {
-      setVideo(
-        e.target.files[0]
-      );
-    }
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  setVideo(file);
+
+  // Create temporary video element
+  const videoElement = document.createElement("video");
+
+  videoElement.preload = "metadata";
+  videoElement.src = URL.createObjectURL(file);
+
+  videoElement.onloadedmetadata = () => {
+    URL.revokeObjectURL(videoElement.src);
+
+    const totalSeconds = Math.floor(
+      videoElement.duration
+    );
+
+    // convert seconds → mm:ss or hh:mm:ss
+    const hours = Math.floor(
+      totalSeconds / 3600
+    );
+
+    const minutes = Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+    const seconds =
+      totalSeconds % 60;
+
+    const formattedDuration =
+      hours > 0
+        ? `${hours}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`
+        : `${minutes}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+
+    setFormData((prev) => ({
+      ...prev,
+      duration:
+        formattedDuration,
+    }));
   };
+};
 
  
   const handleThumbnail = (
