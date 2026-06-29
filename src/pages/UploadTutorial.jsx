@@ -398,7 +398,7 @@ const UploadTutorial = () => {
                 Duration
               </label>
 
-              <input
+              {/* <input
                 type="text"
                 name="duration"
                 placeholder="Auto detected"
@@ -408,7 +408,15 @@ const UploadTutorial = () => {
                 onChange={
                   handleChange
                 }
-              />
+              /> */}
+
+              <input
+  type="text"
+  name="duration"
+  placeholder="Auto detected"
+  value={formData.duration}
+  readOnly
+/>
 
             </div>
 
