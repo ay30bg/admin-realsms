@@ -391,13 +391,74 @@ const UploadTutorial = () => {
     });
   };
 
+  // const handleVideo = (e) => {
+  //   if (e.target.files[0]) {
+  //     setVideo(
+  //       e.target.files[0]
+  //     );
+  //   }
+  // };
+
   const handleVideo = (e) => {
-    if (e.target.files[0]) {
-      setVideo(
-        e.target.files[0]
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const videoUrl =
+    URL.createObjectURL(file);
+
+  setVideo(videoUrl);
+
+  // create temporary video element
+  const videoElement =
+    document.createElement(
+      "video"
+    );
+
+  videoElement.preload =
+    "metadata";
+
+  videoElement.src =
+    videoUrl;
+
+  videoElement.onloadedmetadata =
+    () => {
+
+      const totalSeconds =
+        Math.floor(
+          videoElement.duration
+        );
+
+      const minutes =
+        Math.floor(
+          totalSeconds / 60
+        );
+
+      const seconds =
+        totalSeconds % 60;
+
+      const formattedDuration =
+        `${minutes}:${String(
+          seconds
+        ).padStart(
+          2,
+          "0"
+        )}`;
+
+      // auto-fill duration input
+      setFormData(
+        (prev) => ({
+          ...prev,
+          duration:
+            formattedDuration,
+        })
       );
-    }
-  };
+
+      URL.revokeObjectURL(
+        videoUrl
+      );
+    };
+};
 
   const handleThumbnail = (
     e
@@ -676,7 +737,7 @@ const UploadTutorial = () => {
               <input
                 type="text"
                 name="duration"
-                placeholder="3:45"
+                placeholder="Auto detected"
                 value={
                   formData.duration
                 }
