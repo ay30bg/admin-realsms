@@ -776,8 +776,7 @@ import {
 
 import "../styles/uploadTutorial.css";
 
-const API_URL =
-  process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 const CLOUD_NAME =
   process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
@@ -786,13 +785,12 @@ const UPLOAD_PRESET =
   process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const UploadTutorial = () => {
-  const [formData, setFormData] =
-    useState({
-      title: "",
-      description: "",
-      category: "SMS",
-      duration: "",
-    });
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "SMS",
+    duration: "",
+  });
 
   const [video, setVideo] =
     useState(null);
@@ -800,28 +798,37 @@ const UploadTutorial = () => {
   const [thumbnail, setThumbnail] =
     useState(null);
 
-  const [videoPreview,
-    setVideoPreview] =
+  const [videoPreview, setVideoPreview] =
     useState(null);
 
-  const [thumbnailPreview,
-    setThumbnailPreview] =
+  const [
+    thumbnailPreview,
+    setThumbnailPreview,
+  ] = useState(null);
+
+  const [editingId, setEditingId] =
     useState(null);
 
-  const [editingId,
-    setEditingId] =
-    useState(null);
-
-  const [tutorials,
-    setTutorials] =
+  const [tutorials, setTutorials] =
     useState([]);
 
-  const [loading,
-    setLoading] =
+  const [loading, setLoading] =
     useState(false);
 
   useEffect(() => {
     fetchTutorials();
+
+    return () => {
+      if (videoPreview)
+        URL.revokeObjectURL(
+          videoPreview
+        );
+
+      if (thumbnailPreview)
+        URL.revokeObjectURL(
+          thumbnailPreview
+        );
+    };
   }, []);
 
   // ======================
@@ -829,131 +836,113 @@ const UploadTutorial = () => {
   // ======================
 
   const fetchTutorials =
-  async () => {
+    async () => {
+      try {
+        const res =
+          await axios.get(
+            `${API_URL}/api/tutorials`
+          );
 
-    try {
-
-      const res =
-      await axios.get(
-        `${API_URL}/api/tutorials`
-      );
-
-      setTutorials(
-        res.data.tutorials
-      );
-
-    } catch(err){
-
-      console.log(err);
-
-    }
-
-  };
+        setTutorials(
+          res.data.tutorials
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
   // ======================
-  // INPUT CHANGE
+  // INPUT
   // ======================
 
-  const handleChange =
-  (e)=>{
-
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]:
-      e.target.value,
+        e.target.value,
     });
-
   };
 
   // ======================
   // VIDEO
   // ======================
 
-  const handleVideo =
-  (e)=>{
-
+  const handleVideo = (e) => {
     const file =
-    e.target.files[0];
+      e.target.files[0];
 
-    if(!file) return;
+    if (!file) return;
 
     setVideo(file);
 
     const url =
-    URL.createObjectURL(
-      file
-    );
+      URL.createObjectURL(
+        file
+      );
 
-    setVideoPreview(
-      url
-    );
+    setVideoPreview(url);
 
     const videoElement =
-    document.createElement(
-      "video"
-    );
+      document.createElement(
+        "video"
+      );
 
     videoElement.preload =
-    "metadata";
+      "metadata";
 
-    videoElement.src =
-    url;
+    videoElement.src = url;
 
     videoElement.onloadedmetadata =
-    ()=>{
+      () => {
+        const totalSeconds =
+          Math.floor(
+            videoElement.duration
+          );
 
-      const totalSeconds =
-      Math.floor(
-        videoElement.duration
-      );
+        const hours =
+          Math.floor(
+            totalSeconds /
+              3600
+          );
 
-      const hours =
-      Math.floor(
-        totalSeconds / 3600
-      );
+        const minutes =
+          Math.floor(
+            (totalSeconds %
+              3600) /
+              60
+          );
 
-      const minutes =
-      Math.floor(
-        (
-          totalSeconds %
-          3600
-        ) / 60
-      );
+        const seconds =
+          totalSeconds % 60;
 
-      const seconds =
-      totalSeconds %
-      60;
+        const duration =
+          hours > 0
+            ? `${hours}:${minutes
+                .toString()
+                .padStart(
+                  2,
+                  "0"
+                )}:${seconds
+                .toString()
+                .padStart(
+                  2,
+                  "0"
+                )}`
+            : `${minutes}:${seconds
+                .toString()
+                .padStart(
+                  2,
+                  "0"
+                )}`;
 
-      const duration =
-      hours > 0
-
-      ? `${hours}:${minutes
-      .toString()
-      .padStart(
-        2,
-        "0"
-      )}:${seconds
-      .toString()
-      .padStart(
-        2,
-        "0"
-      )}`
-
-      : `${minutes}:${seconds
-      .toString()
-      .padStart(
-        2,
-        "0"
-      )}`;
-
-      setFormData(
-      prev=>({
-        ...prev,
-        duration
-      }));
-
-    };
-
+        setFormData(
+          (prev) => ({
+            ...prev,
+            duration:
+              duration,
+          })
+        );
+      };
   };
 
   // ======================
@@ -961,274 +950,221 @@ const UploadTutorial = () => {
   // ======================
 
   const handleThumbnail =
-  (e)=>{
+    (e) => {
+      const file =
+        e.target.files[0];
 
-    const file =
-    e.target.files[0];
+      if (!file) return;
 
-    if(!file) return;
+      setThumbnail(file);
 
-    setThumbnail(
-      file
-    );
+      const url =
+        URL.createObjectURL(
+          file
+        );
 
-    setThumbnailPreview(
-      URL.createObjectURL(
-        file
-      )
-    );
-
-  };
+      setThumbnailPreview(
+        url
+      );
+    };
 
   // ======================
   // CLOUDINARY
   // ======================
 
   const uploadToCloudinary =
-  async(
-    file,
-    type
-  )=>{
+    async (file, type) => {
+      const data =
+        new FormData();
 
-    const data =
-    new FormData();
+      data.append(
+        "file",
+        file
+      );
 
-    data.append(
-      "file",
-      file
-    );
+      data.append(
+        "upload_preset",
+        UPLOAD_PRESET
+      );
 
-    data.append(
-      "upload_preset",
-      UPLOAD_PRESET
-    );
+      data.append(
+        "folder",
+        type ===
+          "video"
+          ? "tutorial-videos"
+          : "tutorial-thumbnails"
+      );
 
-    data.append(
-      "folder",
+      const endpoint =
+        type === "video"
+          ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
+          : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
-      type==="video"
+      const res =
+        await axios.post(
+          endpoint,
+          data,
+          {
+            maxBodyLength:
+              Infinity,
+            maxContentLength:
+              Infinity,
 
-      ? "tutorial-videos"
+            onUploadProgress:
+              (
+                progressEvent
+              ) => {
+                const percent =
+                  Math.round(
+                    (progressEvent.loaded *
+                      100) /
+                      progressEvent.total
+                  );
 
-      : "tutorial-thumbnails"
-    );
+                console.log(
+                  `${type}: ${percent}%`
+                );
+              },
+          }
+        );
 
-    const endpoint =
-
-    type==="video"
-
-    ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
-
-    : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-
-    const res =
-    await axios.post(
-      endpoint,
-      data,
-      {
-        maxBodyLength:
-        Infinity,
-
-        maxContentLength:
-        Infinity,
-
-        onUploadProgress:
-        (
-          progressEvent
-        )=>{
-
-          const percent =
-          Math.round(
-            (
-              progressEvent.loaded *
-              100
-            ) /
-            progressEvent.total
-          );
-
-          console.log(
-            `${type}: ${percent}%`
-          );
-
-        }
-      }
-    );
-
-    return (
-      res.data.secure_url
-    );
-
-  };
+      return res.data.secure_url;
+    };
 
   // ======================
   // SUBMIT
   // ======================
 
   const handleSubmit =
-  async(e)=>{
+    async (e) => {
+      e.preventDefault();
 
-    e.preventDefault();
+      try {
+        setLoading(true);
 
-    try{
+        let videoUrl =
+          "";
 
-      setLoading(
-        true
-      );
+        let thumbnailUrl =
+          "";
 
-      let videoUrl =
-      "";
+        if (video) {
+          videoUrl =
+            await uploadToCloudinary(
+              video,
+              "video"
+            );
+        }
 
-      let thumbnailUrl =
-      "";
+        if (thumbnail) {
+          thumbnailUrl =
+            await uploadToCloudinary(
+              thumbnail,
+              "image"
+            );
+        }
 
-      if(video){
+        const payload = {
+          title:
+            formData.title,
 
-        videoUrl =
-        await uploadToCloudinary(
-          video,
-          "video"
+          description:
+            formData.description,
+
+          category:
+            formData.category,
+
+          duration:
+            formData.duration,
+
+          video:
+            videoUrl,
+
+          thumbnail:
+            thumbnailUrl,
+        };
+
+        if (editingId) {
+          await axios.put(
+            `${API_URL}/api/tutorials/${editingId}`,
+            payload
+          );
+        } else {
+          await axios.post(
+            `${API_URL}/api/tutorials`,
+            payload
+          );
+        }
+
+        fetchTutorials();
+
+        resetForm();
+      } catch (err) {
+        console.log(
+          err.response
+            ?.data ||
+            err.message
         );
-
+      } finally {
+        setLoading(false);
       }
-
-      if(thumbnail){
-
-        thumbnailUrl =
-        await uploadToCloudinary(
-          thumbnail,
-          "image"
-        );
-
-      }
-
-      const payload={
-
-        title:
-        formData.title,
-
-        description:
-        formData.description,
-
-        category:
-        formData.category,
-
-        duration:
-        formData.duration,
-
-        video:
-        videoUrl,
-
-        thumbnail:
-        thumbnailUrl,
-
-      };
-
-      if(editingId){
-
-        await axios.put(
-          `${API_URL}/api/tutorials/${editingId}`,
-          payload
-        );
-
-      }else{
-
-        await axios.post(
-          `${API_URL}/api/tutorials`,
-          payload
-        );
-
-      }
-
-      fetchTutorials();
-
-      resetForm();
-
-    }catch(err){
-
-      console.log(
-        err.response?.data ||
-        err.message
-      );
-
-    }finally{
-
-      setLoading(
-        false
-      );
-
-    }
-
-  };
+    };
 
   // ======================
   // DELETE
   // ======================
 
   const handleDelete =
-  async(id)=>{
+    async (id) => {
+      try {
+        await axios.delete(
+          `${API_URL}/api/tutorials/${id}`
+        );
 
-    try{
-
-      await axios.delete(
-        `${API_URL}/api/tutorials/${id}`
-      );
-
-      setTutorials(
-        tutorials.filter(
-          item =>
-          item._id !== id
-        )
-      );
-
-    }catch(err){
-
-      console.log(err);
-
-    }
-
-  };
+        setTutorials(
+          tutorials.filter(
+            (item) =>
+              item._id !== id
+          )
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
   // ======================
   // EDIT
   // ======================
 
-  const handleEdit =
-  (tutorial)=>{
-
+  const handleEdit = (
+    tutorial
+  ) => {
     setEditingId(
       tutorial._id
     );
 
     setFormData({
-
       title:
-      tutorial.title,
-
+        tutorial.title,
       description:
-      tutorial.description,
-
+        tutorial.description,
       category:
-      tutorial.category,
-
+        tutorial.category,
       duration:
-      tutorial.duration,
-
+        tutorial.duration,
     });
-
   };
 
   // ======================
   // RESET
   // ======================
 
-  const resetForm =
-  ()=>{
-
+  const resetForm = () => {
     setFormData({
-      title:"",
-      description:"",
-      category:"SMS",
-      duration:"",
+      title: "",
+      description: "",
+      category: "SMS",
+      duration: "",
     });
 
     setVideo(null);
@@ -1245,21 +1181,10 @@ const UploadTutorial = () => {
     setEditingId(
       null
     );
-
   };
 
   return (
     <div className="upload-page">
-      <div className="upload-header">
-        <h1>
-          Upload Video Tutorial
-        </h1>
-
-        <p>
-          Add tutorials users can
-          watch
-        </p>
-      </div>
 
       <form
         className="upload-container"
@@ -1282,7 +1207,6 @@ const UploadTutorial = () => {
               value={
                 formData.title
               }
-              placeholder="Getting Started"
               onChange={
                 handleChange
               }
@@ -1313,7 +1237,6 @@ const UploadTutorial = () => {
           <div className="row">
 
             <div className="input-group">
-
               <label>
                 <FiTag />
                 Category
@@ -1331,50 +1254,30 @@ const UploadTutorial = () => {
                 <option>
                   SMS
                 </option>
-
                 <option>
                   OTP
                 </option>
-
                 <option>
                   Deposit
                 </option>
-
                 <option>
                   Logs
                 </option>
-
               </select>
-
             </div>
 
             <div className="input-group">
-
               <label>
                 <FiClock />
                 Duration
               </label>
 
-              {/* <input
-                type="text"
-                name="duration"
-                placeholder="Auto detected"
+              <input
                 value={
                   formData.duration
                 }
-                onChange={
-                  handleChange
-                }
-              /> */}
-
-              <input
-  type="text"
-  name="duration"
-  placeholder="Auto detected"
-  value={formData.duration}
-  readOnly
-/>
-
+                readOnly
+              />
             </div>
 
           </div>
@@ -1402,16 +1305,14 @@ const UploadTutorial = () => {
 
             </label>
 
-            {thumbnail && (
-
+            {thumbnailPreview && (
               <img
-                src={URL.createObjectURL(
-                  thumbnail
-                )}
+                src={
+                  thumbnailPreview
+                }
                 alt=""
                 className="preview-image"
               />
-
             )}
 
           </div>
@@ -1435,26 +1336,23 @@ const UploadTutorial = () => {
 
             </label>
 
-            {video && (
-
+            {videoPreview && (
               <video
                 controls
                 className="preview-video"
               >
                 <source
-                  src={URL.createObjectURL(
-                    video
-                  )}
+                  src={
+                    videoPreview
+                  }
                 />
               </video>
-
             )}
 
           </div>
 
           <button
             className="submit-btn"
-            type="submit"
             disabled={
               loading
             }
@@ -1463,7 +1361,7 @@ const UploadTutorial = () => {
             <FiUpload />
 
             {loading
-              ? "Processing..."
+              ? "Uploading..."
               : editingId
               ? "Update Tutorial"
               : "Upload Tutorial"}
@@ -1483,9 +1381,7 @@ const UploadTutorial = () => {
         <div className="tutorial-list">
 
           {tutorials.map(
-            (
-              tutorial
-            ) => (
+            (tutorial) => (
 
               <div
                 key={
