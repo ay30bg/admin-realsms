@@ -815,21 +815,40 @@ const UploadTutorial = () => {
   const [loading, setLoading] =
     useState(false);
 
-  useEffect(() => {
-    fetchTutorials();
+// ======================
+// EFFECTS
+// ======================
 
-    return () => {
-      if (videoPreview)
-        URL.revokeObjectURL(
-          videoPreview
-        );
+useEffect(() => {
+  fetchTutorials();
+}, []);
 
-      if (thumbnailPreview)
-        URL.revokeObjectURL(
-          thumbnailPreview
-        );
-    };
-  }, []);
+useEffect(() => {
+
+  return () => {
+
+    if (videoPreview) {
+
+      URL.revokeObjectURL(
+        videoPreview
+      );
+
+    }
+
+    if (thumbnailPreview) {
+
+      URL.revokeObjectURL(
+        thumbnailPreview
+      );
+
+    }
+
+  };
+
+}, [
+  videoPreview,
+  thumbnailPreview
+]);
 
   // ======================
   // FETCH
