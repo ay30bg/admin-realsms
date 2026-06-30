@@ -138,88 +138,235 @@ const UploadTutorial = () => {
   // SUBMIT
   // ======================
 
-  const handleSubmit = async (
-    e
-  ) => {
-    e.preventDefault();
+  // const handleSubmit = async (
+  //   e
+  // ) => {
+  //   e.preventDefault();
 
-    try {
-      setLoading(true);
+  //   try {
+  //     setLoading(true);
 
-      const data =
-        new FormData();
+  //     const data =
+  //       new FormData();
 
-      data.append(
-        "title",
-        formData.title
-      );
+  //     data.append(
+  //       "title",
+  //       formData.title
+  //     );
 
-      data.append(
-        "description",
-        formData.description
-      );
+  //     data.append(
+  //       "description",
+  //       formData.description
+  //     );
 
-      data.append(
-        "category",
-        formData.category
-      );
+  //     data.append(
+  //       "category",
+  //       formData.category
+  //     );
 
-      data.append(
-        "duration",
-        formData.duration
-      );
+  //     data.append(
+  //       "duration",
+  //       formData.duration
+  //     );
 
-      if (thumbnail) {
-        data.append(
-          "thumbnail",
-          thumbnail
-        );
+  //     if (thumbnail) {
+  //       data.append(
+  //         "thumbnail",
+  //         thumbnail
+  //       );
+  //     }
+
+  //     if (video) {
+  //       data.append(
+  //         "video",
+  //         video
+  //       );
+  //     }
+
+  //     if (editingId) {
+
+  //       await axios.put(
+  //         `${API_URL}/api/tutorials/${editingId}`,
+  //         data,
+  //         {
+  //           headers: {
+  //             "Content-Type":
+  //               "multipart/form-data",
+  //           },
+  //         }
+  //       );
+
+  //     } else {
+
+  //       await axios.post(
+  //         `${API_URL}/api/tutorials`,
+  //         data,
+  //         {
+  //           headers: {
+  //             "Content-Type":
+  //               "multipart/form-data",
+  //           },
+  //         }
+  //       );
+
+  //     }
+
+  //     fetchTutorials();
+  //     resetForm();
+
+  //   } catch (err) {
+  //     console.log(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const uploadToCloudinary = async (
+  file,
+  type
+) => {
+  const data =
+    new FormData();
+
+  data.append(
+    "file",
+    file
+  );
+
+  data.append(
+    "upload_preset",
+    "YOUR_UPLOAD_PRESET"
+  );
+
+  data.append(
+    "folder",
+    type === "video"
+      ? "tutorial-videos"
+      : "tutorial-thumbnails"
+  );
+
+  const endpoint =
+    type === "video"
+      ? `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/video/upload`
+      : `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`;
+
+  const res =
+    await axios.post(
+      endpoint,
+      data,
+      {
+        maxBodyLength:
+          Infinity,
+        maxContentLength:
+          Infinity,
+
+        onUploadProgress: (
+          progressEvent
+        ) => {
+
+          const percent =
+            Math.round(
+              (progressEvent.loaded *
+                100) /
+              progressEvent.total
+            );
+
+          console.log(
+            `Upload: ${percent}%`
+          );
+        },
       }
+    );
 
-      if (video) {
-        data.append(
-          "video",
-          video
-        );
-      }
+  return res.data.secure_url;
+};
 
-      if (editingId) {
 
-        await axios.put(
-          `${API_URL}/api/tutorials/${editingId}`,
-          data,
-          {
-            headers: {
-              "Content-Type":
-                "multipart/form-data",
-            },
-          }
-        );
+const handleSubmit =
+async (e) => {
 
-      } else {
+  e.preventDefault();
 
-        await axios.post(
-          `${API_URL}/api/tutorials`,
-          data,
-          {
-            headers: {
-              "Content-Type":
-                "multipart/form-data",
-            },
-          }
+  try {
+
+    setLoading(true);
+
+    let videoUrl = "";
+    let thumbnailUrl = "";
+
+    if (video) {
+
+      videoUrl =
+        await uploadToCloudinary(
+          video,
+          "video"
         );
 
-      }
-
-      fetchTutorials();
-      resetForm();
-
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    if (thumbnail) {
+
+      thumbnailUrl =
+        await uploadToCloudinary(
+          thumbnail,
+          "image"
+        );
+
+    }
+
+    const payload = {
+      title:
+        formData.title,
+
+      description:
+        formData.description,
+
+      category:
+        formData.category,
+
+      duration:
+        formData.duration,
+
+      video:
+        videoUrl,
+
+      thumbnail:
+        thumbnailUrl,
+    };
+
+    if (editingId) {
+
+      await axios.put(
+        `${API_URL}/api/tutorials/${editingId}`,
+        payload
+      );
+
+    } else {
+
+      await axios.post(
+        `${API_URL}/api/tutorials`,
+        payload
+      );
+
+    }
+
+    fetchTutorials();
+
+    resetForm();
+
+  } catch (err) {
+
+    console.log(
+      err.response?.data ||
+      err.message
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   // ======================
   // DELETE
